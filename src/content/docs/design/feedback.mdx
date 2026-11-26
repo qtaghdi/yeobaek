@@ -3,6 +3,9 @@ title: "로딩·성공·실패를 어떻게 보여줄까?"
 description: "비동기 복사와 Toast의 수명주기, 독립적인 알림 큐, 접근 가능한 피드백을 설계합니다."
 ---
 
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import { SaveFeedbackExample } from "src/components/examples/design/save-feedback";
+
 ## 복사 버튼을 눌렀다고 복사가 된 건 아닙니다
 
 저장 버튼을 클릭했다고 저장이 완료된 것은 아닙니다. 사용자가 버튼을 누르면 요청이 시작되고, 실제 작업이 끝난 뒤에야 결과를 알 수 있습니다. 그런데 그 사이를 고려하지 않고 바로 성공 메시지를 표시하면 사용자는 실패한 작업도 성공했다고 믿게 됩니다.
@@ -18,6 +21,12 @@ Oddmash UI에서 ClipboardButton과 ToastProvider를 제공하게 된 [#95](http
 | 성공 | 무엇이 실제로 완료되었는가 |
 | 실패 | 어떤 작업이 실패했고 어떻게 복구하는가 |
 | 빈 결과 | 결과가 없는 이유와 다음 행동 |
+
+먼저 변경 사항을 저장한 뒤 예제에서 실패 응답을 보내 보세요. 실패 후 다시 시도해 성공 응답을 보내면, 같은 버튼에서 응답이 오기 전과 후에 무엇을 보여주는지 비교할 수 있습니다.
+
+<ExampleFrame label="저장 요청의 진행·성공·실패 비교">
+  <SaveFeedbackExample client:visible />
+</ExampleFrame>
 
 복사처럼 간단한 작업은 버튼의 상태가 바뀌는 것만으로 충분할 수 있습니다. 반면 목록 조회에 실패했다면 사용자에게는 다시 조회할 방법이 필요합니다. 모든 상태를 Toast로 보여주기 시작하면 정말 중요한 알림도 다른 메시지 사이에 묻히게 됩니다.
 

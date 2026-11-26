@@ -1,0 +1,44 @@
+.select-contract {
+  --om-semantic-color-bg: var(--background);
+  --om-semantic-color-surface: var(--background);
+  --om-semantic-color-text: var(--text);
+  --om-semantic-color-muted: var(--text-muted);
+  --om-semantic-color-border: var(--border-control);
+  --om-semantic-color-border-subtle: var(--border);
+  --om-semantic-color-action: var(--text);
+  --om-semantic-color-on-action: var(--background);
+  --om-semantic-color-action-hover: color-mix(in srgb, var(--text) 85%, var(--background));
+  --om-semantic-color-accent: var(--om-semantic-color-action);
+  --om-semantic-color-on-accent: var(--om-semantic-color-on-action);
+  --om-semantic-color-accent-hover: var(--om-semantic-color-action-hover);
+  --om-semantic-color-focus: var(--focus);
+  --om-semantic-font-family: var(--font);
+
+  &__field {
+    max-inline-size: 22rem;
+
+    .inline-example__caption {
+      margin-block-end: .4rem;
+    }
+  }
+
+  &__result {
+    margin: 0;
+    padding: .75rem;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+
+    code {
+      color: var(--text);
+      font-family: var(--mono);
+    }
+  }
+
+  .om-select-dropdown-trigger {
+    width: 100%;
+    min-inline-size: 0;
+  }
+}

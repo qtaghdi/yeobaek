@@ -3,6 +3,9 @@ title: "재사용 가능한 컴포넌트의 API"
 description: "Oddmash UI의 Select를 사례로 공개 API, 선택·탐색 상태, 네이티브 폼 계약과 오버레이를 설계합니다."
 ---
 
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import { SelectContractExample } from "src/components/examples/design-system/select-contract";
+
 ## 버튼 하나 공통화하는 건 쉬웠는데 Select는 왜 어려울까?
 
 버튼은 스타일과 클릭 동작을 공통화하는 것부터 시작할 수 있습니다. 그런데 Select를 만들다 보면 선택값뿐 아니라 키보드 탐색, 목록의 위치, 폼 제출까지 고려해야 합니다. 화면에 같은 모양이 나온다고 해서 소비자가 같은 방법으로 사용할 수 있다는 보장은 없다는 것을 느끼게 됩니다.
@@ -52,6 +55,12 @@ type SelectionProps = {
 실제 구현은 버튼에 combobox 역할을 제공하고 열린 목록의 활성 항목을 aria-activedescendant로 연결합니다. 목록의 옵션은 role=option 및 aria-selected를 가지고, keyboard active와 pointer hover의 시각 상태도 구분합니다.
 
 DOM 포커스가 항상 현재 강조된 옵션으로 이동하는 구조는 아닙니다. 따라서 옵션을 강조했다고 선택값을 바로 바꾸면 Escape가 취소로 동작하지 않고, 포커스를 색 하나로만 표현하면 마우스와 키보드의 상태가 섞이게 됩니다.
+
+실제로 Oddmash UI의 Select를 열어 아래 방향키를 눌러 보세요. 비활성 항목을 건너뛰어도 확정값은 그대로입니다. Escape로 취소하고 다시 열어 Enter로 확정한 뒤, 폼이 어떤 값을 보내는지 확인해 봅시다.
+
+<ExampleFrame label="Select의 활성 항목과 폼 전송값 확인">
+  <SelectContractExample client:visible />
+</ExampleFrame>
 
 ### 상태를 만드는 값과 파생해서 읽는 값
 

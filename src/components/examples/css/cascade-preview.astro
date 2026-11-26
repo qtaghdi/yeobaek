@@ -1,0 +1,21 @@
+---
+import { Checkbox } from "@oddmash/ui/checkbox";
+import "src/components/examples/example.scss";
+import "./cascade-preview.scss";
+---
+
+<div class="inline-example cascade-preview">
+  <label class="inline-example__check">
+    <Checkbox />
+    app 레이어 적용
+  </label>
+  <figure class="cascade-preview__stage">
+    <div inert>
+      <button type="button" class="button cascade-preview__button">저장</button>
+    </div>
+    <figcaption>
+      <code class="cascade-preview__base-rule">.button { "{ padding: 12px; }" }</code>
+      <code class="cascade-preview__app-rule">button { "{ padding: 8px; }" }</code>
+    </figcaption>
+  </figure>
+</div>

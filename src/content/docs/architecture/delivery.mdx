@@ -3,6 +3,9 @@ title: "빌드와 배포를 분리해서 생각하기"
 description: "정적 사이트의 base 경로, 빌드 아티팩트, CI의 검증 근거와 실제 배포 성공을 구분합니다."
 ---
 
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import { AssetBaseExample } from "src/components/examples/architecture/asset-base";
+
 ## 빌드에 성공했는데 왜 배포된 웹은 404일까?
 
 로컬에서는 문제없이 보이는 웹을 배포했는데 실제 주소에서는 404가 뜹니다. CI에서 빌드까지 통과했으니 어디부터 확인해야 할지 애매합니다.
@@ -41,6 +44,12 @@ export default defineConfig({
 ```
 
 예를 들어 앱의 CSS가 `/_astro/main.css`로 렌더링되었다면 이 주소는 도메인의 루트를 가리킵니다. 실제 파일이 `/yeobaek/_astro/main.css`에 게시됐다면 빌드가 성공했더라도 사용자에게 스타일이 전달되지 않을 수 있습니다.
+
+아래 예제의 이미지 파일은 여백에 실제로 배포된 파비콘입니다. 도메인 루트로 바꿔 보면 문서는 그대로 읽을 수 있지만 같은 파일 이름으로 아이콘을 가져오지는 못합니다.
+
+<ExampleFrame label="배포 경로별 이미지 요청">
+  <AssetBaseExample client:visible />
+</ExampleFrame>
 
 서로 다른 페이지에서 사용할 공개 URL을 생성하는 기능과 실제 정적 파일이 배포된 위치를 함께 확인해야 합니다. 링크, 파비콘, 글꼴, 이미지, script, 검색 인덱스까지 base 경로와 관련이 있습니다.
 
