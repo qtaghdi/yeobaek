@@ -397,7 +397,7 @@ try {
         pageAlignment: Math.max(Math.abs(page.left - root.left), Math.abs(page.right - root.right)),
         headerLeft: header.left - sidebar.left,
         headerRight: toc.right - header.right,
-        searchAlignment: search.left - main.left,
+        searchAlignment: (search.left + search.right - header.left - header.right) / 2,
         width: main.width,
         overflow: document.documentElement.scrollWidth - Math.min(clientWidth, root.width),
       };
@@ -493,6 +493,30 @@ try {
   const featuredPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await featuredPage.goto(origin + "/yeobaek/");
   const featuredLink = featuredPage.locator(".archive-featured > a").first();
+  for (const width of [800, 1024, 1152, 1280, 1920, 2560]) {
+    await featuredPage.setViewportSize({ width, height: 900 });
+    const layout = await featuredPage.evaluate(() => {
+      const rect = selector => document.querySelector(selector).getBoundingClientRect();
+      const header = rect("header.header > .header");
+      const search = rect(".search-trigger");
+      const card = rect(".archive-featured > a");
+      const title = rect(".site-title");
+      const controls = rect(".right-group");
+      return {
+        center: (search.left + search.right - header.left - header.right) / 2,
+        left: search.left - card.left,
+        right: search.right - card.right,
+        titleClearance: search.left - title.right,
+        controlsClearance: controls.left - search.right,
+      };
+    });
+    assert.ok(Math.abs(layout.center) <= 2, `${width}px: search is not centered`);
+    assert.ok(layout.titleClearance > 0 && layout.controlsClearance > 0, `${width}px: search overlaps other header controls`);
+    if (width >= 1280) {
+      assert.ok(Math.abs(layout.left) <= 2 && Math.abs(layout.right) <= 2, `${width}px: search and featured articles should use the same width`);
+    }
+  }
+  await featuredPage.setViewportSize({ width: 1280, height: 900 });
   assert.equal(await featuredLink.evaluate(el => getComputedStyle(el).backgroundSize), "0% 100%");
   await featuredLink.hover();
   await featuredPage.waitForFunction(() => getComputedStyle(document.querySelector(".archive-featured > a")).backgroundSize === "100% 100%");
