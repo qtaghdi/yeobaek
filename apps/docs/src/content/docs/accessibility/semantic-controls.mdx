@@ -27,6 +27,8 @@ import { SemanticControlsExample } from "src/components/examples/accessibility/s
   <SemanticControlsExample client:load />
 </ExampleFrame>
 
+키보드로 누를 수 있게 만들려고 일반 div에 `tabindex="0"`만 추가했다면 포커스는 이동할 수 있습니다. 하지만 그 요소가 버튼이라는 의미가 생기거나 Space와 Enter로 활성화되는 것은 아닙니다. ARIA 역할을 넣는 것과 실제 키보드 동작을 구현하는 것도 별개의 일입니다. 그래서 기본 HTML 요소로 표현할 수 있는 경우에는 먼저 그 요소를 선택하는 것이 좋습니다.
+
 ## 버튼처럼 생긴 링크도 링크입니다
 
 ```html

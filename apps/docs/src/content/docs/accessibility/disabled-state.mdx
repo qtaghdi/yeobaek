@@ -27,6 +27,8 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 
 [MDN: disabled](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled) · [MDN: inert](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert)
 
+비활성 버튼의 스타일만 공유하면 클릭을 막는 정책은 화면마다 다르게 작성하게 됩니다. 예를 들어 폼 제출을 막았는데 키보드 단축키나 다른 이벤트에서 같은 저장 함수를 호출한다면 상태를 UI에서만 확인하는 것으로는 충분하지 않을 수 있습니다. 버튼의 상태 표현과 실제 동작이 같은 조건을 바라보도록 구성하는 편이 이해하기 쉽습니다.
+
 ## 기본 입력 요소를 없앨 이유가 있을까?
 
 Slider를 커스텀 스타일로 꾸며도 키보드 조작과 비활성화 기능까지 새로 만들 필요는 없습니다. [Oddmash UI #104](https://github.com/Oddmash/oddmash-ui/issues/104)에서처럼 실제 input의 상태를 기준으로 시각적 표현을 맞추면 브라우저가 제공하는 동작을 유지할 수 있습니다.

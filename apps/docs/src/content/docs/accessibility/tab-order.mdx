@@ -32,6 +32,8 @@ import { TabOrderExample } from "src/components/examples/accessibility/tab-order
   <TabOrderExample client:load />
 </ExampleFrame>
 
+`tabindex="-1"`도 포커스 자체를 없애는 속성은 아닙니다. 순차 탐색에서 제외할 뿐, 필요한 시점에 코드로 포커스를 줄 수 있습니다. 모달이 열린 뒤 제목으로 포커스를 이동시키고 싶지만 평소에는 제목이 Tab 순서에 포함될 필요가 없는 상황에서 이 차이가 유용합니다.
+
 ## CSS로 위치를 옮겼다고 순서까지 바뀌는 건 아니다
 
 앞의 예제처럼 어떤 요소를 Tab 순서에서 빼는 것과 화면의 배치 순서를 바꾸는 것은 별개의 문제입니다. CSS `order`는 DOM을 재배열하지 않습니다. 한편 메뉴와 같은 커스텀 위젯 내부에서 방향키로 항목을 이동하게 만드는 경우에는 별도의 키보드 처리도 필요합니다.

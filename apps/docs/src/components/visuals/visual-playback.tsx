@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { frameDuration, nextFrame, shouldPlay } from "src/components/visuals/playback-policy";
+import { InteractionScene } from "src/components/visuals/interaction-scene";
 import { StoryIllustration } from "src/components/visuals/story-illustration";
 import type { Story } from "src/components/visuals/stories";
 
@@ -47,8 +48,9 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
   const hasKeys = story.frames.some((step) => step.key);
 
   return (
-    <figure className="visual-story not-content" aria-label={story.title}>
+    <figure className="visual-story not-content" aria-label={story.title} data-playing={playing}>
       <div ref={stageRef} className={`visual-story__stage visual-story__stage--${story.layout}`}>
+        {story.interaction ? <InteractionScene story={story} step={index} /> : <>
         {hasKeys ? <div className="visual-story__input">
           {frame.key ? <kbd key={index}>{frame.key}</kbd> : null}
         </div> : null}
@@ -65,11 +67,12 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
                     <strong key={state?.value}>{state?.value ?? "대기"}</strong>
                   </div>
                 </div>
-                {story.layout === "flow" && position < story.nodes.length - 1 ? <span className="visual-story__arrow" data-active={state?.tone === "active" || frame.states[position + 1]?.tone === "active"} aria-hidden="true">→</span> : null}
+                {story.layout === "flow" && position < story.nodes.length - 1 ? <span className="visual-story__arrow" data-active={frame.states[position + 1]?.tone === "active"} aria-hidden="true">→</span> : null}
               </div>
             );
           })}
         </div>
+        </>}
         <span className="visual-story__sr-only" role="status" aria-live={wantsPlayback ? "off" : "polite"}>{frame.label}: {frame.note}</span>
         <span className="visual-story__sr-only">{story.frames.map((step) => `${step.label}: ${step.note}`).join(" ")}</span>
         <button type="button" className="visual-story__play" onClick={togglePlay} aria-label={wantsPlayback ? "자동 재생 일시 정지" : "자동 재생 시작"}>
