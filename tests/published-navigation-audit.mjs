@@ -10,8 +10,8 @@ export const auditPublishedNavigation = async (browser, origin, screenshotDir) =
     const articles = await index.locator("a").evaluateAll(links => links.map(link => new URL(link.href).pathname));
     const expected = documentSections.flatMap(section => section.chapters.flatMap(chapter => chapter.pages.map(route => "/yeobaek/" + route + "/")));
     assert.deepEqual(articles, expected);
-    assert.deepEqual(await index.locator(".chapter-section > h3").allTextContents(), ["프론트엔드", "디자인", "개발과 운영"]);
-    assert.match(await page.locator(".chapter-heading").textContent(), /37개 글/);
+    assert.deepEqual(await index.locator(".chapter-section > h3").allTextContents(), ["프론트엔드", "디자인", "개발과 운영", "백엔드", "AI"]);
+    assert.match(await page.locator(".chapter-heading").textContent(), /42개 글/);
     await page.getByRole("link", { name: "글 둘러보기" }).click();
     await page.waitForURL(url => decodeURIComponent(url.hash) === "#목차");
     if (screenshotDir) await index.screenshot({ path: screenshotDir + "/index-desktop.png" });

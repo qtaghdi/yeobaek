@@ -11,7 +11,7 @@
 | 모바일 | 터치 및 휠/키보드와 배경 스크롤, 메뉴와 모달 열기/닫기·포커스 복원, 소프트 키보드/주소창/회전, 코드는 의도된 스크롤만 허용. 각 입력 컨트롤 실제 조작. 모바일 에뮬레이션과 실제 모바일 기기 증거는 구분. | [#37](https://github.com/qtaghdi/yeobaek/issues/37) |
 | 모션 | 빠른 펼침/접힘, 목차 연속 이동 및 리사이즈, 자동 재생 각 프레임·정지/재개·화면 이탈/재진입·숨은 탭·모션 감소. 오래된 timer/observer와 잘못된 최종 상태가 남지 않아야 함. | [#38](https://github.com/qtaghdi/yeobaek/issues/38) |
 | 폰트/네트워크 | cold/warm 시작, 지연·실패·오프라인·복구, CSS fallback과 Juliya 렌더 전후 같은 글의 원문·마크업·측정 폭·높이·줄 수 비교, 콘텐츠 폭이 그대로인 뷰포트 리사이즈, 반복 리사이즈·테마 변경·페이지 이동 시 정리. 실제 지연 모사 및 변경 취소. | [#39](https://github.com/qtaghdi/yeobaek/issues/39) |
-| 예제와 접근성 | 39개 문서 경로, 22개 시각 자료, 28개 인터랙티브 예제를 확인. 예제의 입력을 조작한 뒤 적용된 코드·렌더링·폼 전송값 또는 실제 요청 결과를 확인. 정상/실패/초기화/경계값, 실제 pointer/keyboard/touch, Tab/Shift+Tab/ESC, disabled·aria-disabled, 의미와 실제 결과·geometry, 라이트/다크/자동, focus-visible, Tooltip과 인용에서 참고 자료 요약으로 이동, 링크/리소스/미디어 검사. 글 추가 시 기준을 갱신. | [#40](https://github.com/qtaghdi/yeobaek/issues/40) |
+| 예제와 접근성 | 44개 문서 경로, 22개 시각 자료, 28개 인터랙티브 예제를 확인. 예제의 입력을 조작한 뒤 적용된 코드·렌더링·폼 전송값 또는 실제 요청 결과를 확인. 정상/실패/초기화/경계값, 실제 pointer/keyboard/touch, Tab/Shift+Tab/ESC, disabled·aria-disabled, 의미와 실제 결과·geometry, 라이트/다크/자동, focus-visible, Tooltip과 인용에서 참고 자료 요약으로 이동, 링크/리소스/미디어 검사. 글 추가 시 기준을 갱신. | [#40](https://github.com/qtaghdi/yeobaek/issues/40) |
 
 ## 테스트 운영
 

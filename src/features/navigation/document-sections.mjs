@@ -104,6 +104,44 @@ export const documentSections = [
           "architecture/delivery",
         ],
       },
+      {
+        number: "08",
+        title: "도구 연동과 파일 형식",
+        description: "다른 앱과 데이터를 주고받고 파일의 상태를 보존하는 방법.",
+        pages: [
+          "integrations/apple-music-presence",
+          "integrations/docx-dropdown-choice",
+        ],
+      },
+    ],
+  },
+  {
+    id: "backend",
+    title: "백엔드",
+    topics: ["Backend"],
+    chapters: [
+      {
+        number: "09",
+        title: "데이터와 쓰기 요청",
+        description: "동시 수정과 재전송을 서버에서 다루는 방법.",
+        pages: [
+          "backend/workbook-revisions",
+          "backend/error-grouping",
+        ],
+      },
+    ],
+  },
+  {
+    id: "ai",
+    title: "AI",
+    topics: ["AI"],
+    chapters: [
+      {
+        number: "10",
+        title: "개발을 돕는 에이전트",
+        description: "검사 결과를 해석하고 리뷰를 시작하는 조건.",
+        pages: ["ai/review-ci-gating"],
+      },
     ],
   },
 ];

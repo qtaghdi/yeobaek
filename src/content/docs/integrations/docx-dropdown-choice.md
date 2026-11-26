@@ -1,0 +1,37 @@
+---
+title: "Word 드롭다운에서 항목 하나를 고르면 문서에는 뭐가 바뀔까?"
+description: "Foloom에서 Word 드롭다운의 본문 표시 이름과 저장 값을 함께 바꾸는 방법입니다."
+---
+
+결재 문서에 `검토 중`과 `완료` 중 하나를 고르는 드롭다운이 있다고 해봅시다. Foloom에서 이 항목을 바꾸려면 화면에 보이는 `검토 중`을 `완료`로 바꾸면 될 것 같습니다. 그런데 이 파일을 다시 열었을 때도 같은 선택으로 읽으려면 무엇을 저장해야 할까요?
+
+## 본문 글자와 항목 값이 따로 있습니다
+
+DOCX 내부를 보면 Word 드롭다운은 일반 텍스트만 있는 문단보다 조금 더 많은 정보를 가집니다. `w:sdt`라는 콘텐츠 컨트롤 안에 속성과 본문 내용이 나뉘어 있습니다. 속성의 `w:dropDownList`에는 가능한 항목들이 들어갑니다. 각 항목에는 사람에게 보여줄 `displayText`와 내부 값인 `value`가 있습니다. `w:lastValue`는 마지막으로 저장한 항목 값을 담는 속성입니다. 본문에서 실제로 보이는 문자열은 `w:sdtContent` 안에 따로 있습니다. [Open XML의 드롭다운 구조](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.sdtcontentdropdownlist?view=openxml-3.0.1) · [마지막 저장 값 속성](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.sdtcontentdropdownlist.lastvalue?view=openxml-3.0.1)
+
+예를 들어 아래는 `검토 중`을 선택한 인라인 드롭다운의 요지만 담은 XML입니다.
+
+```xml
+<w:sdt>
+  <w:sdtPr>
+    <w:id w:val="42"/>
+    <w:dropDownList w:lastValue="reviewing">
+      <w:listItem w:displayText="검토 중" w:value="reviewing"/>
+      <w:listItem w:displayText="완료" w:value="done"/>
+    </w:dropDownList>
+  </w:sdtPr>
+  <w:sdtContent>
+    <w:r><w:t>검토 중</w:t></w:r>
+  </w:sdtContent>
+</w:sdt>
+```
+
+`완료`를 고르면 `w:t`는 `완료`로, `w:lastValue`는 `done`으로 바뀌어야 합니다. 값에 `완료`를 그대로 넣으면 목록이 정의한 내부 값과 어긋납니다. 반대로 마지막 저장 값만 바꾸면 본문 문자열에는 여전히 `검토 중`이 적혀 있습니다. Foloom은 변경할 수 있는 목록에서 해당 표시 이름의 값을 찾아 두 위치를 하나의 편집으로 갱신합니다. 기존 항목 목록, 컨트롤 ID와 글자 서식을 다시 만들 필요는 없어서, 기존 구조에서 필요한 부분만 바꿉니다. [Foloom 선택 변경 구현](https://github.com/qtaghdi/foloom/pull/334) · [실제 XML 갱신 코드](https://github.com/qtaghdi/foloom/blob/fd09964689a41471ede3eb74b6a1ab79ea4f1050/internal/formats/docx/control_choice.go#L85-L108)
+
+## 무엇을 고쳤는지 확인할 수 있는 범위부터
+
+그럼 화면에 표시된 문자열과 목록의 값이 처음부터 다르면 어떻게 해야 할까요? 예를 들어 본문에는 `검토 중`이라고 써 있는데 `lastValue`는 `done`인 파일입니다. 열자마자 둘 중 하나를 기준으로 다시 쓰면, 사용자가 어느 쪽을 유지하려고 했는지 모르는 상태에서 파일을 바꾸게 됩니다.
+
+Foloom의 선택 변경은 일반 본문의 단순한 드롭다운부터 지원했습니다. 바꿀 수 있는 목록은 표시 이름과 저장 값이 각각 고유하고, 본문에 표시된 이름이 목록 안에 있어야 합니다. 마지막 저장 값이 들어 있다면 본문 이름이 가리키는 저장 값과 맞아야 합니다. 표시 이름을 읽어낸 텍스트 조각도 하나로 한정했습니다. 복합 구조나 바인딩이 있는 컨트롤, 잠긴 컨트롤은 이 작업으로 편집할 수 없습니다. [지원 범위를 검사하는 코드](https://github.com/qtaghdi/foloom/blob/fd09964689a41471ede3eb74b6a1ab79ea4f1050/internal/formats/docx/control_choice.go#L17-L83)
+
+이후 새 목록을 넣는 기능에서도 항목의 이름과 값을 따로 받고, 초기 선택이 목록 안에 있는지 확인했습니다. 목록을 새로 만드는 작업은 기존 목록에서 고른 항목만 바꾸는 것과 편집 범위가 다릅니다. 처음부터 나눠 구현하면 선택 변경 중에 항목 구조까지 손대지 않아도 됩니다. Foloom의 테스트는 선택을 바꾼 파일을 다시 열어 이름과 값, 굵은 글씨, 목록 항목과 ID가 기대한 모습인지 확인합니다. Microsoft Word에서 직접 편집하고 다시 저장한 파일을 확인하는 작업은 별도로 추적하고 있습니다. [저장과 재열기 테스트](https://github.com/qtaghdi/foloom/blob/fd09964689a41471ede3eb74b6a1ab79ea4f1050/internal/formats/docx/control_choice_test.go#L12-L57) · [새 목록 삽입 PR](https://github.com/qtaghdi/foloom/pull/336) · [Word 편집·저장 검증](https://github.com/qtaghdi/foloom/issues/304)
