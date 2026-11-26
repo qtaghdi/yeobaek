@@ -2,7 +2,7 @@
   display: grid;
   gap: 1rem;
   min-inline-size: 0;
-  color: var(--ink);
+  color: var(--text);
   font: inherit;
 
   &--comparison {
@@ -28,17 +28,17 @@
     gap: .4rem;
     min-block-size: 2.75rem;
     max-inline-size: 100%;
-    color: var(--ink);
-    background: var(--paper);
-    border: 1px solid var(--edge);
-    border-radius: .375rem;
+    color: var(--text);
+    background: var(--background);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
     padding: .5rem .8rem;
     font: inherit;
     cursor: pointer;
   }
 
   &__button:hover {
-    background: var(--marker);
+    background: var(--selection);
   }
 
   &__button:focus-visible, input:focus-visible {
@@ -48,7 +48,7 @@
 
   &__caption {
     margin: 0 0 .75rem;
-    color: var(--pencil);
+    color: var(--text-muted);
     font-size: .875rem;
     font-weight: 600;
   }
@@ -70,8 +70,8 @@
     inline-size: min(90%, 24rem);
     padding: 1.5rem;
     background: var(--surface);
-    color: var(--ink);
-    border: 1px solid var(--edge);
+    color: var(--text);
+    border: 1px solid var(--border-control);
     border-radius: .5rem;
   }
 
@@ -90,7 +90,7 @@
     align-items: center;
     gap: .5rem;
     max-inline-size: 100%;
-    border: 2px dashed var(--correction);
+    border: 2px dashed var(--danger);
     padding: .5rem;
   }
 
@@ -112,8 +112,8 @@
 
   &__event {
     padding: 1.25rem;
-    border: 1px dashed var(--pencil);
-    background: var(--paper);
+    border: 1px dashed var(--text-muted);
+    background: var(--background);
   }
 
   &__log {
@@ -134,7 +134,7 @@
     box-sizing: border-box;
     min-block-size: 8rem;
     padding: .75rem;
-    border: 1px solid var(--edge);
+    border: 1px solid var(--border-control);
     border-radius: .375rem;
   }
 
@@ -151,7 +151,7 @@
   &__skeleton span {
     display: block;
     block-size: .9rem;
-    background: var(--edge);
+    background: var(--border);
     border-radius: .2rem;
   }
 
@@ -160,9 +160,9 @@
   }
 
   &__next {
-    border-block-start: 1px solid var(--edge);
+    border-block-start: 1px solid var(--border);
     margin-block: .75rem 0;
     padding-block-start: .5rem;
-    color: var(--pencil);
+    color: var(--text-muted);
   }
 }

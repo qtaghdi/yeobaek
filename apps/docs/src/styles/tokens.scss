@@ -1,29 +1,31 @@
 :root {
-  --paper: #f8f6ef;
-  --surface: #fffdf7;
-  --ink: #292823;
-  --pencil: #67645b;
-  --edge: #dedad0;
-  --marker: #f4e89b;
-  --correction: #a53d35;
-  --focus: #554b28;
-  --grid: #dedad080;
-  --radius-control: .45rem;
-  --radius-surface: .65rem;
+  --background: #ffffff;
+  --surface: #f7f7f8;
+  --surface-raised: #ffffff;
+  --text: #18181b;
+  --text-muted: #52525b;
+  --border: #e4e4e7;
+  --border-control: #a1a1aa;
+  --selection: #e9e9ec;
+  --danger: #b91c1c;
+  --focus: #2563eb;
+  --radius-control: .5rem;
+  --radius-surface: .75rem;
   --motion-control: 140ms;
-  --motion-enter: 360ms;
   --ease-out: cubic-bezier(.2,.7,.25,1);
-  --font: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --mono: ui-monospace, "SF Mono", Consolas, monospace;
 }
+
 :root[data-theme="dark"], [data-theme="dark"] {
-  --paper: #24231f;
-  --surface: #302e28;
-  --ink: #f1ede0;
-  --pencil: #bbb5a6;
-  --edge: #57544a;
-  --marker: #70602b;
-  --correction: #ff9e92;
-  --focus: #f4e89b;
-  --grid: #57544a60;
+  --background: #111113;
+  --surface: #19191c;
+  --surface-raised: #202024;
+  --text: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --border: #303036;
+  --border-control: #71717a;
+  --selection: #29292e;
+  --danger: #fca5a5;
+  --focus: #93c5fd;
 }

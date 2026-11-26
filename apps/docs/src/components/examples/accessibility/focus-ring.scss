@@ -6,12 +6,12 @@
   --ink: #{experiment.$ink};
   --key-surface: #{experiment.$surface};
   --key-edge: #{experiment.$edge};
-  --key-hover: #f5eddf;
-  --key-active: #e8ddce;
-  --key-disabled-ink: #635b51;
-  --key-shadow: #d5ccc0;
+  --key-hover: #f0f0f2;
+  --key-active: #e4e4e7;
+  --key-disabled-ink: #52525b;
+  --key-shadow: #d4d4d8;
   --key-size: 56px;
-  --key-radius: 14px;
+  --key-radius: 8px;
   --key-gap: 16px;
   --ring-color: #{experiment.$accent};
   --ring-width: 3px;
@@ -20,7 +20,7 @@
 
   display: grid;
   place-items: center;
-  min-block-size: var(--experiment-height, max(240px, 100dvh));
+  min-block-size: var(--experiment-height, 19rem);
   color: var(--ink);
   background: var(--surface);
 
@@ -34,15 +34,15 @@
     place-items: center;
 
     &--dark {
-      --surface: #24231f;
-      --ink: #f1ede0;
-      --key-surface: #302e28;
-      --key-edge: #777368;
-      --key-hover: #454137;
-      --key-active: #302c25;
-      --key-disabled-ink: #bbb5a6;
-      --key-shadow: #151411;
-      --ring-color: #f4e89b;
+      --surface: #111113;
+      --ink: #f4f4f5;
+      --key-surface: #202024;
+      --key-edge: #71717a;
+      --key-hover: #303036;
+      --key-active: #29292e;
+      --key-disabled-ink: #a1a1aa;
+      --key-shadow: #09090b;
+      --ring-color: #93c5fd;
 
       color: var(--ink);
       background: var(--surface);
@@ -71,7 +71,7 @@
     padding: 0;
     border: 2px solid var(--key-edge);
     border-radius: var(--key-radius);
-    box-shadow: 0 3px 0 var(--key-shadow);
+    box-shadow: none;
     color: inherit;
     background: var(--key-surface);
     font: 700 1rem / 1 var(--mono);
@@ -92,7 +92,7 @@
     }
 
     &:enabled:active {
-      box-shadow: inset 0 2px 0 var(--key-shadow);
+      box-shadow: none;
       background: var(--key-active);
     }
   }

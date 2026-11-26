@@ -52,11 +52,11 @@ export const FocusRingExample = () => {
   const group = useId();
 
   return (
-    <div className="notebook-experiment">
-      <div className="notebook-experiment__controls">
-        <fieldset className="notebook-choices">
+    <div className="example-workbench">
+      <div className="example-workbench__controls">
+        <fieldset className="example-choices">
           <legend>표시 방식</legend>
-          <div className="notebook-choices__options">
+          <div className="example-choices__options">
             {focusModes.map(({ value, label }) => (
               <label key={value}>
                 <input type="radio" name={group} value={value} checked={mode === value} onChange={() => setMode(value)} />

@@ -3,96 +3,97 @@ title: 여백
 description: 아는 것과 이해하는 것 사이의 여백을 채웁니다.
 template: splash
 hero:
-  title: '아는 것과 이해하는 것 사이의 <mark>여백</mark>을 채웁니다.'
-  tagline: 익숙한 기술의 동작 원리부터 프로젝트에서 마주친 문제와 선택의 이유까지, 프론트엔드 개발의 디테일을 기록합니다.
+  title: 프론트엔드를 이해하는 여백.
+  tagline: 익숙한 기술의 작동 원리부터 실제 제품을 설계하고 구현하며 마주친 문제까지. 선택의 이유와 검증 과정을 기록합니다.
   actions:
-    - text: 첫 장 읽기
-      link: /yeobaek/start/
-      icon: right-arrow
+    - text: 글 둘러보기
+      link: "#목차"
+      icon: down-arrow
       variant: primary
 ---
 
+<section class="archive-featured" aria-labelledby="featured-heading">
+  <h2 id="featured-heading">대표 글</h2>
+  <a href="./css/text-wrap/"><strong>한국어 줄바꿈을 다루는 방법</strong><span>Juliya · CSS와 실제 글꼴 측정</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
+  <a href="./design-system/component-api/"><strong>재사용 가능한 컴포넌트의 API</strong><span>Oddmash UI · Select의 상태와 API</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
+  <a href="./architecture/testing/"><strong>테스트는 어떤 문제를 막아야 할까?</strong><span>Boundra · 전체 검사와 증분 검사</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
+</section>
+
 <div class="chapter-heading">
   <h2 id="목차">목차</h2>
-  <span>8개 장 · 31개 노트</span>
+  <span>7개 장 · 31개 글</span>
 </div>
 
 <div class="chapter-index">
   <section class="chapter" aria-labelledby="chapter-1">
-    <div class="chapter-label"><span aria-hidden="true">01</span><h3 id="chapter-1">웹과 접근성</h3></div>
-    <p>기본 요소부터 키보드와 포커스까지, 누구나 사용할 수 있는 웹의 기본을 다룹니다.</p>
+    <div class="chapter-label"><span aria-hidden="true">01</span><h3 id="chapter-1">웹 플랫폼과 접근성</h3></div>
+    <p>브라우저 동작, 이벤트, 키보드와 포커스의 원리.</p>
     <ul>
-      <li><a href="./accessibility/focus-ring/">포커스 링은 왜 필요할까?</a></li>
+      <li><a href="./browser/events/">클릭 이벤트는 어디까지 전달될까?</a></li>
       <li><a href="./accessibility/semantic-controls/">버튼과 링크를 구분하는 이유</a></li>
+      <li><a href="./accessibility/focus-ring/">포커스 링은 왜 필요할까?</a></li>
       <li><a href="./accessibility/tab-order/">tabindex와 키보드 이동 순서</a></li>
       <li><a href="./accessibility/dialog-focus/">모달이 닫히면 포커스는 어디로 가야 할까?</a></li>
       <li><a href="./accessibility/disabled-state/">비활성화와 접근성 상태</a></li>
+      <li><a href="./browser/storage/">localStorage와 sessionStorage의 차이</a></li>
     </ul>
   </section>
   <section class="chapter" aria-labelledby="chapter-2">
-    <div class="chapter-label"><span aria-hidden="true">02</span><h3 id="chapter-2">CSS</h3></div>
-    <p>레이아웃, 우선순위, 화면 크기와 텍스트를 실제 브라우저에서 이해합니다.</p>
+    <div class="chapter-label"><span aria-hidden="true">02</span><h3 id="chapter-2">CSS·텍스트·렌더링</h3></div>
+    <p>레이아웃과 측정, CSS 우선순위, 한국어 줄바꿈.</p>
     <ul>
-      <li><a href="./css/stacking-context/">z-index가 9999여도 안 되는 이유</a></li>
-      <li><a href="./css/flex-overflow/">flex: 1인데 왜 화면 밖으로 넘어갈까?</a></li>
       <li><a href="./css/cascade/">CSS를 덮어썼는데 적용되지 않는 이유</a></li>
+      <li><a href="./css/flex-overflow/">flex: 1인데 왜 화면 밖으로 넘어갈까?</a></li>
+      <li><a href="./css/stacking-context/">z-index가 9999여도 안 되는 이유</a></li>
       <li><a href="./css/viewport/">모바일에서 100vh가 어긋나는 이유</a></li>
       <li><a href="./css/scrollbar/">모달을 열 때 화면이 옆으로 밀리는 이유</a></li>
       <li><a href="./css/text-wrap/">한국어 줄바꿈을 다루는 방법</a></li>
-    </ul>
-  </section>
-  <section class="chapter" aria-labelledby="chapter-3">
-    <div class="chapter-label"><span aria-hidden="true">03</span><h3 id="chapter-3">브라우저</h3></div>
-    <p>이벤트와 저장소, 요소의 크기가 바뀌는 순간을 살펴봅니다.</p>
-    <ul>
-      <li><a href="./browser/events/">클릭 이벤트는 어디까지 전달될까?</a></li>
-      <li><a href="./browser/storage/">localStorage와 sessionStorage의 차이</a></li>
       <li><a href="./browser/layout-observation/">요소 크기와 글꼴의 변화를 관찰하기</a></li>
     </ul>
   </section>
-  <section class="chapter" aria-labelledby="chapter-4">
-    <div class="chapter-label"><span aria-hidden="true">04</span><h3 id="chapter-4">JavaScript와 TypeScript</h3></div>
-    <p>타입과 실제 값, 비동기 흐름의 차이를 이해합니다.</p>
+  <section class="chapter" aria-labelledby="chapter-3">
+    <div class="chapter-label"><span aria-hidden="true">03</span><h3 id="chapter-3">React와 상태·데이터</h3></div>
+    <p>상태의 책임과 동기화, 타입, 비동기 요청.</p>
     <ul>
       <li><a href="./language/type-runtime/">TypeScript 타입은 런타임에도 안전할까?</a></li>
-      <li><a href="./language/async-requests/">비동기 요청의 실패와 응답 순서</a></li>
-    </ul>
-  </section>
-  <section class="chapter" aria-labelledby="chapter-5">
-    <div class="chapter-label"><span aria-hidden="true">05</span><h3 id="chapter-5">React와 상태 관리</h3></div>
-    <p>렌더링과 입력, 외부 동기화, 서버 상태를 분리합니다.</p>
-    <ul>
       <li><a href="./react/state-snapshot/">상태를 바꿨는데 값이 그대로인 이유</a></li>
       <li><a href="./react/controlled-input/">입력 상태는 누가 관리해야 할까?</a></li>
       <li><a href="./react/effects/">useEffect는 언제 사용해야 할까?</a></li>
       <li><a href="./react/state-location/">상태는 어디에 두는 것이 좋을까?</a></li>
       <li><a href="./react/query-keys/">서버 상태와 Query Key</a></li>
+      <li><a href="./language/async-requests/">비동기 요청의 실패와 응답 순서</a></li>
     </ul>
   </section>
-  <section class="chapter" aria-labelledby="chapter-6">
-    <div class="chapter-label"><span aria-hidden="true">06</span><h3 id="chapter-6">UI와 UX</h3></div>
-    <p>화면의 위계와 피드백을 사용자의 다음 행동에 맞춥니다.</p>
-    <ul>
-      <li><a href="./design/visual-hierarchy/">왜 내 웹만 구릴까?</a></li>
-      <li><a href="./design/loading-states/">로딩이 끝날 때 화면이 움직이는 이유</a></li>
-      <li><a href="./design/feedback/">로딩·성공·실패를 어떻게 보여줄까?</a></li>
-    </ul>
-  </section>
-  <section class="chapter" aria-labelledby="chapter-7">
-    <div class="chapter-label"><span aria-hidden="true">07</span><h3 id="chapter-7">디자인 시스템</h3></div>
-    <p>토큰과 컴포넌트 계약을 일관되게 관리합니다.</p>
+  <section class="chapter" aria-labelledby="chapter-4">
+    <div class="chapter-label"><span aria-hidden="true">04</span><h3 id="chapter-4">컴포넌트와 디자인 시스템</h3></div>
+    <p>디자인 토큰과 공개 API, 소비자 호환성.</p>
     <ul>
       <li><a href="./design-system/tokens/">디자인 토큰은 왜 필요할까?</a></li>
       <li><a href="./design-system/component-api/">재사용 가능한 컴포넌트의 API</a></li>
       <li><a href="./design-system/compatibility/">공통 컴포넌트의 호환성과 변경</a></li>
     </ul>
   </section>
-  <section class="chapter" aria-labelledby="chapter-8">
-    <div class="chapter-label"><span aria-hidden="true">08</span><h3 id="chapter-8">아키텍처와 품질</h3></div>
-    <p>모듈 경계, 테스트와 배포까지 유지보수의 기준을 잡습니다.</p>
+  <section class="chapter" aria-labelledby="chapter-5">
+    <div class="chapter-label"><span aria-hidden="true">05</span><h3 id="chapter-5">복합 인터랙션과 제품 UI</h3></div>
+    <p>시각적 위계와 실제 상태에 맞는 사용자 경험.</p>
+    <ul>
+      <li><a href="./design/visual-hierarchy/">왜 내 웹만 구릴까?</a></li>
+      <li><a href="./design/loading-states/">로딩이 끝날 때 화면이 움직이는 이유</a></li>
+      <li><a href="./design/feedback/">로딩·성공·실패를 어떻게 보여줄까?</a></li>
+    </ul>
+  </section>
+  <section class="chapter" aria-labelledby="chapter-6">
+    <div class="chapter-label"><span aria-hidden="true">06</span><h3 id="chapter-6">아키텍처와 개발자 경험</h3></div>
+    <p>모듈 경계와 구조를 선택하는 기준.</p>
     <ul>
       <li><a href="./architecture/module-boundaries/">폴더 구조보다 중요한 모듈 경계</a></li>
       <li><a href="./architecture/monorepo/">모노레포가 필요한 상황</a></li>
+    </ul>
+  </section>
+  <section class="chapter" aria-labelledby="chapter-7">
+    <div class="chapter-label"><span aria-hidden="true">07</span><h3 id="chapter-7">검증·배포·운영</h3></div>
+    <p>검증해야 할 계약과 실제 배포의 차이.</p>
+    <ul>
       <li><a href="./architecture/testing/">테스트는 어떤 문제를 막아야 할까?</a></li>
       <li><a href="./architecture/delivery/">빌드와 배포를 분리해서 생각하기</a></li>
     </ul>
