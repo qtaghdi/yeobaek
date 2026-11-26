@@ -5,6 +5,7 @@ const storageKey = "yeobaek-navigation-marker";
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 const measure = (root: HTMLElement, target: HTMLElement): MarkerGeometry | undefined => {
+  if (target.closest("details:not([open])")) return undefined;
   const bounds = root.getBoundingClientRect();
   const rect = target.getBoundingClientRect();
   if (!rect.width || !rect.height || !bounds.width) return undefined;
@@ -138,6 +139,58 @@ const animateDisclosure = (details: HTMLDetailsElement) => {
   });
 };
 
+const syncToc = () => {
+  const roots = [...document.querySelectorAll<HTMLElement>("starlight-toc nav, mobile-starlight-toc .dropdown")];
+  if (!roots.length) return;
+  const entries = [...roots[0].querySelectorAll<HTMLAnchorElement>('a[href^="#"]')].flatMap((link) => {
+    try {
+      const id = decodeURIComponent(link.hash.slice(1));
+      const element = document.getElementById(id);
+      return element ? [{ id, element }] : [];
+    } catch { return []; }
+  });
+  if (!entries.length) return;
+  const header = document.querySelector("header.header");
+  let frame = 0;
+  const update = () => {
+    const threshold = (header?.getBoundingClientRect().height ?? 64) + 42;
+    let active = entries[0].id;
+    for (const { id, element } of entries) {
+      if (element.getBoundingClientRect().top <= threshold) active = id;
+      else break;
+    }
+    if (scrollY > 0 && Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight - 2) {
+      active = entries.at(-1)?.id ?? active;
+    }
+    for (const root of roots) {
+      let currentLabel = "";
+      for (const link of root.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')) {
+        let id = "";
+        try { id = decodeURIComponent(link.hash.slice(1)); } catch { continue; }
+        if (id === active) {
+          if (link.getAttribute("aria-current") !== "true") link.setAttribute("aria-current", "true");
+          currentLabel = link.textContent?.trim() ?? "";
+        } else if (link.hasAttribute("aria-current")) link.removeAttribute("aria-current");
+      }
+      const label = root.closest("mobile-starlight-toc")?.querySelector(".display-current");
+      if (label && currentLabel && label.textContent?.trim() !== currentLabel) label.textContent = currentLabel;
+    }
+  };
+  const schedule = () => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(update);
+  };
+  window.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule, { passive: true });
+  window.addEventListener("hashchange", schedule);
+  window.addEventListener("pageshow", schedule);
+  const content = document.querySelector(".sl-markdown-content");
+  if (content) new ResizeObserver(schedule).observe(content);
+  const mutation = new MutationObserver(schedule);
+  for (const root of roots) mutation.observe(root, { attributes: true, attributeFilter: ["aria-current"], subtree: true });
+  schedule();
+};
+
 export const mountNavigationMotion = () => {
   const sidebar = document.querySelector<HTMLElement>(".sidebar-content sl-sidebar-state-persist");
   if (sidebar) {
@@ -147,4 +200,5 @@ export const mountNavigationMotion = () => {
   for (const toc of document.querySelectorAll<HTMLElement>("starlight-toc nav, mobile-starlight-toc .dropdown")) {
     mountMarker(toc, 'a[aria-current="true"]');
   }
+  syncToc();
 };
