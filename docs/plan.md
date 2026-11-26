@@ -47,23 +47,22 @@
 
 헤더에는 브랜드, 검색, 테마, GitHub를 둔다. 좌측은 주제 탐색, 본문은 읽기와 필요한 예제, 우측은 현재 문서 목차로 사용한다. 모바일에서는 탐색과 목차를 접을 수 있게 한다.
 
-## 목표 구조
+## 현재 구조
 
-- `apps/docs`: Astro + Starlight, MDX
-- `packages/experiments`: 공유 실험 컴포넌트와 독립 재현 예제
-- `packages/tokens`: SCSS와 의미 기반 디자인 토큰
-- `packages/config`: 공통 개발 설정
-- pnpm Workspace + Turborepo
+- `apps/docs/src/content/docs`: 주제별 MDX 및 Markdown
+- `apps/docs/src/components/examples`: 문서에 삽입하는 주제별 예제
+- `apps/docs/src/styles`: 공통 SCSS와 의미 기반 디자인 토큰
+- pnpm Workspace: 현재는 문서 앱 하나를 운영하며 필요할 때만 확장
 
 GitHub Pages에는 문서만 배포한다. 인터랙티브 예제는 MDX에서 공유 React 컴포넌트를 직접 렌더링하고 해당 페이지에서 조작할 수 있게 한다. 별도 Storybook 사이트는 운영하지 않는다.
 
 ## 진행 순서
 
 1. 브랜드와 기획 확정
-2. 모노레포 전환 및 개발 환경 검증
+2. 문서 앱 개발 환경 구성 및 검증
 3. 문서 UI와 공통 실험 레이아웃 구현
 4. 기존 예제를 문서 안에 통합
 5. 작성자 검토를 거친 초기 콘텐츠 추가
 6. 빌드, 검색, 키보드, 반응형 및 Pages 경로 검증
 
-문서 중심의 모노레포를 운영하며 작성자가 이해하는 범위에서 콘텐츠를 확장한다.
+단일 문서 앱을 중심으로 운영하며 작성자가 이해하는 범위에서 콘텐츠를 확장한다.

@@ -3,8 +3,8 @@ title: "tabindex와 키보드 이동 순서"
 description: "DOM 순서와 tabindex가 키보드 이동에 미치는 영향."
 ---
 
-import Lab from "../../../components/Lab.astro";
-import { TabOrderDemo } from "@yeobaek/experiments/inline";
+import ExampleFrame from "@/components/exampleFrame.astro";
+import { TabOrderExample } from "@/components/examples/accessibility/tabOrder";
 
 키보드로 화면을 탐색할 때 다음에 포커스가 어디로 이동할지 예측할 수 있어야 합니다. 카드가 눈에 보이는 순서와 Tab 순서가 다르면 화면을 이해하기 어려워집니다.
 
@@ -23,9 +23,9 @@ import { TabOrderDemo } from "@yeobaek/experiments/inline";
 
 일반 순서와 두 번째 버튼에 -1을 적용한 상태를 전환한 뒤, 예제 안으로 Tab을 이동해 보세요. 양수는 문서 전체의 탐색 순서에 영향을 줄 수 있으므로 이 예제에서는 적용하지 않습니다.
 
-<Lab label="Tab 이동 순서 비교">
-  <TabOrderDemo client:load />
-</Lab>
+<ExampleFrame label="Tab 이동 순서 비교">
+  <TabOrderExample client:load />
+</ExampleFrame>
 
 ## 주의할 점
 

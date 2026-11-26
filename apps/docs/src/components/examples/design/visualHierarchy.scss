@@ -1,4 +1,4 @@
-@use "../../../tokens/experiment.scss" as experiment;
+@use "../../../styles/experiment.scss" as experiment;
 
 .design-demo {
   @include experiment.stage;
@@ -7,16 +7,6 @@
   font:
     15px / 1.45 system-ui,
     sans-serif;
-
-  &__comparison {
-    @include experiment.comparison;
-
-    > section {
-      display: grid;
-      grid-template-rows: auto 1fr;
-      min-inline-size: 0;
-    }
-  }
 
   &__caption {
     margin: 0 0 8px;
@@ -181,7 +171,4 @@
     }
   }
 
-  &__comparison &__card {
-    inline-size: 100%;
-  }
 }

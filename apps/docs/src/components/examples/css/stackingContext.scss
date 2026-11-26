@@ -1,4 +1,4 @@
-@use "../../../tokens/experiment.scss" as experiment;
+@use "../../../styles/experiment.scss" as experiment;
 
 .stack-demo {
   @include experiment.stage;
@@ -7,14 +7,6 @@
   font:
     14px / 1.35 system-ui,
     sans-serif;
-
-  &__comparison {
-    @include experiment.comparison;
-
-    > section {
-      min-inline-size: 0;
-    }
-  }
 
   &__caption {
     margin: 0 0 8px;

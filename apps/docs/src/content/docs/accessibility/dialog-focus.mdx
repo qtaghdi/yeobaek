@@ -3,8 +3,8 @@ title: "모달이 닫히면 포커스는 어디로 가야 할까?"
 description: "모달을 열고 닫을 때 사용자의 위치를 보존하는 방법."
 ---
 
-import Lab from "../../../components/Lab.astro";
-import { DialogDemo } from "@yeobaek/experiments/inline";
+import ExampleFrame from "@/components/exampleFrame.astro";
+import { DialogFocusExample } from "@/components/examples/accessibility/dialogFocus";
 
 모달을 닫았는데 Tab을 다시 누르자 페이지 맨 처음부터 탐색해야 한다면, 열고 닫는 시각적 동작만 완성된 것입니다.
 
@@ -37,9 +37,9 @@ const dialog = useRef<HTMLDialogElement>(null);
 
 열기 버튼을 누르고 Tab과 Escape로 이동해 보세요. 닫은 뒤 포커스가 어디로 돌아오는지 확인합니다.
 
-<Lab label="모달 포커스 확인">
-  <DialogDemo client:load />
-</Lab>
+<ExampleFrame label="모달 포커스 확인">
+  <DialogFocusExample client:load />
+</ExampleFrame>
 
 중첩 모달, 트리거가 사라지는 상황, 닫기 애니메이션 중의 포커스 복원은 별도로 검증합니다.
 

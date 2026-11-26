@@ -3,8 +3,8 @@ title: "버튼과 링크를 구분하는 이유"
 description: "HTML의 기본 의미와 키보드 동작을 비교합니다."
 ---
 
-import Lab from "../../../components/Lab.astro";
-import { SemanticDemo } from "@yeobaek/experiments/inline";
+import ExampleFrame from "@/components/exampleFrame.astro";
+import { SemanticControlsExample } from "@/components/examples/accessibility/semanticControls";
 
 화면에서 똑같이 생긴 두 요소라도 HTML 구조가 다르면 사용자에게 제공하는 기능은 다릅니다. 클릭이 된다는 이유만으로 버튼이 되는 것은 아닙니다.
 
@@ -16,9 +16,9 @@ import { SemanticDemo } from "@yeobaek/experiments/inline";
 
 두 컨트롤은 마우스로 클릭하면 숫자가 증가합니다. Tab으로 이동한 뒤 Enter나 Space도 눌러 보세요. 왼쪽은 의도적으로 잘못 구현한 예제입니다.
 
-<Lab label="클릭 요소와 HTML 버튼 비교">
-  <SemanticDemo client:load />
-</Lab>
+<ExampleFrame label="클릭 요소와 HTML 버튼 비교">
+  <SemanticControlsExample client:load />
+</ExampleFrame>
 
 ## 어떻게 작성할까
 

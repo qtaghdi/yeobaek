@@ -3,8 +3,8 @@ title: "클릭 이벤트는 어디까지 전달될까?"
 description: "이벤트 전파와 기본 동작 취소의 차이."
 ---
 
-import Lab from "../../../components/Lab.astro";
-import { EventDemo } from "@yeobaek/experiments/inline";
+import ExampleFrame from "@/components/exampleFrame.astro";
+import { EventPropagationExample } from "@/components/examples/browser/eventPropagation";
 
 카드 전체가 상세 페이지 링크처럼 동작하고, 내부에 즐겨찾기 버튼이 있다면 두 행동이 함께 실행되지 않도록 구조를 먼저 확인해야 합니다.
 
@@ -18,9 +18,9 @@ import { EventDemo } from "@yeobaek/experiments/inline";
 
 안쪽 버튼을 누르면 어떤 핸들러부터 실행되는지 기록됩니다. 전파 차단을 켠 경우도 비교해 보세요.
 
-<Lab label="이벤트 전파 순서">
-  <EventDemo client:load />
-</Lab>
+<ExampleFrame label="이벤트 전파 순서">
+  <EventPropagationExample client:load />
+</ExampleFrame>
 
 ## 두 메서드는 목적이 다르다
 

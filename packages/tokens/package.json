@@ -1,9 +1,0 @@
-{
-  "name": "@yeobaek/tokens",
-  "private": true,
-  "version": "0.0.0",
-  "exports": {
-    "./notebook.css": "./notebook.css",
-    "./experiment.scss": "./experiment.scss"
-  }
-}
