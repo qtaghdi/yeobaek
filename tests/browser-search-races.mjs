@@ -129,6 +129,7 @@ export const auditSearchRaces = async (browser, origin) => {
     }
 
     const searchAddress = await context.newPage();
+    await searchAddress.emulateMedia({ reducedMotion: "no-preference" });
     try {
       const from = origin + start;
       const article = origin + "/yeobaek/react/server-state/";
@@ -147,6 +148,11 @@ export const auditSearchRaces = async (browser, origin) => {
       assert.equal(await match.textContent(), "TanStack Query");
       const section = searchAddress.locator("starlight-toc [aria-current=true]").filter({ hasText: "우리가 가져온 데이터는 누구의 상태일까?" });
       await section.waitFor();
+      const waitForMatchInView = () => searchAddress.waitForFunction(() => {
+        const rect = document.querySelector(".search-document-match")?.getBoundingClientRect();
+        return rect && rect.top >= 64 && rect.bottom <= innerHeight - 24;
+      });
+      await waitForMatchInView();
       await searchAddress.goBack();
       await searchAddress.waitForURL(from);
       await searchAddress.locator("h1").filter({ hasText: "한국어 줄바꿈" }).waitFor();
@@ -154,6 +160,7 @@ export const auditSearchRaces = async (browser, origin) => {
       await searchAddress.goForward();
       await searchAddress.waitForURL(article);
       await match.waitFor();
+      await waitForMatchInView();
 
       const tocLink = searchAddress.locator("starlight-toc nav").getByRole("link", { name: "1분이 지나면 데이터가 사라질까?" });
       await tocLink.click();

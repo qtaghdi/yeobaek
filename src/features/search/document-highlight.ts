@@ -15,7 +15,7 @@ const collectTextNodes = (element: HTMLElement) => {
   return nodes;
 };
 
-export const highlightDocumentMatch = (scroll = true) => {
+export const highlightDocumentMatch = (scroll = true, pageTransition?: Promise<void>) => {
   const matchLocation = readSearchMatchLocation();
   if (!matchLocation) return;
   const { query, anchor } = matchLocation;
@@ -59,10 +59,20 @@ export const highlightDocumentMatch = (scroll = true) => {
   if (!target) return;
   if (!scroll) return;
   const address = location.href;
-  let frame = requestAnimationFrame(() => {
-    frame = requestAnimationFrame(() => {
-      if (target.isConnected && location.href === address) target.scrollIntoView({ block: "center", behavior: "instant" });
-    });
-  });
-  return () => cancelAnimationFrame(frame);
+  let disposed = false;
+  const scrollToMatch = () => {
+    if (disposed || !target.isConnected || location.href !== address) return;
+    const bounds = target.getBoundingClientRect();
+    const rootStyle = document.documentElement.style;
+    const previousBehavior = rootStyle.scrollBehavior;
+    rootStyle.scrollBehavior = "auto";
+    window.scrollTo(window.scrollX, window.scrollY + bounds.top + (bounds.height - window.innerHeight) / 2);
+    rootStyle.scrollBehavior = previousBehavior;
+    if (typeof history.state?.index === "number") {
+      history.replaceState({ ...history.state, scrollX: window.scrollX, scrollY: window.scrollY }, "");
+    }
+  };
+  if (pageTransition) void pageTransition.then(scrollToMatch, scrollToMatch);
+  else scrollToMatch();
+  return () => { disposed = true; };
 };
