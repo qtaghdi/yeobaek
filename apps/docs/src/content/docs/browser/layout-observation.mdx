@@ -5,12 +5,11 @@ description: "ResizeObserver의 전달 루프, 글꼴 변경과 측정 결과의
 
 import VisualStory from "src/components/visuals/visual-story.astro";
 
-
 ## 창 크기는 그대로인데 글이 다시 줄바꿈됐다
 
 창 크기가 같아도 사이드바를 펼치거나 그리드의 열 수가 바뀌면 텍스트의 실제 콘텐츠 폭은 달라집니다. 글꼴이 늦게 로드되면 폭이 같아도 문자열의 측정값이 달라질 수 있습니다.
 
-Juliya처럼 DOM에서 측정하고 다시 렌더링하는 코드는 언제 계산해야 하는지를 정하는 것이 계산 과정만큼 중요합니다.
+이런 변화를 다루는 Juliya를 만들다 보면 줄바꿈 알고리즘보다 언제 다시 계산할지 결정하는 일이 더 까다로울 때가 있습니다. 잘못된 시점에 계산하면 멀쩡히 읽고 있던 글의 줄이 갑자기 바뀔 수도 있거든요.
 
 <VisualStory story="layout-observation" />
 
@@ -91,7 +90,9 @@ const schedule = (layout: Layout, force = false) => {
 - ResizeObserver의 최초 통지: 콘텐츠 박스의 정확한 폭을 확보합니다.
 - 명시적인 refresh: 외부에서 이미 알고 있는 값이나 설정의 변경을 반영합니다.
 
-Juliya [#13](https://github.com/Oddmash/juliya/issues/13)에는 좁은 문서에서 첫 계산 결과가 잠시 세 줄이었다가 최초 관찰 이후 두 줄이 되는 문제가 기록되어 있습니다. 초기 CSS fallback, 정수 측정과 실제 소수점 폭, 렌더링 시점을 함께 확인해야 하는 이유입니다.
+Juliya [#13](https://github.com/Oddmash/juliya/issues/13)에는 좁은 문서에서 첫 계산 결과가 잠시 세 줄이었다가 최초 관찰 이후 두 줄이 되는 문제가 기록되어 있습니다. 여백에서 발견한 [#155](https://github.com/Oddmash/juliya/issues/155)는 여기에 한 가지 고민을 더합니다. 라이브러리를 화면에 표시된 뒤에 마운트하면 처음에는 CSS 줄바꿈이 보이고 이후에 다시 배치될 수 있습니다.
+
+최초 측정이 정확하지 않은 경우와 소비자의 마운트 자체가 늦은 경우는 해결책이 다릅니다. 폰트 준비, 실제 콘텐츠 폭, 적용 시점을 분리해서 봐야 합니다.
 
 ## 해제와 예외 처리
 
