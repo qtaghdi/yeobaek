@@ -1,4 +1,5 @@
 import { mountKowrap } from "@oddmash/juliya/dom";
+import { searchNavigation } from "src/features/search/search-location";
 import { highlightDocumentMatch } from "src/features/search/document-highlight";
 import { mountNavigationMotion } from "src/features/navigation/navigation-motion";
 import { mountReferenceTooltips } from "src/features/references/reference-tooltip";
@@ -30,6 +31,7 @@ let disposePage: (() => void) | undefined;
 let pendingTimer: number | undefined;
 let navigationToken = 0;
 let restoreScroll = false;
+let pageTransition: Promise<void> | undefined;
 let loadingMain: HTMLElement | null = null;
 let loadingStatus: HTMLElement | null = null;
 
@@ -44,8 +46,9 @@ const clearLoading = () => {
 const mountPage = () => {
   disposePage?.();
   const navigate = mountNavigationMotion();
-  const cancelHighlight = highlightDocumentMatch(!restoreScroll);
+  const cancelHighlight = highlightDocumentMatch(!restoreScroll, pageTransition);
   restoreScroll = false;
+  pageTransition = undefined;
   const tooltip = mountReferenceTooltips();
   const wrap = mountWrapping();
   disposePage = () => { cancelHighlight?.(); navigate(); tooltip(); wrap(); };
@@ -71,8 +74,15 @@ document.addEventListener("astro:before-preparation", (event) => {
 });
 
 document.addEventListener("astro:before-swap", (event) => {
-  const transition = event as Event & { navigationType?: string; newDocument: Document };
+  const transition = event as Event & { navigationType?: string; newDocument: Document; viewTransition: ViewTransition; info?: unknown };
   restoreScroll = transition.navigationType === "traverse";
+  if (transition.info === searchNavigation) {
+    // Skipping the snapshot intentionally prevents the ready promise from resolving.
+    void transition.viewTransition.ready.catch(() => {});
+    transition.viewTransition.skipTransition();
+  } else if (typeof document.startViewTransition === "function") {
+    pageTransition = transition.viewTransition.finished;
+  }
   const theme = document.documentElement.dataset.theme;
   if (theme) transition.newDocument.documentElement.dataset.theme = theme;
   clearLoading();

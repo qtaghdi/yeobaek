@@ -29,7 +29,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
 
 <script>
   import { navigate } from "astro:transitions/client";
-  import { searchMatchStateKey, type SearchMatchLocation } from "src/features/search/search-location";
+  import { searchMatchStateKey, searchNavigation, type SearchMatchLocation } from "src/features/search/search-location";
   import { isSearchIndex, isMultiCharacterQuery, getMatchRanges, makeSearchPreview, normalizeSearch, recommendedQueries, relatedQueriesFromMatches, searchArticles, type SearchArticle } from "src/features/search/search-index";
 
   type QueryRecord = { query: string; lastUsed: number };
@@ -336,15 +336,35 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
             return;
           }
           saveHistory(query);
-          this.dialog.close();
-          if (matchedText && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-            event.preventDefault();
-            const destination = new URL(article.url, location.href);
-            const match: SearchMatchLocation = { pathname: destination.pathname, query: matchedText.slice(0, 100), anchor: target };
-            // Astro only creates a history entry when the destination URL changes.
-            if (destination.href === location.href) destination.searchParams.set("highlight", match.query);
-            void navigate(destination.href, { sourceElement: link, state: { [searchMatchStateKey]: match } });
+          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+            this.dialog.close();
+            return;
           }
+
+          event.preventDefault();
+          const destination = new URL(article.url, location.href);
+          const match: SearchMatchLocation | undefined = matchedText
+            ? { pathname: destination.pathname, query: matchedText.slice(0, 100), anchor: target }
+            : undefined;
+          // Astro only creates a history entry when the destination URL changes.
+          if (destination.href === location.href) {
+            if (!match) {
+              this.dialog.close();
+              return;
+            }
+            destination.searchParams.set("highlight", match.query);
+          }
+          const pending = window.setTimeout(() => {
+            if (this.isCurrentRender(query, version)) this.status.textContent = "글 불러오는 중…";
+          }, 180);
+          void navigate(destination.href, {
+            sourceElement: link,
+            info: searchNavigation,
+            state: match ? { [searchMatchStateKey]: match } : undefined,
+          }).finally(() => {
+            window.clearTimeout(pending);
+            if (this.isCurrentRender(query, version)) this.render();
+          });
         };
         link.onauxclick = (event) => {
           if (!this.isCurrentRender(query, version)) {

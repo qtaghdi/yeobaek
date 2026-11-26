@@ -310,10 +310,19 @@ mobile-starlight-toc .dropdown {
 .sl-markdown-content .search-document-match {
   background: var(--search-highlight);
   color: var(--search-highlight-text);
-  padding: .06em .12em;
   border-radius: .16em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sl-markdown-content .search-document-match {
+    animation: search-match-fade .4s ease 1.6s forwards;
+  }
+}
+
+@keyframes search-match-fade {
+  to { background-color: transparent; color: inherit; }
 }
 
 .example-workbench__controls :is(select, input[type="number"]) {

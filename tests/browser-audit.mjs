@@ -459,7 +459,8 @@ try {
   await historyPage.waitForURL("**/design/feedback/");
   await historyPage.goBack();
   await historyPage.waitForURL(origin + "/yeobaek/design/loading-states/");
-  await historyPage.locator(".search-document-match").waitFor();
+  await historyPage.getByRole("heading", { name: "접근성과 모션" }).waitFor();
+  assert.equal(await historyPage.locator(".search-document-match").count(), 0);
   assert.ok(await historyPage.evaluate(() => scrollY < 100), "history restoration must not jump to search highlight");
   await historyPage.close();
 
