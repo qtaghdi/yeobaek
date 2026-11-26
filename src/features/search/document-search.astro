@@ -339,8 +339,11 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
           this.dialog.close();
           if (matchedText && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
             event.preventDefault();
-            const match: SearchMatchLocation = { pathname: new URL(link.href).pathname, query: matchedText, anchor: target };
-            void navigate(article.url, { sourceElement: link, state: { [searchMatchStateKey]: match } });
+            const destination = new URL(article.url, location.href);
+            const match: SearchMatchLocation = { pathname: destination.pathname, query: matchedText.slice(0, 100), anchor: target };
+            // Astro only creates a history entry when the destination URL changes.
+            if (destination.href === location.href) destination.searchParams.set("highlight", match.query);
+            void navigate(destination.href, { sourceElement: link, state: { [searchMatchStateKey]: match } });
           }
         };
         link.onauxclick = (event) => {

@@ -13,15 +13,18 @@ export const getStoredSearchMatchLocation = (): SearchMatchLocation | undefined 
 
 export const readSearchMatchLocation = (): SearchMatchLocation | undefined => {
   const url = new URL(location.href);
+  const stored = getStoredSearchMatchLocation();
   const query = url.searchParams.get("highlight")?.slice(0, 100);
   if (query) {
-    let anchor: string | undefined;
-    try { anchor = decodeURIComponent(url.hash.slice(1)); } catch { anchor = undefined; }
+    let anchor = stored?.query === query ? stored.anchor : undefined;
+    if (url.hash) {
+      try { anchor = decodeURIComponent(url.hash.slice(1)); } catch { anchor = undefined; }
+    }
     const match = { pathname: url.pathname, query, anchor };
     url.searchParams.delete("highlight");
     url.hash = "";
     history.replaceState({ ...history.state, [searchMatchStateKey]: match }, "", url);
     return match;
   }
-  return getStoredSearchMatchLocation();
+  return stored;
 };

@@ -162,6 +162,21 @@ export const auditSearchRaces = async (browser, origin) => {
       await searchAddress.waitForURL(article);
       await match.waitFor();
 
+      const initialIndex = await searchAddress.evaluate(() => history.state.index);
+      for (const offset of [1, 2]) {
+        const term = "Axios";
+        await searchAddress.getByRole("button", { name: "글 검색" }).click();
+        await searchAddress.getByRole("searchbox", { name: "검색어" }).fill(term);
+        await result.press("Enter");
+        await searchAddress.waitForFunction(index => history.state?.index === index && !location.search && !location.hash, initialIndex + offset);
+        await match.filter({ hasText: term }).waitFor();
+      }
+      await searchAddress.goBack();
+      await searchAddress.waitForFunction(index => history.state?.index === index, initialIndex + 1);
+      await match.filter({ hasText: "Axios" }).waitFor();
+      await searchAddress.goBack();
+      await match.filter({ hasText: "TanStack Query" }).waitFor();
+
       shareableUrl.searchParams.set("ref", "qa");
       await searchAddress.goto(shareableUrl.href);
       await searchAddress.waitForURL(article + "?ref=qa");
