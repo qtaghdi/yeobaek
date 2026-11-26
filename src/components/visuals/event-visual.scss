@@ -1,0 +1,170 @@
+.event-visual {
+  --hover-at: 300ms;
+  --click-at: 550ms;
+
+  display: grid;
+  gap: .8rem;
+  min-inline-size: 0;
+
+  &__parent {
+    display: grid;
+    gap: .75rem;
+    min-inline-size: 0;
+    padding: clamp(.75rem, 3vw, 1.15rem);
+    border: 1px dashed var(--border-control);
+    border-radius: var(--radius-control);
+    background: var(--background);
+
+    p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: .8rem;
+    }
+  }
+
+  &__target-row {
+    display: grid;
+    place-items: center;
+    min-block-size: 4.8rem;
+  }
+
+  &__target {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-inline-size: 7rem;
+    min-block-size: var(--control-height);
+    padding: .5rem .8rem;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+    background: var(--surface-raised);
+    font-weight: 650;
+  }
+
+  &__pointer {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 55%;
+    inset-inline-start: 68%;
+    pointer-events: none;
+  }
+
+  &__trace {
+    display: grid;
+    gap: .5rem;
+    align-items: start;
+    min-inline-size: 0;
+
+    code {
+      width: max-content;
+      max-inline-size: 100%;
+      font-size: .78rem;
+      color: var(--text-muted);
+      overflow-wrap: anywhere;
+    }
+
+    ol {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(.25rem, 1.3vw, .65rem);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: event-step;
+    }
+
+    li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-content: start;
+      align-items: baseline;
+      min-inline-size: 0;
+      gap: .2rem .35rem;
+      min-block-size: 3.25rem;
+      padding: .5rem .4rem;
+      border: 1px solid var(--border-control);
+      border-radius: var(--radius-control);
+      background: var(--background);
+      color: var(--text);
+      font-size: clamp(.72rem, 1.7vw, .86rem);
+      line-height: 1.35;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    li::before {
+      counter-increment: event-step;
+      content: counter(event-step);
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    [data-blocked="true"] {
+      border-style: dashed;
+      color: var(--text-muted);
+      &::before { content: "×"; }
+    }
+
+    small {
+      grid-column: 2;
+      font-size: .7rem;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .event-visual {
+    &__target {
+      animation: event-button-click var(--click-at) linear both;
+    }
+
+    &__pointer {
+      animation: event-pointer-approach var(--hover-at) cubic-bezier(.18, .8, .25, 1) both;
+    }
+
+    &__pointer .scene-pointer__arrow {
+      animation: event-pointer-arrow var(--hover-at) step-end both;
+    }
+
+    &__pointer .scene-pointer__hand {
+      animation: event-pointer-hand var(--hover-at) step-end both;
+    }
+
+    &__trace li {
+      animation: event-trace-appear 90ms ease-out var(--click-at) both;
+      &:nth-child(2) { animation-delay: calc(var(--click-at) + 55ms); }
+      &:nth-child(3) { animation-delay: calc(var(--click-at) + 110ms); }
+    }
+
+    .visual-story[data-playing="false"] & {
+      &__target, &__pointer, &__pointer svg, &__trace li { animation-play-state: paused; }
+    }
+  }
+}
+
+@keyframes event-pointer-approach {
+  from { transform: translate(2.5rem, 1.85rem); }
+  to { transform: translate(0, 0); }
+}
+
+@keyframes event-pointer-arrow {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes event-pointer-hand {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes event-button-click {
+  0%, 54% { background: var(--surface-raised); box-shadow: none; scale: 1; }
+  62%, 84% { background: var(--selection); box-shadow: 0 0 0 1px var(--border-control); scale: 1; }
+  90%, 94% { background: var(--text); color: var(--background); scale: .965; }
+  100% { background: var(--selection); color: var(--text); scale: 1; }
+}
+
+@keyframes event-trace-appear {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}

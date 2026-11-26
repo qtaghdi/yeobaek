@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { auditInteractionScenes } from "./interaction-scenes-audit.mjs";
 
 const base = (origin) => origin + "/yeobaek/";
 const storySelector = ".visual-story";
@@ -232,6 +233,7 @@ const checkDocumentLoading = async (browser, origin) => {
 
 export const runMotionNetworkAudit = async (browser, origin) => {
   await checkMotion(browser, origin);
+  await auditInteractionScenes(browser, origin);
   await checkDelayedFont(browser, origin);
   await checkFixedWidthWrapping(browser, origin);
   await checkDocumentLoading(browser, origin);

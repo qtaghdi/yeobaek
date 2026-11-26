@@ -1,4 +1,5 @@
 import type { Story } from "src/components/visuals/stories";
+import "src/components/visuals/browser-sequences.scss";
 
 export const StoryIllustration = ({ variant, step }: { variant: NonNullable<Story["illustration"]>; step: number }) => {
   if (variant === "loading") return (
@@ -28,17 +29,27 @@ export const StoryIllustration = ({ variant, step }: { variant: NonNullable<Stor
   );
   if (variant === "scrollbar") return (
     <div className="story-art story-art--scrollbar" aria-hidden="true">
-      <div className="story-art__browser"><div className="story-art__browser-head"><i /><i /><i /></div><div className="story-art__browser-body"><div className="story-art__browser-content"><span>콘텐츠</span></div><div className="story-art__scrollbar" style={{ width: step === 1 ? 0 : "4.6875%" }} /></div></div>
+      <div className="story-art__browser">
+        <div className="story-art__browser-head">
+          <span>{step === 0 ? "문서 읽기" : "모달 열림"}</span>
+          <code>{step === 2 ? "scrollbar-gutter: stable" : "scrollbar-gutter: auto"}</code>
+        </div>
+        <div className="story-art__browser-body">
+          <div className="story-art__browser-content"><span>가운데 콘텐츠</span></div>
+          <div className="story-art__scrollbar" data-gutter={step !== 1} data-scroll={step === 0} />
+        </div>
+      </div>
     </div>
   );
   if (variant === "viewport") return (
     <div className="story-art story-art--viewport" aria-hidden="true">
-      {[true, false].map((small) => (
-        <div className="story-art__phone" key={String(small)}>
-          <div className={`story-art__address ${small ? "" : "story-art__address--closed"}`}>주소창</div>
-          <div className="story-art__phone-screen" data-selected={step === 0 ? small : step === 1 ? !small : true}>{small ? "svh" : "lvh"}</div>
+      <div className="viewport-sequence__phone" data-collapsed={step === 1} data-unit={["svh", "lvh", "dvh"][step]}>
+        <div className="viewport-sequence__address"><span>yeobaek</span></div>
+        <div className="viewport-sequence__screen">
+          <b>{["100svh", "100lvh", "100dvh"][step]}</b>
+          <span>{step === 1 ? "주소창 접힘" : "주소창 펼침"}</span>
         </div>
-      ))}
+      </div>
     </div>
   );
   return (

@@ -1,0 +1,17 @@
+.inline-example__button.event-propagation__target:hover {
+  border-color: var(--text-muted);
+  background: var(--selection);
+}
+
+.inline-example__button.event-propagation__target:active {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--background);
+  transition: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .inline-example__button.event-propagation__target:active {
+    transform: scale(.965);
+  }
+}
