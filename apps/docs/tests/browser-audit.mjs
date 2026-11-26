@@ -153,18 +153,38 @@ try {
   await page.goBack();
   await page.waitForURL("**/browser/storage/**");
   assert.equal(await page.evaluate(() => window.__yeobaekNavigationProbe), true, "history navigation reloaded the document");
-  await page.route("**/accessibility/tab-order/", async (route) => {
-    await new Promise((done) => setTimeout(done, 900));
+  const slowPage = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
+  let releaseResponse;
+  const responseGate = new Promise(resolve => { releaseResponse = resolve; });
+  let requestIntercepted;
+  const intercepted = new Promise(resolve => { requestIntercepted = resolve; });
+  await slowPage.route("**/accessibility/tab-order/", async route => {
+    requestIntercepted();
+    await responseGate;
     await route.continue();
   });
-  const navigation = page.locator(".sidebar-content a[href$='/accessibility/tab-order/']").first().press("Enter");
-  await page.locator(".main-pane .document-loading").waitFor();
-  assert.equal(await page.locator(".main-pane").getAttribute("aria-busy"), "true");
-  assert.equal(await page.locator(".sidebar-pane").getAttribute("aria-busy"), null);
-  await navigation;
-  await page.waitForURL("**/accessibility/tab-order/");
-  await page.locator(".document-loading").waitFor({ state: "hidden" });
-  assert.equal(await page.evaluate(() => window.__yeobaekNavigationProbe), true);
+  try {
+    await slowPage.goto(origin + "/yeobaek/browser/storage/");
+    await slowPage.locator(".sidebar-content a[href$='/browser/events/']").first().click();
+    await slowPage.waitForURL("**/browser/events/");
+    await slowPage.locator(".sidebar-content a[aria-current='page'][href$='/browser/events/']").waitFor();
+    await slowPage.evaluate(() => { window.__yeobaekNavigationProbe = true; });
+    await slowPage.locator(".sidebar-content a[href$='/accessibility/tab-order/']").first().press("Enter");
+    await Promise.race([
+      intercepted,
+      slowPage.waitForURL("**/accessibility/tab-order/").then(() => { throw new Error("Slow document response was not intercepted"); })
+    ]);
+    await slowPage.locator(".main-pane .document-loading").waitFor({ timeout: 5000 });
+    assert.equal(await slowPage.locator(".main-pane").getAttribute("aria-busy"), "true");
+    assert.equal(await slowPage.locator(".sidebar-pane").getAttribute("aria-busy"), null);
+    releaseResponse();
+    await slowPage.waitForURL("**/accessibility/tab-order/");
+    await slowPage.locator(".document-loading").waitFor({ state: "hidden" });
+    assert.equal(await slowPage.evaluate(() => window.__yeobaekNavigationProbe), true);
+  } finally {
+    releaseResponse();
+    await slowPage.close();
+  }
   console.log(`Verified ${storyCount} visual scenes and ${exampleCount} interactive examples at both viewport widths plus interaction contracts.`);
   await page.close();
 } finally {
