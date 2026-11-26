@@ -7,6 +7,7 @@ import { remarkReferenceNotes, rehypeReferenceNotes } from "./src/lib/references
 export default defineConfig({
   site: "https://qtaghdi.github.io",
   base: "/yeobaek",
+  prefetch: { prefetchAll: false, defaultStrategy: "hover" },
   vite: { resolve: { alias: { src: fileURLToPath(new URL("./src", import.meta.url)) } } },
   markdown: { remarkPlugins: [remarkReferenceNotes], rehypePlugins: [rehypeReferenceNotes] },
   integrations: [

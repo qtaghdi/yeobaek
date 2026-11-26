@@ -19,6 +19,8 @@ const applyGeometry = (marker: HTMLElement, geometry: MarkerGeometry) => {
 };
 
 const mountMarker = (root: HTMLElement, currentSelector: string) => {
+  const controller = new AbortController();
+  const { signal } = controller;
   const marker = document.createElement("span");
   marker.className = "navigation-marker";
   marker.setAttribute("aria-hidden", "true");
@@ -62,14 +64,16 @@ const mountMarker = (root: HTMLElement, currentSelector: string) => {
   mutation.observe(root, { attributes: true, attributeFilter: ["aria-current", "open"], subtree: true });
 
   update(false);
-  document.fonts?.ready.then(schedule);
-  window.addEventListener("pageshow", schedule);
+  document.fonts?.ready.then(() => { if (!signal.aborted) schedule(); });
+  window.addEventListener("pageshow", schedule, { signal });
+  return () => { controller.abort(); cancelAnimationFrame(frame); resize.disconnect(); mutation.disconnect(); marker.remove(); root.classList.remove("navigation-track", "navigation-marker-ready"); };
 };
 
 const animateDisclosure = (details: HTMLDetailsElement, onChange: (open: boolean) => void) => {
   const summary = details.querySelector<HTMLElement>(":scope > summary");
   const list = details.querySelector<HTMLElement>(":scope > ul");
-  if (!summary || !list) return;
+  if (!summary || !list) return () => undefined;
+  const controller = new AbortController();
   let animation: Animation | undefined;
   let desired = details.open;
 
@@ -104,11 +108,17 @@ const animateDisclosure = (details: HTMLDetailsElement, onChange: (open: boolean
       list.style.removeProperty("overflow");
       animation = undefined;
     };
-  });
+  }, { signal: controller.signal });
+  return () => { controller.abort(); animation?.cancel(); list.style.removeProperty("overflow"); details.open = desired; };
 };
 
 const mountSidebar = (sidebar: HTMLElement) => {
+  const controller = new AbortController();
+  const { signal } = controller;
+  const cleanups: (() => void)[] = [];
+  let restoreFrame = 0;
   const pane = sidebar.closest<HTMLElement>(".sidebar-pane");
+  for (const link of sidebar.querySelectorAll<HTMLAnchorElement>("a[href]")) link.dataset.astroPrefetch = "hover";
   const groups = [...sidebar.querySelectorAll<HTMLDetailsElement>("details")].flatMap((details) => {
     const link = details.querySelector<HTMLAnchorElement>("a[href]");
     return link ? [{ key: new URL(link.href).pathname, details }] : [];
@@ -133,26 +143,27 @@ const mountSidebar = (sidebar: HTMLElement) => {
     const stored = previous?.groups[key];
     details.open = active || (typeof stored === "boolean" ? stored : details.open);
     state.groups[key] = details.open;
-    animateDisclosure(details, (open) => {
+    cleanups.push(animateDisclosure(details, (open) => {
       state.groups[key] = open;
       persist();
-    });
+    }));
   }
   if (pane && previous) {
     const savedScroll = previous.scroll;
     pane.scrollTop = savedScroll;
-    requestAnimationFrame(() => { pane.scrollTop = savedScroll; });
+    restoreFrame = requestAnimationFrame(() => { pane.scrollTop = savedScroll; });
   }
-  window.addEventListener("pagehide", persist);
+  window.addEventListener("pagehide", persist, { signal });
   document.addEventListener("click", (event) => {
     const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
     if (link && new URL(link.href).origin === location.origin) persist();
-  });
+  }, { signal });
+  return () => { persist(); controller.abort(); cancelAnimationFrame(restoreFrame); cleanups.forEach((cleanup) => cleanup()); };
 };
 
 const syncToc = () => {
   const roots = [...document.querySelectorAll<HTMLElement>("starlight-toc nav, mobile-starlight-toc .dropdown")];
-  if (!roots.length) return;
+  if (!roots.length) return () => undefined;
   const entries = [...roots[0].querySelectorAll<HTMLAnchorElement>('a[href^="#"]')].flatMap((link) => {
     try {
       const id = decodeURIComponent(link.hash.slice(1));
@@ -160,7 +171,9 @@ const syncToc = () => {
       return element ? [{ id, element }] : [];
     } catch { return []; }
   });
-  if (!entries.length) return;
+  if (!entries.length) return () => undefined;
+  const controller = new AbortController();
+  const { signal } = controller;
   const header = document.querySelector("header.header");
   let frame = 0;
   const update = () => {
@@ -191,22 +204,26 @@ const syncToc = () => {
     cancelAnimationFrame(frame);
     frame = requestAnimationFrame(update);
   };
-  window.addEventListener("scroll", schedule, { passive: true });
-  window.addEventListener("resize", schedule, { passive: true });
-  window.addEventListener("hashchange", schedule);
-  window.addEventListener("pageshow", schedule);
+  window.addEventListener("scroll", schedule, { passive: true, signal });
+  window.addEventListener("resize", schedule, { passive: true, signal });
+  window.addEventListener("hashchange", schedule, { signal });
+  window.addEventListener("pageshow", schedule, { signal });
   const content = document.querySelector(".sl-markdown-content");
-  if (content) new ResizeObserver(schedule).observe(content);
+  const resize = new ResizeObserver(schedule);
+  if (content) resize.observe(content);
   const mutation = new MutationObserver(schedule);
   for (const root of roots) mutation.observe(root, { attributes: true, attributeFilter: ["aria-current"], subtree: true });
   schedule();
+  return () => { controller.abort(); cancelAnimationFrame(frame); resize.disconnect(); mutation.disconnect(); };
 };
 
 export const mountNavigationMotion = () => {
   const sidebar = document.querySelector<HTMLElement>(".sidebar-content sl-sidebar-state-persist");
-  if (sidebar) mountSidebar(sidebar);
+  const cleanups: (() => void)[] = [];
+  if (sidebar) cleanups.push(mountSidebar(sidebar));
   for (const toc of document.querySelectorAll<HTMLElement>("starlight-toc nav, mobile-starlight-toc .dropdown")) {
-    mountMarker(toc, 'a[aria-current="true"]');
+    cleanups.push(mountMarker(toc, 'a[aria-current="true"]'));
   }
-  syncToc();
+  cleanups.push(syncToc());
+  return () => cleanups.forEach((cleanup) => cleanup());
 };

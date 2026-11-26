@@ -32,7 +32,7 @@ export const remarkReferenceNotes = () => (tree) => {
         type: "paragraph",
         children: [
           { type: "link", url, children: [text(title)] },
-          text(` — ${summary}`),
+          text(`: ${summary}`),
         ],
       }],
     });
@@ -46,8 +46,12 @@ export const rehypeReferenceNotes = () => (tree) => {
       node.properties.className = ["reference-notes-heading"];
       node.children = [text("참고 자료 요약")];
     }
+    if (node.tagName === "a" && typeof node.properties?.href === "string" && references[node.properties.href]) {
+      node.properties.dataReferenceSummary = references[node.properties.href].summary;
+    }
     if (notes && node.tagName === "a" && node.properties?.dataFootnoteBackref !== undefined) {
       node.properties.ariaLabel = "본문의 인용 위치로 돌아가기";
+      node.children = [text("본문으로")];
     }
     node.children?.forEach((child) => visit(child, notes));
   };

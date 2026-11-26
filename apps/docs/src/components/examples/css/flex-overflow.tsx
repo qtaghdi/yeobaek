@@ -14,15 +14,15 @@ export const FlexOverflowExample = () => {
         카드 폭 {width}px
         <input type="range" min="190" max="480" value={width} onChange={(event) => setWidth(Number(event.target.value))} />
       </label>
-      <div className="inline-example__scroll">
-        <div className="inline-example__flex" style={{ inlineSize: width }}>
+      <div className="inline-example__scroll" role="region" aria-label="고정 폭 카드 비교 영역" tabIndex={0}>
+        <div className="inline-example__flex" data-overflow={!shrink} style={{ inlineSize: width }}>
           <div className="inline-example__filename" style={{ minInlineSize: shrink ? 0 : undefined }}>
             <span>very-long-design-system-component-documentation.tsx</span>
           </div>
           <button type="button" className="inline-example__button">열기</button>
         </div>
       </div>
-      <output>카드의 경계와 버튼 위치를 비교하세요.</output>
+      <output className="inline-example__flex-status" data-overflow={!shrink}>{shrink ? "최소 너비를 0으로 지정한 상태입니다." : "의도적으로 넘치는 상태입니다. 버튼이 카드 경계 밖으로 이동할 수 있습니다."}</output>
     </div>
   );
 };
