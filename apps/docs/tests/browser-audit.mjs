@@ -153,6 +153,18 @@ try {
   await page.goBack();
   await page.waitForURL("**/browser/storage/**");
   assert.equal(await page.evaluate(() => window.__yeobaekNavigationProbe), true, "history navigation reloaded the document");
+  await page.route("**/accessibility/tab-order/", async (route) => {
+    await new Promise((done) => setTimeout(done, 900));
+    await route.continue();
+  });
+  const navigation = page.locator(".sidebar-content a[href$='/accessibility/tab-order/']").first().press("Enter");
+  await page.locator(".main-pane .document-loading").waitFor();
+  assert.equal(await page.locator(".main-pane").getAttribute("aria-busy"), "true");
+  assert.equal(await page.locator(".sidebar-pane").getAttribute("aria-busy"), null);
+  await navigation;
+  await page.waitForURL("**/accessibility/tab-order/");
+  await page.locator(".document-loading").waitFor({ state: "hidden" });
+  assert.equal(await page.evaluate(() => window.__yeobaekNavigationProbe), true);
   console.log(`Verified ${storyCount} visual scenes and ${exampleCount} interactive examples at both viewport widths plus interaction contracts.`);
   await page.close();
 } finally {
