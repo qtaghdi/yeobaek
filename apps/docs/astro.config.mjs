@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
@@ -5,6 +6,7 @@ import react from "@astrojs/react";
 export default defineConfig({
   site: "https://qtaghdi.github.io",
   base: "/yeobaek",
+  vite: { resolve: { alias: { src: fileURLToPath(new URL("./src", import.meta.url)) } } },
   integrations: [
     react(),
     starlight({
