@@ -37,12 +37,18 @@ test("a citation receives a tooltip and repeated URLs share a footnote", () => {
   assert.equal(tree.children[1].children[0].children[0].url, url);
 });
 
-test("reference labels are localized without changing anchors", () => {
-  const heading = { type: "element", tagName: "h2", properties: { id: "footnote-label", className: ["sr-only"] }, children: [{ type: "text", value: "Footnotes" }] };
-  const back = { type: "element", tagName: "a", properties: { href: "#ref", dataFootnoteBackref: "" }, children: [] };
-  rehypeReferenceNotes()({ type: "root", children: [{ type: "element", tagName: "section", properties: { dataFootnotes: "" }, children: [heading, back] }] });
+test("generated references keep source links while omitting repeated back links", () => {
+  const url = "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling";
+  const heading = { type: "element", tagName: "h2", properties: { id: "footnote-label" }, children: [{ type: "text", value: "Footnotes" }] };
+  const link = { type: "element", tagName: "a", properties: { href: url }, children: [] };
+  const backref = (href) => ({ type: "element", tagName: "a", properties: { href, dataFootnoteBackref: "" }, children: [] });
+  const manualBackref = backref("#user-content-fnref-note");
+  const summary = { type: "element", tagName: "p", children: [link, backref("#user-content-fnref-source-1"), backref("#user-content-fnref-source-1-2")] };
+  const section = { type: "element", tagName: "section", properties: { dataFootnotes: "" }, children: [heading, summary, manualBackref] };
+  rehypeReferenceNotes()({ type: "root", children: [section] });
   assert.equal(heading.children[0].value, "참고 자료 요약");
-  assert.equal(back.properties.ariaLabel, "본문의 인용 위치로 돌아가기");
-  assert.equal(back.properties.href, "#ref");
-  assert.equal(back.children[0].value, "본문으로");
+  assert.deepEqual(summary.children, [link]);
+  assert.equal(link.properties.href, url);
+  assert.equal(link.properties.dataReferenceSummary, references[url].summary);
+  assert.equal(section.children[2], manualBackref);
 });

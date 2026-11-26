@@ -4,7 +4,7 @@ import { highlightDocumentMatch } from "src/features/search/document-highlight";
 import { mountNavigationMotion } from "src/features/navigation/navigation-motion";
 import { mountReferenceTooltips } from "src/features/references/reference-tooltip";
 
-const selectors = ".hero h1, .hero .tagline, h1#_top, .sl-markdown-content :is(h2, h3, p)";
+const selectors = ".hero h1, .hero .tagline, h1#_top, .pagination-links .link-title, .sl-markdown-content :is(h2, h3, p)";
 const mountWrapping = () => {
   let disposed = false;
   const cleanups: (() => void)[] = [];
