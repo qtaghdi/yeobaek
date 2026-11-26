@@ -286,3 +286,12 @@ mobile-starlight-toc .dropdown {
   starlight-toc a,
   mobile-starlight-toc a { transition: none; }
 }
+
+.sl-markdown-content .search-document-match {
+  background: var(--search-highlight);
+  color: var(--search-highlight-text);
+  padding: .06em .12em;
+  border-radius: .16em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}

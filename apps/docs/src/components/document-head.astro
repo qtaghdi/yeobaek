@@ -4,6 +4,9 @@ import Default from "@astrojs/starlight/components/Head.astro";
 <Default><slot /></Default>
 <script>
   import { mountKowrap } from "@oddmash/juliya/dom";
+  import { highlightDocumentMatch } from "src/lib/search/document-highlight";
+
+  highlightDocumentMatch();
 
   const selectors = ".hero h1, .hero .tagline, h1[data-page-title], .sl-markdown-content :is(h2, h3, p)";
   const elements = document.querySelectorAll<HTMLElement>(selectors);
@@ -25,7 +28,7 @@ import Default from "@astrojs/starlight/components/Head.astro";
   for (const element of elements) {
     const text = element.textContent?.trim() ?? "";
     if (!/[가-힣]/.test(text) || text.length < 12 || text.length > 180) continue;
-    if (element.closest(".not-content, .example-frame, .chapter-index") || element.querySelector("a, code, pre, button, input, select, textarea, svg, astro-island")) continue;
+    if (element.closest(".not-content, .example-frame, .chapter-index, [data-search-highlight]") || element.querySelector("a, code, pre, button, input, select, textarea, svg, astro-island")) continue;
     if ([...element.children].some(child => !["MARK", "STRONG", "EM", "SPAN", "BR"].includes(child.tagName))) continue;
     observer.observe(element);
   }
