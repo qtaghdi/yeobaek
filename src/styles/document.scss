@@ -128,15 +128,31 @@ header.header { border-block-end: 1px solid var(--border); }
   grid-template-columns: minmax(0, 1fr) auto;
   gap: .3rem 1rem;
   align-items: center;
-  padding: .85rem 0;
+  padding: .85rem .65rem;
   border-block-end: 1px solid var(--border);
+  background-image: linear-gradient(var(--featured-fill), var(--featured-fill));
+  --featured-fill: color-mix(in srgb, var(--text) 7%, transparent);
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  transition: background-size 280ms var(--ease-out);
   color: var(--text);
   text-decoration: none;
 }
 .archive-featured > a > strong { font-size: .95rem; line-height: 1.5; font-weight: 650; }
 .archive-featured > a > span { display: block; color: var(--text-muted); font-size: .85rem; grid-column: 1; }
 .archive-featured > a > svg { grid-row: 1 / 3; grid-column: 2; color: var(--text-muted); }
-.archive-featured > a:hover > strong { text-decoration: underline; text-underline-offset: .2em; }
+.archive-featured > a > svg { transition: transform 280ms var(--ease-out); }
+.archive-featured > a:focus-visible { background-size: 100% 100%; }
+.archive-featured > a:focus-visible > svg { transform: translateX(2px); }
+@media (hover: hover) and (pointer: fine) {
+  .archive-featured > a:hover { background-size: 100% 100%; }
+  .archive-featured > a:hover > svg { transform: translateX(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .archive-featured > a, .archive-featured > a > svg { transition: none; }
+  .archive-featured > a:is(:hover, :focus-visible) > svg { transform: none; }
+}
 
 .chapter-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-block-start: 2.5rem; }
 .chapter-heading h2 { margin: 0; padding: 0 !important; }

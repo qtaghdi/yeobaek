@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { searchArticles, relatedQueries, getMatchRanges, makeSearchPreview, canOpenFirstResult } from "../src/features/search/search-index.ts";
+import { searchArticles, relatedQueries, getMatchRanges, makeSearchPreview, isMultiCharacterQuery } from "../src/features/search/search-index.ts";
 
 const article = (id, title, keywords, text) => ({
   id, title, keywords, description: title, category: "테스트", url: "/" + id + "/",
@@ -85,12 +85,12 @@ test("초성은 한글 원문과 연속된 초성으로 비교하고 실제 범�
   assert.equal(decomposed.slice(decomposedRange.start, decomposedRange.end), decomposed);
 });
 
-test("한 글자는 명시적인 결과 선택 없이 이동하지 않고 본문 검색을 제한한다", () => {
-  assert.equal(canOpenFirstResult("상"), false);
-  assert.equal(canOpenFirstResult("ㅍ"), false);
-  assert.equal(canOpenFirstResult("ㅍㅋ"), true);
-  assert.equal(canOpenFirstResult(" "), false);
-  assert.equal(canOpenFirstResult("."), false);
+test("한 글자 검색은 본문 검색과 연관 검색의 범위를 제한한다", () => {
+  assert.equal(isMultiCharacterQuery("상"), false);
+  assert.equal(isMultiCharacterQuery("ㅍ"), false);
+  assert.equal(isMultiCharacterQuery("ㅍㅋ"), true);
+  assert.equal(isMultiCharacterQuery(" "), false);
+  assert.equal(isMultiCharacterQuery("."), false);
   assert.deepEqual(searchArticles([article("body", "제목", [], "상태")], "상"), []);
   assert.deepEqual(searchArticles(entries, "포").map(result => result.article.id).sort(), ["dialog", "focus"]);
 });

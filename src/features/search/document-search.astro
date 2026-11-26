@@ -20,12 +20,12 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       <p class="search-status" role="status" aria-live="polite"></p>
       <ul class="search-results" aria-label="검색 결과"></ul>
     </div>
-    <footer class="search-footer"><span><kbd>↑</kbd><kbd>↓</kbd> 이동</span><span><kbd>Enter</kbd> 열기</span><span><kbd>Esc</kbd> 닫기</span></footer>
+    <footer class="search-footer"><span><kbd>↑</kbd><kbd>↓</kbd> 이동</span><span><kbd>Enter</kbd> 선택한 글 열기</span><span><kbd>Esc</kbd> 닫기</span></footer>
   </dialog>
 </yeobaek-search>
 
 <script>
-  import { canOpenFirstResult, getMatchRanges, makeSearchPreview, normalizeSearch, recommendedQueries, relatedQueriesFromMatches, searchArticles, type SearchArticle } from "src/features/search/search-index";
+  import { isMultiCharacterQuery, getMatchRanges, makeSearchPreview, normalizeSearch, recommendedQueries, relatedQueriesFromMatches, searchArticles, type SearchArticle } from "src/features/search/search-index";
 
   type QueryRecord = { query: string; count: number; lastUsed: number };
   const historyKey = "yeobaek-search-history-v1";
@@ -245,7 +245,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         this.status.textContent = query ? "검색 준비 중…" : "관심 있는 기술이나 글의 제목을 검색해 보세요.";
         return;
       }
-      const status = matches.length ? `${matches.length}개 글${canOpenFirstResult(query) ? "" : " · 결과를 선택해 열어 주세요."}` : "검색 결과가 없습니다. 다른 검색어를 입력해 보세요.";
+      const status = matches.length ? `${matches.length}개 글${isMultiCharacterQuery(query) ? "" : " · 결과를 선택해 열어 주세요."}` : "검색 결과가 없습니다. 다른 검색어를 입력해 보세요.";
       if (this.status.textContent !== status) this.status.textContent = status;
       const existing = new Map([...this.results.children].map((item) => [(item as HTMLElement).dataset.id, item]));
       const items = document.createDocumentFragment();
@@ -286,7 +286,6 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       const active = document.activeElement;
       if (event.key === "Enter" && active === this.input) {
         event.preventDefault();
-        if (canOpenFirstResult(this.input.value)) links[0]?.click();
         return;
       }
       if (!links.length) return;

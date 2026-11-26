@@ -165,6 +165,11 @@ try {
   for (const result of await results.all()) {
     assert.ok((await result.innerText()).includes("상태를 다뤘습니다."));
   }
+  await searchInput.press("Enter");
+  assert.equal(searchPage.url(), originalUrl);
+  assert.ok(await searchPage.locator(".search-dialog").isVisible());
+  assert.equal(await searchPage.locator(".search-bar button").count(), 1);
+  assert.equal(await searchInput.evaluate(el => getComputedStyle(el).appearance), "none");
   await searchInput.fill("포");
   await searchPage.locator(".search-status").filter({ hasText: "결과를 선택해 열어 주세요." }).waitFor();
   await searchInput.press("Enter");
@@ -176,11 +181,28 @@ try {
   assert.ok(await searchPage.locator(".search-dialog").isVisible());
   await searchInput.fill("ㅍㅋㅅㄹ");
   await searchPage.locator(".search-result-title mark").filter({ hasText: "포커스 링" }).first().waitFor();
+  await searchInput.press("Enter");
+  assert.equal(searchPage.url(), originalUrl);
+  assert.ok(await searchPage.locator(".search-dialog").isVisible());
   await searchInput.press("ArrowDown");
   await searchPage.keyboard.press("Enter");
   await searchPage.waitForURL("**/accessibility/focus-ring/");
   await searchPage.locator("h1").filter({ hasText: "포커스 링" }).waitFor();
   await searchPage.close();
+
+  const featuredPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await featuredPage.goto(origin + "/yeobaek/");
+  const featuredLink = featuredPage.locator(".archive-featured > a").first();
+  assert.equal(await featuredLink.evaluate(el => getComputedStyle(el).backgroundSize), "0% 100%");
+  await featuredLink.hover();
+  await featuredPage.waitForFunction(() => getComputedStyle(document.querySelector(".archive-featured > a")).backgroundSize === "100% 100%");
+  await featuredPage.locator(".search-trigger").hover();
+  await featuredPage.waitForFunction(() => getComputedStyle(document.querySelector(".archive-featured > a")).backgroundSize === "0% 100%");
+  await featuredLink.focus();
+  await featuredPage.keyboard.press("Tab");
+  await featuredPage.keyboard.press("Shift+Tab");
+  await featuredPage.waitForFunction(() => getComputedStyle(document.querySelector(".archive-featured > a")).backgroundSize === "100% 100%");
+  await featuredPage.close();
 
   const slowPage = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   let releaseResponse;
