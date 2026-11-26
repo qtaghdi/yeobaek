@@ -99,6 +99,10 @@ try {
   await go("accessibility/dialog-focus");
   await click("모달 열기");
   await frame().getByRole("dialog").waitFor();
+  const modalScroll = await page.evaluate(() => scrollY);
+  assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).overflowY), "hidden");
+  for (const key of ["ArrowDown", "ArrowUp", "PageDown", "PageUp"]) await page.keyboard.press(key);
+  assert.equal(await page.evaluate(() => scrollY), modalScroll);
   await page.keyboard.press("Escape");
   await frame().getByRole("dialog").waitFor({ state: "hidden" });
   assert.ok(await frame().getByRole("button", { name: "모달 열기" }).evaluate(el => el === document.activeElement));
@@ -168,13 +172,38 @@ try {
   await page.waitForURL("**/browser/storage/**");
   assert.equal(await page.evaluate(() => window.__yeobaekNavigationProbe), true, "history navigation reloaded the document");
   const searchPage = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
-  await searchPage.goto(origin + "/yeobaek/browser/storage/");
+  await searchPage.goto(origin + "/yeobaek/css/text-wrap/");
+  await searchPage.evaluate(() => document.fonts.ready);
+  await searchPage.evaluate(() => window.scrollTo({top: 450, behavior: "instant"}));
   const originalUrl = searchPage.url();
+  const originalScroll = await searchPage.evaluate(() => scrollY);
   await searchPage.getByRole("button", { name: "글 검색" }).click();
   const searchInput = searchPage.getByRole("searchbox", { name: "검색어" });
   const results = searchPage.locator(".search-results a");
+  assert.ok(originalScroll > 0);
+  assert.equal(await searchPage.evaluate(() => getComputedStyle(document.documentElement).overflowY), "hidden");
+  await searchInput.press("ArrowDown");
+  assert.ok(await searchPage.locator(".search-query").first().evaluate(el => el === document.activeElement));
+  await searchPage.keyboard.press("ArrowUp");
+  assert.ok(await searchInput.evaluate(el => el === document.activeElement));
+  await searchInput.press("PageDown");
+  await searchInput.press("ArrowUp");
+  assert.equal(await searchPage.evaluate(() => scrollY), originalScroll);
+  await searchInput.focus();
+  await searchInput.press("Escape");
+  await searchPage.locator(".search-dialog").waitFor({state: "hidden"});
+  assert.notEqual(await searchPage.evaluate(() => getComputedStyle(document.documentElement).overflowY), "hidden");
+  assert.equal(await searchPage.evaluate(() => scrollY), originalScroll);
+  await searchPage.getByRole("button", { name: "글 검색" }).click();
   await searchInput.fill("유지합니다. 실제 레이아웃");
   await searchPage.getByText("검색 결과가 없습니다. 다른 검색어를 입력해 보세요.", { exact: true }).waitFor();
+  for (const key of ["ArrowDown", "ArrowUp", "PageDown", "PageUp"]) await searchInput.press(key);
+  assert.equal(await searchPage.evaluate(() => scrollY), originalScroll);
+  assert.ok(await searchInput.evaluate(el => el === document.activeElement));
+  await searchInput.press("Enter");
+  await searchInput.fill("");
+  await searchPage.getByRole("heading", {name: "검색 기록"}).waitFor();
+  assert.equal(await searchPage.locator(".search-history .search-query").first().innerText(), "유지합니다. 실제 레이아웃");
   await searchInput.fill("React");
   await results.first().waitFor();
   await searchPage.evaluate(() => {
@@ -213,10 +242,32 @@ try {
   assert.equal(searchPage.url(), originalUrl);
   assert.ok(await searchPage.locator(".search-dialog").isVisible());
   await searchInput.press("ArrowDown");
+  assert.ok(await results.first().evaluate(el => el === document.activeElement));
+  assert.equal(await searchPage.evaluate(() => scrollY), originalScroll);
+  await searchPage.keyboard.press("ArrowDown");
+  await searchPage.keyboard.press("ArrowUp");
+  assert.ok(await results.first().evaluate(el => el === document.activeElement));
   await searchPage.keyboard.press("Enter");
   await searchPage.waitForURL("**/accessibility/focus-ring/");
   await searchPage.locator("h1").filter({ hasText: "포커스 링" }).waitFor();
   await searchPage.close();
+
+  const layoutPage = await browser.newPage({ viewport: { width: 1920, height: 900 } });
+  await layoutPage.goto(origin + "/yeobaek/css/text-wrap/");
+  for (const width of [1152, 1280, 1440, 1920, 2560]) {
+    await layoutPage.setViewportSize({width, height: 900});
+    await layoutPage.evaluate(() => document.fonts.ready);
+    const layout = await layoutPage.evaluate(() => {
+      const main = document.querySelector(".sl-markdown-content").getBoundingClientRect();
+      const sidebar = document.querySelector(".sidebar-pane").getBoundingClientRect();
+      const toc = document.querySelector(".right-sidebar").getBoundingClientRect();
+      return {left: main.left - sidebar.right, right: toc.left - main.right, width: main.width, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth};
+    });
+    assert.ok(layout.left >= 0 && layout.left <= 50, `${width}: excessive left gutter ${layout.left}`);
+    assert.ok(layout.right >= 0 && layout.right <= 50, `${width}: excessive right gutter ${layout.right}`);
+    assert.ok(layout.width <= 840 && layout.overflow <= 2, `${width}: layout overflow`);
+  }
+  await layoutPage.close();
 
   const recovery = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await recovery.route("**/search-index.json", route => route.fulfill({ json: {} }));
