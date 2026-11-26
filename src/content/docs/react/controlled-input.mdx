@@ -4,6 +4,8 @@ description: "제어형·비제어형 입력의 책임과 날짜 범위 필터�
 ---
 
 import VisualStory from "src/components/visuals/visual-story.astro";
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import { AppliedDateFilter } from "src/components/examples/react/applied-date-filter";
 
 ## 입력 중인 값이 곧 서버에 보낼 값일까요?
 
@@ -91,6 +93,12 @@ const cancel = () => setDraft({ ...applied });
 서버 상태 라이브러리를 사용하는 경우 쿼리 키는 actual applied 범위를 표현해야 합니다. 사용자가 입력한 순간마다 조회하도록 의도한 검색창과, 명시적으로 적용하는 기간 필터는 다른 계약입니다.
 
 적용 버튼을 클릭할 때 유효성을 검사하는 것과 입력 중에 사용자에게 오류를 보여주는 것은 동시에 할 수도 있습니다. 다만 입력값이 잠시 유효하지 않다는 이유로 마지막으로 성공한 화면까지 지울 이유는 없습니다. 새 조회가 시작되는 경계를 적용 동작으로 정하면 필터 UI와 서버 요청의 책임을 나누기 편해집니다.
+
+아래에서 시작일을 11월 15일로 바꿔보세요. 범위가 역전되어도 조회 결과는 그대로입니다. 종료일을 11월 20일로 바꾼 뒤 적용하면 그 기간의 실행 기록만 나타납니다. 예제는 날짜 단위의 가상 데이터를 사용합니다.
+
+<ExampleFrame label="편집 범위와 적용 범위 비교">
+  <AppliedDateFilter client:visible />
+</ExampleFrame>
 
 ## 날짜와 시간대의 경계
 

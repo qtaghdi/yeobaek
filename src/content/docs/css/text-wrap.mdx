@@ -4,6 +4,8 @@ description: "CSS 줄바꿈부터 실제 글꼴 측정, 줄바꿈 후보 평가�
 ---
 
 import VisualStory from "src/components/visuals/visual-story.astro";
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import { TextWrapPreview } from "src/components/examples/css/text-wrap-preview";
 
 ## 한글은 다 표시됐는데 왜 읽기 불편할까?
 
@@ -26,6 +28,12 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 - `word-break: keep-all`: 한국어처럼 CJK 문자 사이에서 발생할 수 있는 줄바꿈을 제한합니다.
 - `overflow-wrap: anywhere`: 다른 적절한 줄바꿈 기회가 없을 때 긴 문자열을 나눌 수 있게 합니다. 최소 콘텐츠 크기 계산에도 영향을 줄 수 있습니다.
 - `text-wrap: balance`: 여러 줄에 텍스트가 배치될 때 줄 길이를 균형 있게 만드는 데 도움을 줍니다.
+
+카드 폭을 바꿔 같은 문장이 어디에서 나뉘는지 비교해 보세요. 세 카드 모두 긴 단어가 화면 밖으로 나가지 않도록 `overflow-wrap: anywhere`를 적용했습니다.
+
+<ExampleFrame label="카드 폭에 따른 CSS 줄바꿈">
+  <TextWrapPreview client:visible />
+</ExampleFrame>
 
 CSS가 제공하는 것만으로 충분한 문장에는 스크립트를 도입할 필요가 없습니다. 특정 단어 조합이나 언어별 문장 경계를 비용으로 평가해야 할 때에만 추가적인 로직이 필요합니다.
 

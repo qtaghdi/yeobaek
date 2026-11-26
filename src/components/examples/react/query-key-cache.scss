@@ -1,0 +1,9 @@
+.query-key-cache {
+  [aria-pressed="true"] {
+    color: var(--background);
+    background: var(--text);
+    border-color: var(--text);
+  }
+
+  output { font-family: var(--mono); }
+}

@@ -68,13 +68,13 @@ export const stories = {
   },
   "disabled-state": {
     interaction: "disabled",
-    title: "보이는 상태와 실제 비활성 상태는 다르다",
+    title: "저장 버튼에 접근하는 것과 저장이 실행되는 것은 다르다",
     layout: "comparison",
-    nodes: ["CSS만 회색", "disabled", "aria-disabled"],
+    nodes: ["disabled", "aria-disabled", "aria-disabled + 실행 조건"],
     frames: [
-      f("화면 표시", "세 컨트롤이 모두 비활성처럼 보일 수 있어도 브라우저가 이해하는 상태는 다릅니다.", [s("회색"), s("회색"), s("회색")]),
-      f("Tab 이동", "네이티브 disabled는 일반 Tab 순서에서 빠집니다. aria-disabled는 그 자체로 포커스를 막지 않습니다.", [s("이동 가능"), s("건너뜀", "muted"), s("이동 가능", "active")], "Tab"),
-      f("클릭", "CSS나 aria-disabled만 지정하면 클릭 실행을 자동으로 막지 않습니다. 별도 이벤트 제어가 필요합니다.", [s("실행됨", "warning"), s("실행 차단", "done"), s("별도 제어 필요", "warning")], "Click"),
+      f("세 저장 버튼", "세 버튼 모두 비활성 상태를 전달합니다. 아직 저장은 실행되지 않았습니다.", [s("저장 0회"), s("저장 0회"), s("저장 0회")]),
+      f("각 버튼에 Tab으로 접근", "disabled는 Tab 순서에서 건너뜁니다. aria-disabled가 있는 두 버튼은 포커스를 받을 수 있습니다.", [s("건너뜀", "muted"), s("포커스", "active"), s("포커스", "active")], "Tab"),
+      f("각 버튼을 클릭", "aria-disabled만 붙인 가운데 버튼에서만 저장이 실행됩니다. disabled는 브라우저가 차단하고, 마지막 버튼은 코드가 차단합니다.", [s("저장 0회", "done"), s("저장 1회", "warning"), s("저장 0회", "done")], "Click"),
     ],
   },
   "stacking-context": {

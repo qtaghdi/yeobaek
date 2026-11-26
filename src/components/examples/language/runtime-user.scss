@@ -1,0 +1,42 @@
+.runtime-user {
+  &__pick {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem .75rem;
+
+    select {
+      min-block-size: var(--control-height);
+      max-inline-size: 100%;
+      padding-inline: .5rem;
+      border: 1px solid var(--border-control);
+      border-radius: var(--radius-control);
+      background: var(--background);
+      color: var(--text);
+      font: inherit;
+    }
+
+    select:focus-visible {
+      outline: var(--focus-width) solid var(--focus);
+      outline-offset: var(--focus-offset);
+    }
+  }
+
+  &__payload {
+    margin: 0;
+    padding: .6rem .75rem;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    white-space: pre-wrap;
+  }
+
+  &__result {
+    padding: .75rem;
+    border-inline-start: 2px solid var(--border-control);
+  }
+
+  &__result[data-error="true"] {
+    border-inline-start-color: var(--danger);
+  }
+}

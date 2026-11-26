@@ -1,0 +1,35 @@
+.applied-date-filter {
+  &__form, &__dates {
+    display: grid;
+    gap: .75rem;
+  }
+
+  &__dates {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  }
+
+  label {
+    display: grid;
+    align-content: start;
+    gap: .25rem;
+    min-inline-size: 0;
+  }
+
+  input[type="date"] {
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-inline-size: 0;
+    min-block-size: var(--control-height);
+    padding: .35rem .6rem;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+    color: var(--text);
+    background: var(--background);
+    font: inherit;
+  }
+
+  input[aria-invalid="true"] { border-color: var(--danger); }
+  [role="status"] { margin: 0; color: var(--danger); }
+  ul { margin-block: .5rem 0; padding-inline-start: 1.5rem; }
+  li + li { margin-block-start: .25rem; }
+}

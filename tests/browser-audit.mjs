@@ -3,6 +3,7 @@ import { createServer } from "node:http";
 import { readFile, readdir } from "node:fs/promises";
 import { join, resolve, extname, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { auditExamplesInContext } from "./browser-examples-in-context.mjs";
 import { auditSearchRaces } from "./browser-search-races.mjs";
 import { runMotionNetworkAudit } from "./motion-network-audit.mjs";
 
@@ -103,7 +104,7 @@ try {
   for (const { from, path, anchor } of linkedAnchors) {
     assert.ok(anchors.get(path)?.has(anchor), `${from}: missing internal anchor ${path}#${anchor}`);
   }
-  assert.ok(pages.length >= 39 && storyCount >= 22 && exampleCount >= 11, `pages=${pages.length}, visuals=${storyCount}, examples=${exampleCount}`);
+  assert.ok(pages.length >= 39 && storyCount >= 22 && exampleCount >= 22, `pages=${pages.length}, visuals=${storyCount}, examples=${exampleCount}`);
 
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   const go = async (route) => { await page.goto(origin + "/yeobaek/" + route + "/"); await page.locator(".main-pane").first().waitFor(); await page.waitForFunction(() => !document.querySelector(".example-frame astro-island[ssr]")); };
@@ -565,6 +566,7 @@ try {
     releaseResponse();
     await slowPage.close();
   }
+  await auditExamplesInContext(browser, origin);
   await auditSearchRaces(browser, origin);
   await runMotionNetworkAudit(browser, origin);
   console.log(`Verified ${storyCount} visual scenes and ${exampleCount} interactive examples at both viewport widths plus interaction contracts.`);

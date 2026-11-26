@@ -16,7 +16,7 @@ test("등록되지 않은 서버 오류 코드에는 기본 문구를 사용한�
 });
 
 test("목록 조회와 키 생성 함수는 동일한 캐시 키를 사용한다", async () => {
-  const article = await readFile(new URL("../src/content/docs/react/query-keys.md", import.meta.url), "utf8");
+  const article = await readFile(new URL("../src/content/docs/react/query-keys.mdx", import.meta.url), "utf8");
   const [query, factory] = [...article.matchAll(/```tsx?\n([\s\S]+?)```/g)].map((match) => match[1]);
   const keys = runInNewContext(stripTypeScriptTypes(query + factory) + "\n[query.queryKey, itemKeys.list(keyword, page)]", {
     useQuery: (options) => options,

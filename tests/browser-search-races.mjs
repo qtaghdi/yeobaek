@@ -76,15 +76,19 @@ export const auditSearchRaces = async (browser, origin) => {
         input.dispatchEvent(new CompositionEvent("compositionstart", { bubbles: true }));
         input.value = "포";
         input.dispatchEvent(new InputEvent("input", { bubbles: true, isComposing: true }));
-        input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", isComposing: true, bubbles: true, cancelable: true }));
+        const keys = ["Enter", "ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"];
+        const keysLeftToIme = [true, false].every(isComposing => keys.every(key =>
+          input.dispatchEvent(new KeyboardEvent("keydown", { key, isComposing, bubbles: true, cancelable: true }))
+        ));
+        const focused = document.activeElement === input;
         const cancelAllowed = document.querySelector(".search-dialog").dispatchEvent(new Event("cancel", { cancelable: true }));
         chip?.click();
         const clicked = old.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
         const value = input.value;
         input.dispatchEvent(new CompositionEvent("compositionend", { bubbles: true }));
-        return { clicked, value, cancelAllowed };
+        return { clicked, value, cancelAllowed, keysLeftToIme, focused };
       });
-      assert.deepEqual(composing, { clicked: false, value: "포", cancelAllowed: false });
+      assert.deepEqual(composing, { clicked: false, value: "포", cancelAllowed: false, keysLeftToIme: true, focused: true });
       assert.equal(page.url(), origin + start);
       assert.equal(await page.evaluate(key => localStorage.getItem(key), historyKey), null);
       await page.locator(".search-status").filter({ hasText: "결과를 선택해 열어 주세요." }).waitFor();

@@ -73,9 +73,9 @@ const ControlsScene = ({ story, step, disabled }: { story: Story; step: number; 
           return (
             <div className="interaction-control" key={node}>
               <small>{node}</small>
-              <div className="interaction-target interaction-target--control" data-active={state?.tone === "active" || (disabled && input === "Tab" && index === 0)} data-dim={disabled && (step === 0 || index === 1)}>
-                실행
-                {input === "Click" && !(disabled && index === 1) ? <Cursor step={step} /> : null}
+              <div className="interaction-target interaction-target--control" data-active={state?.tone === "active"} data-dim={disabled && state?.tone !== "active"}>
+                {disabled ? "저장" : "실행"}
+                {input === "Click" ? <Cursor step={step} /> : null}
               </div>
               <span className="interaction-result" data-tone={state?.tone}>{state?.value}</span>
             </div>

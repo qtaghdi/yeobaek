@@ -1,0 +1,40 @@
+.save-feedback {
+  &__preview {
+    display: grid;
+    justify-items: start;
+    gap: .65rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background: var(--background);
+
+    p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    &[data-phase="error"] p {
+      color: var(--danger);
+    }
+  }
+
+  &__response {
+    min-inline-size: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+
+    legend {
+      padding: 0;
+      margin-block-end: .55rem;
+      font-size: .875rem;
+      color: var(--text-muted);
+    }
+  }
+
+  .inline-example__button[aria-disabled="true"] {
+    opacity: .55;
+    background: var(--background);
+    cursor: not-allowed;
+  }
+}

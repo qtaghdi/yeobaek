@@ -1,0 +1,32 @@
+.text-wrap-preview {
+  &__sample {
+    display: grid;
+    gap: .5rem;
+    min-inline-size: 0;
+    margin: 0;
+  }
+
+  figcaption {
+    color: var(--text-muted);
+    font-size: .875rem;
+    overflow-wrap: anywhere;
+  }
+
+  &__text {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    padding: .65rem .8rem;
+    background: var(--background);
+    font-size: 1.15rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    text-wrap: wrap;
+
+    &[data-wrap-mode="words"], &[data-wrap-mode="balance"] { word-break: keep-all; }
+    &[data-wrap-mode="balance"] { text-wrap: balance; }
+  }
+}

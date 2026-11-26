@@ -1,0 +1,49 @@
+@layer yeobaek-cascade-components, yeobaek-cascade-app;
+
+@layer yeobaek-cascade-components {
+  :where(.cascade-preview__stage) .button { padding: 12px; }
+}
+
+@layer yeobaek-cascade-app {
+  :where(.cascade-preview:has(input:checked) .cascade-preview__stage) button {
+    padding: 8px;
+  }
+}
+
+.cascade-preview {
+  &__stage {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background: var(--background);
+    text-align: center;
+  }
+
+  &__button {
+    border: 1px solid var(--text);
+    border-radius: var(--radius-control);
+    background: var(--text);
+    color: var(--background);
+    font: inherit;
+    font-weight: 600;
+  }
+
+  &__base-rule, &__app-rule {
+    font-family: var(--mono);
+    font-size: .875rem;
+    overflow-wrap: anywhere;
+  }
+
+  &__app-rule,
+  &:has(input:checked) &__base-rule {
+    display: none;
+  }
+
+  &:has(input:checked) &__app-rule {
+    display: inline;
+  }
+}
