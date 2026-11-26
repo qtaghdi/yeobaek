@@ -141,33 +141,54 @@ export const auditSearchRaces = async (browser, origin) => {
       const shareableUrl = new URL(await result.getAttribute("href"), origin);
       assert.equal(shareableUrl.searchParams.get("highlight"), "TanStack Query");
       assert.equal(decodeURIComponent(shareableUrl.hash), "#우리가-가져온-데이터는-누구의-상태일까");
+      let releaseArticle;
+      const articleGate = new Promise(resolve => { releaseArticle = resolve; });
+      await searchAddress.route(article, async route => {
+        await articleGate;
+        await route.continue();
+      }, { times: 1 });
       await result.press("Enter");
+      try {
+        const searchDialog = searchAddress.locator(".search-dialog[open]");
+        await searchDialog.getByRole("status").filter({ hasText: "글 불러오는 중" }).waitFor();
+        assert.equal(searchAddress.url(), from);
+      } finally {
+        releaseArticle();
+      }
       await searchAddress.waitForURL(article);
+      await searchAddress.locator(".search-dialog").waitFor({ state: "hidden" });
       const match = searchAddress.locator(".search-document-match").first();
       await match.waitFor();
       assert.equal(await match.textContent(), "TanStack Query");
       const section = searchAddress.locator("starlight-toc [aria-current=true]").filter({ hasText: "우리가 가져온 데이터는 누구의 상태일까?" });
       await section.waitFor();
-      const waitForMatchInView = () => searchAddress.waitForFunction(() => {
-        const rect = document.querySelector(".search-document-match")?.getBoundingClientRect();
+      const paragraph = searchAddress.getByText("Axios와 TanStack Query를 비교할 때도", { exact: false }).last();
+      const waitForParagraphInView = () => searchAddress.waitForFunction(() => {
+        const paragraph = [...document.querySelectorAll(".sl-markdown-content p")].find(element => element.textContent.includes("Axios와 TanStack Query를 비교할 때도"));
+        const rect = paragraph?.getBoundingClientRect();
         return rect && rect.top >= 64 && rect.bottom <= innerHeight - 24;
       });
-      await waitForMatchInView();
+      await waitForParagraphInView();
+      const originalParagraph = await paragraph.textContent();
+      await match.waitFor({ state: "detached" });
+      assert.equal(await paragraph.textContent(), originalParagraph);
+      await waitForParagraphInView();
       await searchAddress.goBack();
       await searchAddress.waitForURL(from);
       await searchAddress.locator("h1").filter({ hasText: "한국어 줄바꿈" }).waitFor();
       assert.equal(await match.count(), 0);
       await searchAddress.goForward();
       await searchAddress.waitForURL(article);
-      await match.waitFor();
-      await waitForMatchInView();
+      await waitForParagraphInView();
+      assert.equal(await match.count(), 0);
 
       const tocLink = searchAddress.locator("starlight-toc nav").getByRole("link", { name: "1분이 지나면 데이터가 사라질까?" });
       await tocLink.click();
       await searchAddress.waitForURL(url => url.pathname === new URL(article).pathname && url.hash !== "");
       await searchAddress.goBack();
       await searchAddress.waitForURL(article);
-      await match.waitFor();
+      await paragraph.waitFor();
+      assert.equal(await match.count(), 0);
 
       const initialIndex = await searchAddress.evaluate(() => history.state.index);
       for (const offset of [1, 2]) {
@@ -178,11 +199,14 @@ export const auditSearchRaces = async (browser, origin) => {
         await searchAddress.waitForFunction(index => history.state?.index === index && !location.search && !location.hash, initialIndex + offset);
         await match.filter({ hasText: term }).waitFor();
       }
-      await searchAddress.goBack();
-      await searchAddress.waitForFunction(index => history.state?.index === index, initialIndex + 1);
-      await match.filter({ hasText: "Axios" }).waitFor();
-      await searchAddress.goBack();
-      await match.filter({ hasText: "TanStack Query" }).waitFor();
+      for (const offset of [1, 0]) {
+        const outgoingParagraph = await paragraph.elementHandle();
+        await searchAddress.goBack();
+        await searchAddress.waitForFunction(index => history.state?.index === index, initialIndex + offset);
+        await outgoingParagraph.waitForElementState("hidden");
+        await waitForParagraphInView();
+        assert.equal(await match.count(), 0);
+      }
 
       shareableUrl.searchParams.set("ref", "qa");
       await searchAddress.goto(shareableUrl.href);

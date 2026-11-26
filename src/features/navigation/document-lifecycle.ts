@@ -1,4 +1,5 @@
 import { mountKowrap } from "@oddmash/juliya/dom";
+import { searchNavigation } from "src/features/search/search-location";
 import { highlightDocumentMatch } from "src/features/search/document-highlight";
 import { mountNavigationMotion } from "src/features/navigation/navigation-motion";
 import { mountReferenceTooltips } from "src/features/references/reference-tooltip";
@@ -73,9 +74,10 @@ document.addEventListener("astro:before-preparation", (event) => {
 });
 
 document.addEventListener("astro:before-swap", (event) => {
-  const transition = event as Event & { navigationType?: string; newDocument: Document; viewTransition: ViewTransition };
+  const transition = event as Event & { navigationType?: string; newDocument: Document; viewTransition: ViewTransition; info?: unknown };
   restoreScroll = transition.navigationType === "traverse";
-  if (typeof document.startViewTransition === "function") pageTransition = transition.viewTransition.finished;
+  if (transition.info === searchNavigation) transition.viewTransition.skipTransition();
+  else if (typeof document.startViewTransition === "function") pageTransition = transition.viewTransition.finished;
   const theme = document.documentElement.dataset.theme;
   if (theme) transition.newDocument.documentElement.dataset.theme = theme;
   clearLoading();

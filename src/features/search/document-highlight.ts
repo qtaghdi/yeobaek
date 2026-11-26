@@ -17,7 +17,7 @@ const collectTextNodes = (element: HTMLElement) => {
 
 export const highlightDocumentMatch = (scroll = true, pageTransition?: Promise<void>) => {
   const matchLocation = readSearchMatchLocation();
-  if (!matchLocation) return;
+  if (!matchLocation || !scroll) return;
   const { query, anchor } = matchLocation;
   const root = document.querySelector(".sl-markdown-content");
   if (!root) return;
@@ -57,9 +57,14 @@ export const highlightDocumentMatch = (scroll = true, pageTransition?: Promise<v
   }
   const target = element.querySelector(".search-document-match");
   if (!target) return;
-  if (!scroll) return;
+  const clearHighlight = () => {
+    for (const mark of element.querySelectorAll(".search-document-match")) mark.replaceWith(...mark.childNodes);
+    element.normalize();
+    delete element.dataset.searchHighlight;
+  };
   const address = location.href;
   let disposed = false;
+  let highlightTimer: number | undefined;
   const scrollToMatch = () => {
     if (disposed || !target.isConnected || location.href !== address) return;
     const bounds = target.getBoundingClientRect();
@@ -68,11 +73,16 @@ export const highlightDocumentMatch = (scroll = true, pageTransition?: Promise<v
     rootStyle.scrollBehavior = "auto";
     window.scrollTo(window.scrollX, window.scrollY + bounds.top + (bounds.height - window.innerHeight) / 2);
     rootStyle.scrollBehavior = previousBehavior;
+    highlightTimer = window.setTimeout(clearHighlight, 2000);
     if (typeof history.state?.index === "number") {
       history.replaceState({ ...history.state, scrollX: window.scrollX, scrollY: window.scrollY }, "");
     }
   };
   if (pageTransition) void pageTransition.then(scrollToMatch, scrollToMatch);
   else scrollToMatch();
-  return () => { disposed = true; };
+  return () => {
+    disposed = true;
+    window.clearTimeout(highlightTimer);
+    if (element.hasAttribute("data-search-highlight")) clearHighlight();
+  };
 };

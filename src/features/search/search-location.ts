@@ -1,3 +1,4 @@
+export const searchNavigation = "yeobaek-search-result";
 export const searchMatchStateKey = "yeobaekSearchMatch";
 
 export type SearchMatchLocation = {
