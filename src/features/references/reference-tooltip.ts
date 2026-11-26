@@ -1,4 +1,4 @@
-import { mountTooltip } from "src/features/references/tooltip-controller";
+import { mountTooltip } from "@oddmash/ui/tooltip-controller";
 
 export const mountReferenceTooltips = () => {
   const cleanup: (() => void)[] = [];
