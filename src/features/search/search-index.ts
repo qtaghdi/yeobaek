@@ -82,7 +82,7 @@ const createQuery = (value: string) => {
   return { normalized, term, initial, valid: /[\p{L}\p{N}]/u.test(term), short: [...term].length === 1 };
 };
 
-export const canOpenFirstResult = (query: string) => {
+export const isMultiCharacterQuery = (query: string) => {
   const parsed = createQuery(query);
   return parsed.valid && !parsed.short;
 };
@@ -157,7 +157,7 @@ export const searchArticles = (articles: SearchArticle[], value: string) => {
 };
 
 export const relatedQueriesFromMatches = (matches: ReturnType<typeof searchArticles>, query: string, limit = 6) => {
-  if (!canOpenFirstResult(query)) return [];
+  if (!isMultiCharacterQuery(query)) return [];
   const counts = new Map<string, number>();
   for (const { article, score } of matches.slice(0, 5)) {
     for (const keyword of article.keywords) {

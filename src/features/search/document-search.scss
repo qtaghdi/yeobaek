@@ -7,7 +7,7 @@ yeobaek-search {
   align-items: center;
   gap: .65rem;
   min-block-size: 2.5rem;
-  inline-size: min(100%, 25rem);
+  inline-size: min(100%, 34rem);
   padding: .55rem .7rem;
   background: var(--surface);
   color: var(--text-muted);
@@ -35,7 +35,7 @@ yeobaek-search {
   inset: max(8vh, 1rem) 0 auto;
   margin: 0 auto;
   padding: 0;
-  inline-size: min(46rem, calc(100% - 2rem));
+  inline-size: min(52rem, calc(100% - 2rem));
   max-inline-size: none;
   block-size: min(76dvh, 38rem);
   max-block-size: min(82dvh, 45rem);
@@ -98,6 +98,8 @@ yeobaek-search {
     border-radius: var(--radius-control);
     font-size: 1rem;
 
+    appearance: none;
+    &::-webkit-search-cancel-button, &::-webkit-search-decoration { appearance: none; display: none; }
     &::placeholder { color: var(--text-muted); }
     &:focus-visible { outline-offset: 1px; }
   }
