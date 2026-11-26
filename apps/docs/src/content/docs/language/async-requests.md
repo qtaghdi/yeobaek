@@ -32,3 +32,13 @@ const cancel = () => controller.abort();
 네트워크 오류, HTTP 상태 오류, 검증 오류는 서로 다릅니다. 모든 실패를 자동 재시도할 필요는 없습니다. 특히 상태를 변경하는 요청은 재시도 시 중복 실행 가능성을 고려해야 합니다.
 
 [MDN: Using Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) · [MDN: AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
+
+## 프로젝트에서 이어진 고민
+
+날짜 필터의 입력 범위가 뒤집혔을 때 잘못된 draft가 이미 적용된 조건을 바꾸지 않아야 한다는 요구가 기록되었다. 요청 순서도 마찬가지로, 입력이 바뀌었는데 이전 요청의 응답이 늦게 도착하면 현재 화면이 과거 값으로 바뀔 수 있다.
+
+### 검증 기준
+
+잘못된 조건에서는 요청하지 않고 유효한 조건을 적용할 때만 새 요청을 시작한다. 요청 취소 또는 최신 요청 식별자를 사용해 오래된 응답을 무시하고 실패 시 기존 결과를 유지할지 정한다.
+
+[관련 이슈 · oddmash-agents #248](https://github.com/Oddmash/oddmash-agents/issues/248)

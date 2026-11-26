@@ -30,3 +30,13 @@ description: "명시도, 선언 순서와 cascade layer의 관계."
 모든 문제를 layer로 해결할 수는 없습니다. 개발자 도구에서 실제 적용된 규칙, 출처, 중요도와 명시도를 확인합니다.
 
 [MDN: Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Introduction) · [MDN: Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity)
+
+## 프로젝트에서 이어진 고민
+
+공통 CSS를 사용하는 여러 페이지에서는 같은 선택자를 여러 번 덮어쓰는 방식보다 스타일 출처와 우선순위를 분명히 하는 편이 안전하다. 컴포넌트에 국지적인 변형을 추가할 때는 전역 규칙까지 바뀌지 않는지 확인해야 한다.
+
+### 검증 기준
+
+개발자 도구의 computed style에서 최종 값을 결정한 선언을 확인한다. 레이어, 명시도, 선언 순서를 구분하고 선택자를 무작정 길게 만들지 않는다.
+
+[관련 이슈 · oddmash-website #74](https://github.com/Oddmash/oddmash-website/issues/74)

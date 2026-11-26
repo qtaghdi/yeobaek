@@ -3,8 +3,8 @@
 :root, :root[data-theme="light"], :root[data-theme="dark"] {
   --sl-font: var(--font);
   --sl-font-mono: var(--mono);
-  --sl-content-width: 48rem;
-  --sl-sidebar-width: 17rem;
+  --sl-content-width: 49rem;
+  --sl-sidebar-width: 18rem;
   --sl-line-height: 1.8;
   --sl-color-white: var(--ink);
   --sl-color-gray-1: var(--ink);
@@ -116,7 +116,7 @@
   color: var(--ink);
   background-color: var(--surface);
   border: 1px solid var(--edge);
-  border-radius: .375rem;
+  border-radius: var(--radius-control);
   padding: .45rem .7rem;
   font: inherit;
 }
@@ -201,7 +201,7 @@
   min-block-size: 2.5rem;
   padding: .4rem .7rem;
   border: 1px solid var(--edge);
-  border-radius: .375rem;
+  border-radius: var(--radius-control);
   cursor: pointer;
   text-align: center;
 }
@@ -300,3 +300,57 @@
 }
 
 .notebook-lab .notebook-experiment :is(.focus-ring--outline-removed) button:focus { outline: none; }
+
+.site-title { letter-spacing: -.055em; }
+header.header { border-block-end: 1px solid var(--edge); }
+.sidebar-content a { word-break: keep-all; overflow-wrap: anywhere; padding-block: .42rem; }
+.sidebar-content [aria-current="page"] { border-inline-start: 3px solid var(--focus); }
+.main-pane h1 { letter-spacing: -.045em; line-height: 1.28; word-break: keep-all; overflow-wrap: anywhere; }
+.sl-markdown-content :is(p, li) { line-height: 1.85; }
+.sl-markdown-content :is(h2, h3) { letter-spacing: -.025em; line-height: 1.4; }
+.sl-markdown-content :is(h2, h3), .hero h1, .hero .tagline { text-wrap: balance; }
+[data-juliya-wrapped] { text-wrap: wrap !important; }
+.hero { max-inline-size: none; padding-block: clamp(2.75rem, 7vw, 6rem) 2.75rem; border-block-end: 1px solid var(--edge); }
+.hero .copy { max-inline-size: 48rem; }
+.hero h1 { font-size: clamp(2.45rem, 6.2vw, 4.6rem); line-height: 1.22; max-inline-size: 43rem; }
+.hero .tagline { max-inline-size: 36rem; line-height: 1.75; }
+.hero .actions a { background: var(--ink); color: var(--paper); border-color: var(--ink); border-radius: var(--radius-control); }
+.hero .actions a:hover { background: var(--focus); color: var(--paper); }
+.chapter-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-block-start: 2rem; }
+.chapter-heading h2 { margin: 0; border: 0; padding: 0; }
+.chapter-heading > span { color: var(--pencil); font: .8rem var(--mono); }
+.chapter-index { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 2.2rem; margin-block: 1.4rem 4rem; }
+.chapter-index > .chapter { border-block-start: 1px solid var(--edge); padding-block: 1.3rem 1.5rem; min-inline-size: 0; margin-block: 0; }
+.chapter-label { display: flex; gap: .8rem; align-items: baseline; }
+.chapter-label > span { color: var(--pencil); font: 600 .85rem var(--mono); }
+.chapter-label > h3 { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.chapter > p { color: var(--pencil); font-size: .9rem; margin-block: .55rem .75rem; line-height: 1.7; }
+.chapter > ul { list-style: none; padding: 0; margin: 0; }
+.chapter li { margin: 0; }
+.chapter li > a { display: block; position: relative; padding: .48rem 1.3rem .48rem .2rem; color: var(--ink); text-decoration: none; line-height: 1.55; font-size: .9rem; border-radius: var(--radius-control); }
+.chapter li > a::after { content: "→"; position: absolute; inset-inline-end: .25rem; top: .48rem; color: var(--pencil); }
+.chapter li > a:hover { background: var(--surface); text-decoration: underline; text-underline-offset: .2em; }
+.notebook-lab { border-radius: var(--radius-surface); padding: clamp(.75rem, 2.5vw, 1.25rem); }
+.notebook-experiment__controls :is(select, input[type="number"], button), .notebook-choices__options label { min-block-size: 2.75rem; }
+.notebook-experiment__controls button:active { background: var(--marker); border-color: var(--focus); }
+.notebook-experiment__controls button:disabled { cursor: not-allowed; opacity: .55; }
+@media (max-width: 46rem) {
+  .chapter-index { grid-template-columns: minmax(0, 1fr); }
+  .hero { padding-block: 2.5rem 2rem; }
+  .hero h1 { font-size: clamp(2rem, 9vw, 3rem); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero :is(h1, .tagline, .actions), .chapter-heading { animation: notebook-enter var(--motion-enter) var(--ease-out) both; }
+  .hero .tagline { animation-delay: 50ms; }
+  .hero .actions { animation-delay: 100ms; }
+  .chapter-heading { animation-delay: 140ms; }
+  .chapter li > a, .sidebar-content a, .hero .actions a, .notebook-experiment__controls :is(button, select, input[type="number"]), .notebook-choices__options label {
+    transition: background-color var(--motion-control) var(--ease-out), border-color var(--motion-control) var(--ease-out), color var(--motion-control) var(--ease-out);
+  }
+  .chapter li > a::after { transition: transform var(--motion-control) var(--ease-out); }
+  .chapter li > a:hover::after { transform: translateX(2px); }
+}
+@keyframes notebook-enter {
+  from { opacity: .8; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

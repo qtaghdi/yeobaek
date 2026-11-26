@@ -16,6 +16,7 @@ export default defineConfig({
       locales: { root: { label: "한국어", lang: "ko" } },
       social: [{ icon: "github", label: "GitHub", href: "https://github.com/qtaghdi/yeobaek" }],
       customCss: ["./src/styles/notebook.scss"],
+      components: { Head: "./src/components/document-head.astro" },
       sidebar: [
         { label: "첫 장", items: [{ label: "여백 소개", slug: "start" }] },
         { label: "01 · 웹과 접근성", collapsed: true, items: ["accessibility/focus-ring", "accessibility/semantic-controls", "accessibility/tab-order", "accessibility/dialog-focus", "accessibility/disabled-state"] },

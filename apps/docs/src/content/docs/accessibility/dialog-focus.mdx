@@ -44,3 +44,13 @@ const dialog = useRef<HTMLDialogElement>(null);
 중첩 모달, 트리거가 사라지는 상황, 닫기 애니메이션 중의 포커스 복원은 별도로 검증합니다.
 
 [W3C: Dialog Modal Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) · [MDN: dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog)
+
+## 프로젝트에서 이어진 고민
+
+여러 Toast를 쌓아 두고 하나를 닫는 경우에도 포커스 복귀 문제가 발생한다. 매번 처음 트리거로 복귀시키면 아직 남은 알림을 읽거나 닫는 흐름이 끊긴다.
+
+### 검증 기준
+
+닫힌 항목에 포커스가 있었다면 가까운 남은 조작 요소로 옮기고, 마지막 항목이 사라졌을 때만 원래 위치를 복원하는 정책을 정한다. 이미 다른 곳에 있는 포커스를 강제로 이동시키지 않는다.
+
+[관련 이슈 · oddmash-ui #64](https://github.com/Oddmash/oddmash-ui/issues/64)

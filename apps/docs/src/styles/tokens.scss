@@ -8,6 +8,11 @@
   --correction: #a53d35;
   --focus: #554b28;
   --grid: #dedad080;
+  --radius-control: .45rem;
+  --radius-surface: .65rem;
+  --motion-control: 140ms;
+  --motion-enter: 360ms;
+  --ease-out: cubic-bezier(.2,.7,.25,1);
   --font: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --mono: ui-monospace, "SF Mono", Consolas, monospace;
 }

@@ -39,3 +39,13 @@ button:focus-visible {
 
 - [MDN: :focus-visible](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible)
 - [W3C: Focus Visible](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html)
+
+## 프로젝트에서 이어진 고민
+
+공통 버튼과 네이티브 Select의 기본 스타일을 맞추는 과정에서 포커스 링도 같은 토큰으로 정리할 필요가 있었다. 화면 배경과 버튼의 색이 달라져도 키보드 포커스가 식별되어야 한다. 포인터 클릭에만 의존해 확인하면 놓치기 쉬운 문제다.
+
+### 검증 기준
+
+Tab으로 버튼, 링크, Select를 연속 이동하고 밝은 테마와 어두운 테마에서 현재 위치가 사라지지 않는지 확인한다. outline을 없애는 대신 컴포넌트 바깥에 일정한 offset을 둔다.
+
+[관련 이슈 · oddmash-ui #42](https://github.com/Oddmash/oddmash-ui/issues/42)

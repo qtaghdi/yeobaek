@@ -28,3 +28,13 @@ params.set("sort", "oldest");
 실제 라우터에서 URL을 변경할 때는 검색 기록을 남길지, 현재 기록을 대체할지도 결정합니다. 민감하거나 일시적인 입력을 URL에 넣지 않습니다. 복사 가능한 값인지부터 생각합니다.
 
 [MDN: URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) · [React: Sharing State](https://react.dev/learn/sharing-state-between-components)
+
+## 프로젝트에서 이어진 고민
+
+여러 문서 사이트의 탐색 UI를 공유하면서도 실제 경로 결정은 각 사이트가 소유해야 한다는 요구가 있었다. 모든 상태를 공통 컴포넌트로 옮기면 사이트별 URL과 탐색 정책까지 묶이게 된다.
+
+### 검증 기준
+
+현재 경로는 라우터, 임시 메뉴 열림 상태는 메뉴, 실제 원격 데이터는 서버 상태 캐시가 관리하도록 경계를 잡는다. 동일한 값을 여러 위치에 복제하지 않는다.
+
+[관련 이슈 · oddmash-ui #94](https://github.com/Oddmash/oddmash-ui/issues/94)

@@ -22,3 +22,13 @@ description: "disabled, aria-disabled와 inert가 담당하는 동작."
 모달 뒤쪽 영역이나 일시적으로 숨긴 화면에서는 개별 버튼을 하나씩 비활성화하기보다 영역 전체가 상호작용 대상인지 판단합니다.
 
 [MDN: disabled](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled) · [MDN: inert](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert)
+
+## 프로젝트에서 이어진 고민
+
+Slider를 브라우저별로 꾸미면서 비활성 상태, 접근 가능한 이름, Home/End 키의 기본 동작까지 유지해야 한다는 요구가 있었다. 커스텀 스타일을 적용한다는 이유만으로 네이티브 동작을 다시 구현할 필요는 없다.
+
+### 검증 기준
+
+실제 input의 disabled와 CSS의 시각적 비활성화를 구분한다. 값 변경 불가 상태에서 포인터, 방향키, Home/End를 확인한다. 단순 aria-disabled는 동작을 자동으로 막지 않는다는 점도 기억한다.
+
+[관련 이슈 · oddmash-ui #104](https://github.com/Oddmash/oddmash-ui/issues/104)

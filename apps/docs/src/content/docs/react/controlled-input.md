@@ -31,3 +31,13 @@ const [name, setName] = useState("");
 실시간 검증, 필터링, 외부 상태와의 동기화가 필요하면 제어형이 편리합니다. 제출 시점에만 필요하다면 비제어형으로 불필요한 상태를 줄일 수 있습니다. 한 입력의 제어형 여부를 렌더 중에 반복해서 바꾸지 않습니다.
 
 [React: input](https://react.dev/reference/react-dom/components/input)
+
+## 프로젝트에서 이어진 고민
+
+날짜 입력에서는 입력 중인 범위와 실제 조회에 적용된 범위를 구분해야 한다. 두 날짜가 잠시 역전되는 것은 입력 과정에서 자연스럽지만 결과 목록까지 잘못된 조건으로 조회할 이유는 없다.
+
+### 검증 기준
+
+draft와 applied를 별도로 관리하고 유효성 검사를 통과한 값만 적용한다. 입력 변경, 적용, 초기화 시점에 각각 어떤 상태를 변경하는지 정의한다.
+
+[관련 이슈 · oddmash-agents #248](https://github.com/Oddmash/oddmash-agents/issues/248)

@@ -30,3 +30,13 @@ useEffect(() => {
 정리 함수는 의존성 변경이나 언마운트 시 이전 연결을 정리합니다. 의존성을 억지로 제거하지 말고 이벤트 핸들러와 effect 내부의 역할을 분리합니다.
 
 [React: You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect)
+
+## 프로젝트에서 이어진 고민
+
+크기 관찰과 폰트 로딩, 명시적 refresh가 모두 재계산을 일으킬 수 있다. 입력값을 보고 결과를 계산할 때마다 Effect를 추가하면 호출 순서와 정리 시점이 불명확해진다.
+
+### 검증 기준
+
+렌더링에서 계산 가능한 값은 렌더에서 계산한다. 외부 관찰자나 타이머 연결만 Effect로 관리하며 cleanup에서 해제한다. 같은 크기로 연속 호출했을 때 중복 작업이 없는지 확인한다.
+
+[관련 이슈 · juliya #121](https://github.com/Oddmash/juliya/issues/121)

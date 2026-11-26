@@ -14,7 +14,8 @@
     "@astrojs/starlight": "^0.37.0",
     "@astrojs/react": "^4.4.0",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "@oddmash/juliya": "0.4.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",

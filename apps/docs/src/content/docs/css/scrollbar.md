@@ -25,3 +25,13 @@ main {
 스크롤 잠금 자체도 올바른 요소에 적용하고 모달 안의 콘텐츠가 넘칠 때 별도 스크롤이 가능한지 확인합니다. 고정 헤더와 sticky 요소까지 포함해 모달을 열기 전후의 폭을 비교하면 원인을 좁히기 쉽습니다.
 
 [MDN: scrollbar-gutter](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/scrollbar-gutter)
+
+## 프로젝트에서 이어진 고민
+
+320px 브라우저에서 클래식 스크롤바가 15px 공간을 차지할 때 Toast의 배치가 한쪽으로 치우치는 사례가 기록되어 있다. 뷰포트 너비와 실제 콘텐츠 영역 너비를 동일하게 취급하면 이런 차이를 놓친다.
+
+### 검증 기준
+
+window.innerWidth, document.documentElement.clientWidth, 실제 요소의 bounding box를 구분해 측정한다. 고정된 100vw 대신 가능한 영역을 기준으로 배치하고, 본문 스크롤 잠금 전후의 정렬을 비교한다.
+
+[관련 이슈 · oddmash-ui #81](https://github.com/Oddmash/oddmash-ui/issues/81)

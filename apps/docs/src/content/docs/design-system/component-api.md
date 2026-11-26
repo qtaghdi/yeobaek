@@ -25,3 +25,13 @@ variant는 시각적 형태, size는 크기, disabled는 동작 가능 여부처
 사용자 입력, focus, disabled, 오류처럼 상태가 바뀌는 경우를 문서와 테스트에 포함합니다. API 예시로 설명한 타입은 완성된 버튼 구현 전체가 아닙니다.
 
 [Oddmash UI](https://github.com/Oddmash/oddmash-ui) · [React: Passing Props](https://react.dev/learn/passing-props-to-a-component)
+
+## 프로젝트에서 이어진 고민
+
+네이티브 Select와 커스텀 Select를 별도로 제공할 때 어떤 구현을 기본 공개 API로 정할지 논의되었다. 기본 이름의 계약을 변경하면 기존 소비자의 사용 방식과 동작이 바뀔 수 있다.
+
+### 검증 기준
+
+selected, active, focus를 별개의 상태로 정의하고 값 변경 이벤트와 키보드 조작을 문서화한다. 기존 공개 이름을 유지하는 호환 별칭이 필요하다면 제거 시점과 마이그레이션을 명시한다.
+
+[관련 이슈 · oddmash-ui #65](https://github.com/Oddmash/oddmash-ui/issues/65)

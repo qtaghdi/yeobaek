@@ -29,3 +29,13 @@ import { EventPropagationExample } from "src/components/examples/browser/event-p
 먼저 중첩된 인터랙션 자체가 적절한지 확인합니다. 링크 안에 버튼을 넣는 대신 독립된 컨트롤로 분리하면 전파를 억지로 차단할 필요가 줄어들 수 있습니다.
 
 [MDN: Event bubbling](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling)
+
+## 프로젝트에서 이어진 고민
+
+확장 프로그램의 요소 선택 모드에서는 Escape로 선택을 취소할 때 확장 UI의 상태와 실제 페이지의 상태를 함께 정리해야 했다. 이벤트의 대상, 전파 경로, 취소 여부를 구분해야 다른 페이지의 정상 동작을 방해하지 않는다.
+
+### 검증 기준
+
+이벤트를 처리하는 소유자를 명확히 하고 선택 모드가 아닐 때에는 개입하지 않는다. 이벤트 리스너 등록/해제와 aria-pressed 상태에서는 취소 이후의 최종 상태도 검증한다.
+
+[관련 이슈 · interaction-inspector #26](https://github.com/Oddmash/interaction-inspector/issues/26)
