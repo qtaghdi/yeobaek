@@ -1,9 +1,11 @@
 ---
 title: "한국어 줄바꿈을 다루는 방법"
-description: "줄바꿈, 단어 보존, 실제 너비와 폰트의 관계."
+description: "CSS 줄바꿈부터 실제 글꼴 측정, 줄바꿈 후보 평가와 인라인 렌더링까지 Juliya의 사례로 이해합니다."
 ---
 
-한국어 문장이 카드 너비에 맞게 줄바꿈되더라도 읽기 좋은 경계에서 나뉘는 것은 아닙니다. 단어가 끊기거나 한 줄에 몇 글자만 남으면 정보의 전달이 부자연스러워집니다.
+화면에 한 문장을 넣었을 때 줄이 나뉘는 것과, 문장이 읽기 좋은 위치에서 나뉘는 것은 다른 문제입니다. 자동 줄바꿈 라이브러리 [Juliya](https://github.com/Oddmash/juliya)는 이 차이를 다루면서 브라우저의 실제 레이아웃과 텍스트 처리 사이의 경계를 만났습니다.
+
+예를 들어 좁은 카드에서 `패키지 매니저`라는 표현이 서로 다른 줄에 배치되면 화면에는 모두 표시되지만 읽는 흐름이 끊깁니다. 반대로 단어를 무조건 함께 유지하면 긴 기술 용어가 화면 밖으로 넘어갈 수 있습니다. 줄바꿈은 이 두 요구를 함께 다루어야 합니다.
 
 ## CSS로 할 수 있는 범위
 
@@ -15,36 +17,97 @@ description: "줄바꿈, 단어 보존, 실제 너비와 폰트의 관계."
 }
 ```
 
-`keep-all`은 CJK 텍스트의 줄바꿈 기회를 줄이고, `overflow-wrap`은 긴 문자열이 넘치는 상황에 대응합니다. `text-wrap: balance`는 여러 줄의 균형을 돕습니다. 그러나 모든 언어의 의미 단위까지 판단해 주지는 않습니다.
+- `word-break: keep-all`: 한국어처럼 CJK 문자 사이에서 발생할 수 있는 줄바꿈을 제한합니다.
+- `overflow-wrap: anywhere`: 다른 적절한 줄바꿈 기회가 없을 때 긴 문자열을 나눌 수 있게 합니다. 최소 콘텐츠 크기 계산에도 영향을 줄 수 있습니다.
+- `text-wrap: balance`: 여러 줄에 텍스트가 배치될 때 줄 길이를 균형 있게 만드는 데 도움을 줍니다.
+
+CSS가 제공하는 것만으로 충분한 문장에는 스크립트를 도입할 필요가 없습니다. 특정 단어 조합이나 언어별 문장 경계를 비용으로 평가해야 할 때에만 추가적인 로직이 필요합니다.
+
+<span id="프로젝트에서-이어진-고민"></span>
 
 ## 글자 수 대신 실제 폭
 
-줄 길이를 글자 수로만 계산하면 글꼴 크기, 가변 폭 글꼴, 혼합 언어와 컨테이너 변화가 반영되지 않습니다. 폭을 측정하는 라이브러리를 만든다면 사용 가능한 너비와 실제 글꼴을 고려해야 합니다. 폰트가 늦게 로드되거나 영역 크기가 바뀌는 경우도 처리합니다.
+같은 8글자라도 `WWWWWWWW`와 `iiiiiiii`의 폭은 가변 폭 글꼴에서 다를 수 있습니다. 글꼴 크기, 굵기, 글자 간격, 언어별 fallback까지 바뀌면 단순 문자 수 기반 계산은 실제 화면과 다른 결과를 만듭니다.
 
-이 문제를 다루기 위해 만든 공개 프로젝트가 [줄이야(Juliya)](https://github.com/Oddmash/juliya)입니다. 모든 문장에 별도 라이브러리가 필요한 것은 아닙니다. 먼저 CSS로 해결 가능한지 확인하는 것이 좋습니다.
+많이 쓰는 측정값의 차이를 먼저 이해해야 합니다.
 
-[MDN: word-break](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/word-break) · [MDN: text-wrap](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/text-wrap)
+| 측정 | 의미 |
+| --- | --- |
+| clientWidth | padding을 포함하는 정수 CSS 픽셀 너비, border와 세로 스크롤바 제외 |
+| getBoundingClientRect().width | border box의 화면상 너비, 변환이 포함될 수 있고 소수점 값 가능 |
+| ResizeObserver contentRect.width | 관찰 대상의 콘텐츠 박스 너비 |
+| Canvas measureText().width | 지정한 글꼴 설정에서 문자열을 그릴 때의 advance width |
 
-## 프로젝트에서 이어진 고민
+Juliya [#1](https://github.com/Oddmash/juliya/issues/1)에서는 정수로 반올림된 clientWidth에서 추가로 1px을 빼던 방식 때문에 CSS에서는 들어가는 문장이 한 줄 더 밀리는 문제가 기록되었습니다. 현재 DOM 관찰 코드는 content-box 측정값을 우선 사용합니다. 초기 관찰 전에는 계산된 폭이 정수 fallback과 충분히 가까운지 확인해 소수점 값을 선택합니다.
 
-한국어 의미 단위를 유지하는 라이브러리 Juliya에서는 정수로 반올림한 clientWidth와 실제 브라우저의 소수점 너비 차이 때문에 CSS에서는 들어가는 문장이 한 줄 더 밀리는 문제가 기록되었다. 글꼴 측정도 중요하다. 이슈 #3에서는 macOS 한국어 serif의 DOM 너비와 언어 정보가 없는 Canvas 측정값이 달랐다.
+### 같은 폭을 비교하지 않으면 측정도 틀린다
 
-### 검증 기준
+[#3](https://github.com/Oddmash/juliya/issues/3)에는 macOS의 한국어 serif fixture에서 DOM 781.33px, 언어 속성을 설정하지 않은 Canvas 746.83px이 측정된 사례가 있습니다. 두 값은 해당 환경의 기록이며 다른 글꼴에서 같은 차이가 난다는 뜻은 아닙니다.
 
-같은 글꼴과 같은 실제 너비에서 CSS와 라이브러리 결과를 비교한다. 문단 전체에 강제 개행을 넣기보다 인라인 강조, 링크, 명시적 줄바꿈을 보존하고 지원하는 범위에서만 적용한다. 글꼴 로딩 전후와 320px 화면을 포함한다.
+문자열과 font-family를 같게 지정해도 브라우저가 언어에 따라 다른 fallback 글꼴을 선택하면 결과가 달라질 수 있습니다. 실제 구현은 요소에서 상속된 language를 찾아 Canvas에 전달하고 font, letterSpacing, wordSpacing, fontKerning을 함께 맞춥니다.
 
-[관련 이슈 · juliya #1](https://github.com/Oddmash/juliya/issues/1)
+```ts
+const style = getComputedStyle(element);
+const canvas = document.createElement("canvas");
+canvas.lang = element.closest("[lang]")?.getAttribute("lang") ?? "";
+const context = canvas.getContext("2d");
 
-## 같은 폭을 비교하지 않으면 측정도 틀린다
+if (context) {
+  context.font = style.font;
+  const width = context.measureText("패키지 매니저").width;
+  console.log(width);
+}
+```
 
-Juliya의 [이슈 #3](https://github.com/Oddmash/juliya/issues/3)에서는 macOS의 한국어 serif 문장을 DOM에서 측정했을 때 781.33px, 언어 정보가 없는 Canvas에서는 746.83px이 나왔다. 약 34px 차이는 줄바꿈 위치를 바꾸기에 충분하다.
+이는 측정 원리를 설명하기 위해 축약한 예제입니다. 실제 라이브러리는 spacing 지원 여부와 유효하지 않은 측정값, 관찰 시점도 처리합니다.
 
-측정값이 다를 때 무조건 보정값을 더하는 것은 다른 글꼴이나 운영체제에서 또 다른 오차를 만들 수 있다. 먼저 측정 대상의 font, lang, letter-spacing, 실제 콘텐츠 폭이 동일한지 확인해야 한다. CSS와 비교할 때에도 동일한 문자열, 폰트와 영역 안에서 비교해야 의미가 있다.
+## 줄바꿈 결과를 어떻게 선택할까?
 
-| 접근 | 장점 | 한계 |
-| --- | --- | --- |
-| CSS keep-all | 별도 스크립트 없이 동작 | 의미 경계를 고르지 않음 |
-| 글자 수 기준 | 구현이 간단함 | 혼합 언어와 가변 폭 글꼴을 반영하지 못함 |
-| 실제 폭 기반 | 현재 레이아웃을 고려 | 측정 정확성, 폰트와 크기 변화 관리를 요구 |
+Juliya의 core는 DOM에 의존하지 않고 문자열, 가용 폭, 측정 함수를 입력으로 받습니다. DOM 또는 프레임워크 adapter는 화면의 측정값을 제공하고 선택된 경계를 렌더링합니다.
 
-여백에서도 Juliya를 제목과 짧은 문장에 제한해 적용한다. 본문에 코드나 링크가 섞이면 브라우저의 기본 줄바꿈이 더 안전한 경우가 있다.
+| 단계 | 책임 |
+| --- | --- |
+| Segmentation | 명시적인 개행과 문단, 텍스트 경계 구분 |
+| Boundary candidates | 다음 줄로 나눌 수 있는 위치와 폭 계산 |
+| Layout | 후보 중 사용할 경로 선택 |
+| Rendering | 결과를 원래 문자열의 범위와 개행으로 변환 |
+
+현재 공개 소스에서 greedy 방식은 각 줄에 가능한 마지막 후보를 선택합니다. balanced 방식은 뒤쪽 경계부터 가능한 줄 선택을 비교합니다. 줄 수가 적은 결과를 우선하고, 줄 수가 같으면 가용 공간 및 경계에 대한 누적 비용을 비교합니다.
+
+이를 쉬운 숫자로 설명하면 폭 12인 영역에 단어들이 5, 3, 3, 4의 너비를 가지고 단어 사이의 공백이 1이라고 가정해 봅시다. 첫 줄에 최대한 많이 넣는 방식과 2줄 모두 적절히 채우는 방식의 결과가 다를 수 있습니다. 여기에 수식어 뒤, 문장의 종료, 기술 용어 조합처럼 나누기 좋은지에 대한 추가 비용이 들어가면 균형이 비슷한 후보에서도 선택이 달라집니다.
+
+[#123](https://github.com/Oddmash/juliya/issues/123)은 `패키지 매니저`와 같은 기술 명사구가 균형 줄바꿈 중 나뉘는 문제입니다. 규칙은 일부 표현의 분리 비용을 높입니다. 이를 일반적인 자연어 분석이나 절대적인 분리 금지로 설명해서는 안 됩니다. 공간이 부족하거나 다른 후보가 없으면 나누어야 할 수도 있습니다.
+
+## 인라인 마크업을 유지하는 이유
+
+`<strong>`과 링크를 포함한 문단은 단순한 문자열과 다릅니다. 텍스트 전체를 새 노드로 바꾸면 강조, 링크의 클릭 동작, 요소에 연결된 상태까지 사라질 수 있습니다.
+
+Juliya의 인라인 구현은 텍스트 노드를 순회해 원래 문자열에서의 시작·끝 위치를 기록합니다. 각 구간의 글꼴과 언어에 맞는 측정 함수를 사용하고, 선택된 위치에 자신이 생성한 개행 요소를 표시합니다. 다시 계산하거나 해제할 때 원래 마크업을 복원할 수 있도록 자체 변경을 따로 관리합니다.
+
+```html
+<p lang="ko">
+  실제 <strong>글꼴 측정</strong>이 줄바꿈의 기준입니다.
+</p>
+```
+
+위처럼 이미 의미가 있는 요소를 제거하지 않는 것이 목표입니다. 사용자 입력, 링크의 상호작용 등 민감한 영역에는 adapter의 실제 지원 범위를 확인한 뒤 적용해야 합니다.
+
+## 검증 기준
+
+| 상황 | 확인할 결과 |
+| --- | --- |
+| 정확히 한 줄에 맞는 폭 | 불필요한 개행 없음 |
+| 320px 또는 긴 단어 | 넘침 없이 읽을 수 있음 |
+| 기술 명사구와 혼합 언어 | 문맥에 맞는 경계 선택 |
+| 다른 글꼴·언어 | 실측 결과와 비교 |
+| 명시 개행과 강조 태그 | 원문과 의미 유지 |
+| 폰트 로딩 및 컨테이너 변경 | 최신 폭 기준으로 갱신 |
+
+여백 자체는 짧은 한국어 제목과 문장에만 Juliya를 적용하고 코드나 복잡한 링크가 있는 글은 CSS의 기본 줄바꿈을 사용합니다. 줄바꿈 계산이 필요한 경우와 일반 CSS가 충분한 경우를 구분하는 과정 자체가 설계의 일부입니다.
+
+## 참고
+
+- [Juliya #1: 반올림된 폭](https://github.com/Oddmash/juliya/issues/1), [#3: 언어와 폰트 측정](https://github.com/Oddmash/juliya/issues/3), [#123: 기술 명사구](https://github.com/Oddmash/juliya/issues/123)
+- [실제 Canvas 측정 코드](https://github.com/Oddmash/juliya/blob/86e2f6455ec84e6936d05eabd8b7fbd639f55c9e/src/dom/measure.ts) · [콘텐츠 폭 측정](https://github.com/Oddmash/juliya/blob/86e2f6455ec84e6936d05eabd8b7fbd639f55c9e/src/dom/observe-element.ts) · [줄바꿈 선택](https://github.com/Oddmash/juliya/blob/86e2f6455ec84e6936d05eabd8b7fbd639f55c9e/src/core/layout.ts) · [인라인 마크업 처리](https://github.com/Oddmash/juliya/blob/86e2f6455ec84e6936d05eabd8b7fbd639f55c9e/src/dom/inline.ts)
+- [MDN: word-break](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/word-break) · [MDN: text-wrap](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/text-wrap)
+- [요소 크기와 글꼴의 변화를 관찰하기](../../browser/layout-observation/)

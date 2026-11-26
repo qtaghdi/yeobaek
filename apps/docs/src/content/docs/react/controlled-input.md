@@ -1,19 +1,24 @@
 ---
 title: "입력 상태는 누가 관리해야 할까?"
-description: "제어형 입력과 비제어형 입력을 선택하는 기준."
+description: "제어형·비제어형 입력의 책임과 날짜 범위 필터의 draft/applied 상태를 설계합니다."
 ---
 
-입력값이 검색 결과나 저장 버튼 상태를 결정한다면 현재 값이 화면 상태에 영향을 주게 됩니다. 반면 제출할 때만 값이 필요하다면 DOM이 입력을 관리해도 됩니다.
+입력 상태를 어디에 둘지는 사용하는 라이브러리보다 어떤 값이 언제 필요해지는지에 따라 달라집니다. 현재 값이 화면을 실시간으로 바꾼다면 React가 그 값을 관리할 수 있습니다. 폼 제출 시점에만 필요한 값이라면 브라우저가 관리해도 됩니다.
+
+복합 입력에서는 한 걸음 더 생각해야 합니다. 날짜 범위를 편집하는 값이 곧 서버에 전송할 조건인지, 입력 중인 값은 별도로 보존해야 하는지 결정해야 합니다.
 
 ## 두 방식
 
 ```tsx
 const [name, setName] = useState("");
 
-<input value={name} onChange={(event) => setName(event.target.value)} />;
+<input
+  value={name}
+  onChange={(event) => setName(event.target.value)}
+/>;
 ```
 
-제어형 입력은 React 상태가 현재 값을 결정합니다. 비제어형 입력은 `defaultValue`로 초기값을 제공하고 필요할 때 폼 데이터나 ref로 읽습니다.
+제어형 입력에서는 value가 현재 표시값을 결정합니다. onChange에서 상태를 갱신하면 React의 다음 렌더에 반영됩니다. 입력할 때마다 검증 메시지를 갱신하거나 다른 UI와 함께 변경해야 할 때 적합합니다.
 
 ```tsx
 <form onSubmit={(event) => {
@@ -26,33 +31,87 @@ const [name, setName] = useState("");
 </form>
 ```
 
-## 선택 기준
+비제어형 입력에서 defaultValue는 초기값이며 이후 입력은 DOM이 관리합니다. 폼 제출, FormData 또는 ref에서 필요할 때 읽을 수 있습니다. 입력 요소의 생명주기 중 value의 제어 여부를 반복해서 바꾸지 않습니다.
 
-실시간 검증, 필터링, 외부 상태와의 동기화가 필요하면 제어형이 편리합니다. 제출 시점에만 필요하다면 비제어형으로 불필요한 상태를 줄일 수 있습니다. 한 입력의 제어형 여부를 렌더 중에 반복해서 바꾸지 않습니다.
-
-[React: input](https://react.dev/reference/react-dom/components/input)
-
-## 프로젝트에서 이어진 고민
-
-날짜 입력에서는 입력 중인 범위와 실제 조회에 적용된 범위를 구분해야 한다. 두 날짜가 잠시 역전되는 것은 입력 과정에서 자연스럽지만 결과 목록까지 잘못된 조건으로 조회할 이유는 없다.
-
-### 검증 기준
-
-draft와 applied를 별도로 관리하고 유효성 검사를 통과한 값만 적용한다. 입력 변경, 적용, 초기화 시점에 각각 어떤 상태를 변경하는지 정의한다.
-
-[관련 이슈 · oddmash-agents #248](https://github.com/Oddmash/oddmash-agents/issues/248)
+<span id="프로젝트에서-이어진-고민"></span>
 
 ## 입력을 위한 상태와 제출한 상태
 
-필터 시작일과 종료일을 변경하는 도중에는 범위가 잠시 뒤집힐 수 있다. [Oddmash Agents #248](https://github.com/Oddmash/oddmash-agents/issues/248)의 날짜 필터는 이런 잘못된 입력이 기존 조회 조건을 바꾸지 않도록 검토했다.
+Oddmash Agents의 [#248](https://github.com/Oddmash/oddmash-agents/issues/248)은 실행 기록을 초 단위 시간 범위로 필터링하는 요구를 다룹니다. 시작 날짜와 종료 날짜를 변경하는 과정에서는 잠시 시작이 종료보다 뒤일 수 있습니다. 이때 즉시 API 요청을 보내거나 이미 조회된 결과를 잘못된 조건으로 바꾸지 않는 것이 중요합니다.
+
+예를 들어 이전 적용 범위가 11월 1일부터 11월 10일까지일 때 사용자가 시작일을 11월 15일로 먼저 변경한다면 새로운 값은 아직 완성되지 않은 범위입니다. 이 변경이 실제 조회 범위를 변경해야 한다는 뜻은 아닙니다.
+
+| 사용자 행동 | draft | applied |
+| --- | --- | --- |
+| 처음 열기 | 현재 적용값 | 현재 적용값 |
+| 시작일 수정 | 수정값 | 유지 |
+| 범위가 역전됨 | 오류 표시 | 유지 |
+| 종료일 수정 | 유효한 입력값 | 유지 |
+| 적용 | 유지 | 유효한 입력값 |
+| 취소 | 적용값으로 복구 | 유지 |
+
+두 상태는 복제를 위해 만든 것이 아닙니다. 입력 중인 값과 실제로 적용된 조회 조건이라는 서로 다른 책임을 가집니다.
+
+## 유효 조건만 적용하는 구조
+
+아래는 날짜 비교 자체보다 상태의 역할에 집중한 설명용 모델입니다. 날짜는 검증된 epoch milliseconds로 정규화되었다고 가정합니다.
 
 ```tsx
-const [draft, setDraft] = useState(initialRange);
-const [applied, setApplied] = useState(initialRange);
-const isValid = draft.start <= draft.end;
-const apply = () => {
-  if (isValid) setApplied(draft);
+type Range = {
+  start: number | null;
+  end: number | null;
 };
+
+const [draft, setDraft] = useState<Range>(initialRange);
+const [applied, setApplied] = useState<Range>(initialRange);
+
+const isValid = (range: Range) =>
+  (range.start === null || Number.isFinite(range.start)) &&
+  (range.end === null || Number.isFinite(range.end)) &&
+  (range.start === null ||
+    range.end === null ||
+    range.start <= range.end);
+
+const apply = () => {
+  if (!isValid(draft)) return;
+  setApplied({ ...draft });
+};
+
+const cancel = () => setDraft({ ...applied });
 ```
 
-여기서 draft와 applied는 중복 상태가 아니다. 각각 수정 중인 값과 확정된 조회 조건이라는 다른 책임을 가진다. 반면 버튼의 활성 여부는 기존 상태에서 계산할 수 있으므로 별도 state를 두지 않는다. 날짜 문자열을 비교할 경우 같은 정규화 형식이라는 전제가 필요하다. 실제 조회 조건에는 시간대와 포함/제외 경계도 명시해야 한다.
+여기서 버튼의 활성화 조건은 draft로부터 계산할 수 있습니다. 유효성을 별도 state에 저장해 두고 모든 입력 변경에서 갱신하면 입력과 유효성의 일치 여부를 또 관리하게 됩니다.
+
+서버 상태 라이브러리를 사용하는 경우 쿼리 키는 actual applied 범위를 표현해야 합니다. 사용자가 입력한 순간마다 조회하도록 의도한 검색창과, 명시적으로 적용하는 기간 필터는 다른 계약입니다.
+
+## 날짜와 시간대의 경계
+
+기간 필터는 보이는 날짜와 실제 비교할 시간을 구분해야 합니다. 현지 날짜의 시작과 끝을 UTC instant로 변환할 때 현지 시간대와 daylight saving의 영향을 고려해야 하며, 하루를 기계적으로 24시간으로 더하는 것만으로 항상 다음 날 자정이 되는 것은 아닙니다.
+
+- 날짜만 선택한다면 종료일 전체가 범위에 포함되어야 하는지 정의합니다.
+- 초 단위가 필요한 경우 실제 timestamp의 밀리초를 포함하는 경계인지 명시합니다.
+- 시작 또는 종료를 비워 한쪽 경계만 지정할 수 있는지 정합니다.
+- 잘못된 날짜 문자열을 Date가 자동으로 정규화한 결과를 그대로 유효하다고 판단하지 않습니다.
+
+[#273](https://github.com/Oddmash/oddmash-agents/issues/273)에서는 여러 기간 Select가 사용자의 조회 목적에 비해 복잡하다는 문제가 제기되었습니다. 달력과 공통 기간을 먼저 제공하고 정밀한 시간을 별도 설정에서 다루는 방향은 상태 모델과 사용자 경험을 함께 설계한 사례입니다.
+
+<span id="선택-기준"></span>
+<span id="검증-기준"></span>
+
+## 선택 기준과 검증
+
+| 요구 | 적절한 시작점 |
+| --- | --- |
+| 제출할 때만 값 필요 | 비제어형 입력 |
+| 실시간 미리보기나 검증 | 제어형 입력 |
+| 여러 값을 함께 유효성 검사 후 적용 | draft와 applied 분리 |
+| URL로 공유 가능한 필터 | 적용값과 URL의 단일 계약 |
+| 서버 결과와 요청 캐시 | 적용값 기준의 서버 상태 관리 |
+
+초기화가 draft만 지우는지 실제 필터까지 지우는지, 취소 후 기존 값이 남는지, 빈 시작/끝 조건이 허용되는지, 잘못된 날짜가 현재 조회 결과를 변경하지 않는지 실제 조작으로 확인합니다.
+
+## 참고
+
+- [Oddmash Agents #248](https://github.com/Oddmash/oddmash-agents/issues/248) · [#273](https://github.com/Oddmash/oddmash-agents/issues/273)
+- [Oddmash UI #137: 달력과 범위 선택](https://github.com/Oddmash/oddmash-ui/issues/137) · [#142: 정확한 날짜 경계](https://github.com/Oddmash/oddmash-ui/issues/142)
+- [React: input](https://react.dev/reference/react-dom/components/input) · [서버 상태와 Query Key](../query-keys/)
