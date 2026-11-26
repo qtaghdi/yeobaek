@@ -3,6 +3,8 @@ import { createServer } from "node:http";
 import { readFile, readdir } from "node:fs/promises";
 import { join, resolve, extname, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { auditSearchRaces } from "./browser-search-races.mjs";
+import { runMotionNetworkAudit } from "./motion-network-audit.mjs";
 
 const root = fileURLToPath(new URL("../dist/", import.meta.url));
 const { chromium } = await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href);
@@ -25,11 +27,21 @@ try {
   const pages = (await readdir(root, { recursive: true })).filter((file) => file.endsWith("index.html") && !file.startsWith("_astro/")).map((file) => "/yeobaek/" + file.slice(0, -"index.html".length));
   let storyCount = 0;
   let exampleCount = 0;
+  const documentPaths = new Set(pages);
+  const anchors = new Map();
+  const linkedAnchors = [];
   for (const [width, theme] of [[1280, "light"], [320, "dark"]]) {
     const page = await browser.newPage({ viewport: { width, height: 900 }, colorScheme: theme, reducedMotion: "reduce" });
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    page.on("response", response => {
+      if (response.url().startsWith(origin + "/") && response.status() >= 400) errors.push(`${response.status()} ${response.url()}`);
+    });
     await page.clock.install();
     for (const route of pages) {
-      await page.goto(origin + route);
+      errors.length = 0;
+      const response = await page.goto(origin + route);
+      assert.ok(response?.ok(), `${route}: document response failed`);
       await page.locator(".main-pane").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
       const geometry = await page.evaluate(() => ({
@@ -40,6 +52,26 @@ try {
         interactive: document.querySelectorAll(".example-frame").length
       }));
       assert.ok(geometry.scroll <= geometry.viewport + 2, `${width} ${route}: page overflow ${geometry.scroll} > ${geometry.viewport}`);
+      if (width === 1280) {
+        const documentState = await page.evaluate(() => ({
+          headings: [...document.querySelectorAll("h1")].map(heading => heading.textContent?.trim()),
+          ids: [...document.querySelectorAll("[id]")].map(element => element.id),
+          links: [...document.querySelectorAll("a[href]")].map(link => link.href),
+          images: [...document.images].filter(image => !image.complete || !image.naturalWidth).map(image => image.src),
+        }));
+        assert.equal(documentState.headings.length, 1, `${route}: expected a single page heading`);
+        assert.ok(documentState.headings[0], `${route}: empty page heading`);
+        assert.deepEqual(documentState.images, [], `${route}: image load failure`);
+        anchors.set(route, new Set(documentState.ids));
+        for (const href of documentState.links) {
+          const url = new URL(href, origin + route);
+          if (url.origin !== origin || !url.pathname.startsWith("/yeobaek/")) continue;
+          if (url.pathname.endsWith("/")) {
+            assert.ok(documentPaths.has(url.pathname), `${route}: missing internal page ${href}`);
+            if (url.hash) linkedAnchors.push({ from: route, path: url.pathname, anchor: decodeURIComponent(url.hash.slice(1)) });
+          }
+        }
+      }
       for (const example of geometry.examples) {
         assert.ok(example.width > 0 && example.scroll <= example.width + 3, `${width} ${route}: ${example.label} leaked overflow ${example.scroll} > ${example.width}`);
       }
@@ -62,11 +94,15 @@ try {
         }
       }
       if (width === 1280) { storyCount += geometry.visuals; exampleCount += geometry.interactive; }
+      assert.deepEqual(errors, [], `${width} ${route}: JavaScript or local resource failure`);
       console.log(`${width} ${theme} ${route} : ${geometry.visuals} visuals, ${geometry.interactive} interactive examples`);
     }
     await page.close();
   }
-  assert.ok(storyCount >= 20 && exampleCount >= 11, `visuals=${storyCount}, examples=${exampleCount}`);
+  for (const { from, path, anchor } of linkedAnchors) {
+    assert.ok(anchors.get(path)?.has(anchor), `${from}: missing internal anchor ${path}#${anchor}`);
+  }
+  assert.ok(pages.length >= 39 && storyCount >= 22 && exampleCount >= 11, `pages=${pages.length}, visuals=${storyCount}, examples=${exampleCount}`);
 
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   const go = async (route) => { await page.goto(origin + "/yeobaek/" + route + "/"); await page.locator(".main-pane").first().waitFor(); await page.waitForFunction(() => !document.querySelector(".example-frame astro-island[ssr]")); };
@@ -79,26 +115,50 @@ try {
   await frame().getByRole("checkbox").check();
   await click("안쪽 버튼");
   assert.deepEqual(await frame().locator("ol li").allTextContents(), ["부모 캡처", "대상 버튼"]);
+  await click("기록 지우기");
+  assert.deepEqual(await frame().locator("ol li").allTextContents(), ["버튼을 눌러 보세요."]);
+  await frame().getByRole("checkbox").uncheck();
+  for (let index = 0; index < 4; index++) await click("안쪽 버튼");
+  assert.deepEqual(await frame().locator("ol li").allTextContents(), Array(3).fill(["부모 캡처", "대상 버튼", "부모 버블"]).flat());
 
   await go("accessibility/semantic-controls");
   await frame().locator(".inline-example__button").first().click();
   await frame().getByRole("button", { name: "클릭 0" }).press("Enter");
   assert.equal(await frame().locator(".inline-example__button").first().innerText(), "클릭 1");
   assert.equal(await frame().getByRole("button", { name: "클릭 1" }).count(), 1);
+  await frame().getByRole("button", { name: "클릭 1" }).press("Space");
+  assert.equal(await frame().getByRole("button", { name: "클릭 2" }).count(), 1);
+  assert.equal(await frame().locator("div.inline-example__button").innerText(), "클릭 1");
 
   await go("accessibility/focus-ring");
   await frame().getByRole("checkbox").check();
   assert.ok(await frame().getByRole("button", { name: "버튼 02" }).isDisabled());
+  await frame().getByRole("button", { name: "버튼 01" }).focus();
+  await page.keyboard.press("Tab");
+  assert.ok(await frame().getByRole("button", { name: "버튼 03" }).evaluate(el => el === document.activeElement && el.matches(":focus-visible")));
   await frame().getByText("포커스 제거", { exact: true }).click();
   assert.equal(await frame().locator(".focus-ring--outline-removed").count(), 1);
 
   await go("accessibility/tab-order");
   await frame().getByRole("checkbox").check();
   assert.equal(await frame().getByRole("button", { name: "2", exact: true }).getAttribute("tabindex"), "-1");
+  await frame().getByRole("button", { name: "1", exact: true }).focus();
+  await page.keyboard.press("Tab");
+  assert.ok(await frame().getByRole("button", { name: "3", exact: true }).evaluate(el => el === document.activeElement));
+  await frame().getByRole("checkbox").uncheck();
+  await frame().getByRole("button", { name: "1", exact: true }).focus();
+  await page.keyboard.press("Tab");
+  assert.ok(await frame().getByRole("button", { name: "2", exact: true }).evaluate(el => el === document.activeElement));
 
   await go("accessibility/dialog-focus");
   await click("모달 열기");
   await frame().getByRole("dialog").waitFor();
+  const dialog = frame().getByRole("dialog");
+  assert.ok(await dialog.getByRole("button", { name: "닫기" }).evaluate(el => el === document.activeElement));
+  await page.keyboard.press("Tab");
+  assert.ok(await dialog.getByRole("button", { name: "확인" }).evaluate(el => el === document.activeElement));
+  await page.keyboard.press("Shift+Tab");
+  assert.ok(await dialog.getByRole("button", { name: "닫기" }).evaluate(el => el === document.activeElement));
   const modalScroll = await page.evaluate(() => scrollY);
   assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).overflowY), "hidden");
   for (const key of ["ArrowDown", "ArrowUp", "PageDown", "PageUp"]) await page.keyboard.press(key);
@@ -106,6 +166,13 @@ try {
   await page.keyboard.press("Escape");
   await frame().getByRole("dialog").waitFor({ state: "hidden" });
   assert.ok(await frame().getByRole("button", { name: "모달 열기" }).evaluate(el => el === document.activeElement));
+  for (const action of ["확인", "닫기"]) {
+    await click("모달 열기");
+    await click(action);
+    await dialog.waitFor({ state: "hidden" });
+    assert.ok(await frame().getByRole("button", { name: "모달 열기" }).evaluate(el => el === document.activeElement));
+    assert.notEqual(await page.evaluate(() => getComputedStyle(document.documentElement).overflowY), "hidden");
+  }
 
   await go("css/flex-overflow");
   const scroll = frame().getByRole("region", { name: "고정 폭 카드 비교 영역" });
@@ -125,24 +192,83 @@ try {
   await childZ.fill("1.5");
   await childZ.blur();
   assert.equal(await childZ.inputValue(), "-1");
+  const topLayer = async () => {
+    await frame().locator(".stack-demo__diagram").scrollIntoViewIfNeeded();
+    return frame().locator(".stack-demo__child").evaluate(child => {
+      const sibling = child.closest(".stack-demo__diagram").querySelector(".stack-demo__sibling");
+      const a = child.getBoundingClientRect(), b = sibling.getBoundingClientRect();
+      const left = Math.max(a.left, b.left), right = Math.min(a.right, b.right);
+      const top = Math.max(a.top, b.top), bottom = Math.min(a.bottom, b.bottom);
+      if (right <= left || bottom <= top) return "no overlap";
+      const target = document.elementFromPoint((left + right) / 2, (top + bottom) / 2);
+      return child.contains(target) ? "child" : sibling.contains(target) ? "sibling" : "other";
+    });
+  };
+  await click("초기화");
+  assert.equal(await topLayer(), "child");
+  await frame().getByLabel("부모 A z-index").selectOption("1");
+  assert.equal(await topLayer(), "sibling");
+  await frame().getByLabel("부모 A z-index").selectOption("3");
+  assert.equal(await topLayer(), "child");
+  await click("초기화");
+  await frame().getByLabel("transform").check();
+  assert.equal(await topLayer(), "sibling");
+  await click("초기화");
+  await frame().getByLabel("isolation").check();
+  assert.equal(await topLayer(), "sibling");
 
   await go("react/state-snapshot");
   const requests = frame().getByRole("button", { name: "세 번 요청" });
   await requests.first().click();
   await requests.last().click();
   assert.deepEqual(await frame().locator("output").allTextContents(), ["1", "3"]);
+  await requests.first().click();
+  await requests.last().click();
+  assert.deepEqual(await frame().locator("output").allTextContents(), ["2", "6"]);
+  await click("초기화");
+  assert.deepEqual(await frame().locator("output").allTextContents(), ["0", "0"]);
 
   await go("language/async-requests");
   await click("응답 순서 재현");
+  await click("다시 재현");
   await page.waitForFunction(() => [...document.querySelectorAll(".example-frame output")].map(e => e.textContent).join(",") === "A 결과,B 결과");
+  assert.deepEqual(await frame().locator("ol li").allTextContents(), ["A 요청 시작", "B 요청 시작", "B 응답 도착", "A 응답 도착"]);
 
   await go("design/visual-hierarchy");
+  for (const stage of ["문자", "간격", "색상", "위계", "개선 후"]) {
+    await frame().getByText(stage, { exact: true }).click();
+    assert.ok(await frame().getByRole("radio", { name: stage }).isChecked());
+  }
   await frame().getByText("개선 후", { exact: true }).click();
   assert.equal(await frame().locator(".design-demo__card--after").count(), 1);
+  const email = frame().getByRole("textbox", { name: "이메일 주소" });
+  const login = frame().getByRole("button", { name: "로그인" });
+  for (const colorScheme of ["light", "dark"]) {
+    await page.emulateMedia({ colorScheme });
+    await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, colorScheme);
+    await email.focus();
+    await page.keyboard.press("Tab");
+    assert.ok(await login.evaluate(button => button.matches(":focus-visible") && getComputedStyle(button).outlineColor !== getComputedStyle(button.closest(".design-demo__card")).backgroundColor));
+  }
+  await email.fill("invalid");
+  await login.click();
+  assert.ok(await email.evaluate(input => !input.validity.valid));
+  assert.equal(await frame().locator(".design-demo__note").innerText(), "연습용 화면 · 실제 인증 없음");
+  await email.fill("qa@example.com");
+  await login.click();
+  assert.equal(await frame().locator(".design-demo__note").innerText(), "이메일 형식을 확인했어요.");
+  await page.emulateMedia({ colorScheme: "light" });
 
   await go("design/loading-states");
+  const nextTops = () => frame().locator(".inline-example__next").evaluateAll(elements => elements.map(el => el.getBoundingClientRect().top - el.closest(".inline-example").getBoundingClientRect().top));
+  const beforeLoading = await nextTops();
   await click("로딩 완료");
   assert.equal(await frame().locator(".inline-example__loaded").count(), 2);
+  const afterLoading = await nextTops();
+  assert.ok(afterLoading[0] > beforeLoading[0]);
+  assert.ok(Math.abs(afterLoading[1] - beforeLoading[1]) <= 2);
+  await click("다시 로딩");
+  assert.deepEqual(await nextTops(), beforeLoading);
 
   await go("browser/storage");
   await page.locator("h1#_top[data-juliya-wrapped=true]").waitFor();
@@ -252,22 +378,63 @@ try {
   await searchPage.locator("h1").filter({ hasText: "포커스 링" }).waitFor();
   await searchPage.close();
 
-  const layoutPage = await browser.newPage({ viewport: { width: 1920, height: 900 } });
-  await layoutPage.goto(origin + "/yeobaek/css/text-wrap/");
-  for (const width of [1152, 1280, 1440, 1920, 2560]) {
-    await layoutPage.setViewportSize({width, height: 900});
-    await layoutPage.evaluate(() => document.fonts.ready);
-    const layout = await layoutPage.evaluate(() => {
-      const main = document.querySelector(".sl-markdown-content").getBoundingClientRect();
-      const sidebar = document.querySelector(".sidebar-pane").getBoundingClientRect();
-      const toc = document.querySelector(".right-sidebar").getBoundingClientRect();
-      return {left: main.left - sidebar.right, right: toc.left - main.right, width: main.width, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth};
+  const layoutScreenshotDir = process.env.LAYOUT_SCREENSHOT_DIR;
+  if (layoutScreenshotDir) await (await import("node:fs/promises")).mkdir(layoutScreenshotDir, { recursive: true });
+  for (const theme of ["light", "dark"]) {
+    const layoutPage = await browser.newPage({ viewport: { width: 1920, height: 900 }, colorScheme: theme, reducedMotion: "reduce" });
+    const measureLayout = () => layoutPage.evaluate(() => {
+      const rect = selector => document.querySelector(selector).getBoundingClientRect();
+      const main = rect(".sl-markdown-content"), sidebar = rect(".sidebar-pane"), toc = rect(".right-sidebar");
+      const header = rect("header.header > .header"), search = rect(".search-trigger");
+      const clientWidth = document.documentElement.clientWidth;
+      const page = rect(".page"), root = document.documentElement.getBoundingClientRect();
+      return {
+        left: main.left - sidebar.right,
+        right: toc.left - main.right,
+        outerLeft: sidebar.left - page.left,
+        outerRight: page.right - toc.right,
+        reservedScrollbar: clientWidth - root.width,
+        pageAlignment: Math.max(Math.abs(page.left - root.left), Math.abs(page.right - root.right)),
+        headerLeft: header.left - sidebar.left,
+        headerRight: toc.right - header.right,
+        searchAlignment: search.left - main.left,
+        width: main.width,
+        overflow: document.documentElement.scrollWidth - Math.min(clientWidth, root.width),
+      };
     });
-    assert.ok(layout.left >= 0 && layout.left <= 50, `${width}: excessive left gutter ${layout.left}`);
-    assert.ok(layout.right >= 0 && layout.right <= 50, `${width}: excessive right gutter ${layout.right}`);
-    assert.ok(layout.width <= 840 && layout.overflow <= 2, `${width}: layout overflow`);
+    for (const route of ["start", "css/text-wrap"]) {
+      await layoutPage.goto(origin + "/yeobaek/" + route + "/");
+      for (const width of [1152, 1280, 1440, 1536, 1600, 1920, 2560]) {
+        await layoutPage.setViewportSize({ width, height: 900 });
+        await layoutPage.evaluate(() => document.fonts.ready);
+        const layout = await measureLayout();
+        const label = `${theme} ${route} ${width}`;
+        assert.ok(layout.left >= 0 && layout.left <= 50, `${label}: excessive left gutter ${layout.left}`);
+        assert.ok(layout.right >= 0 && layout.right <= 50, `${label}: excessive right gutter ${layout.right}`);
+        assert.ok(Math.abs(layout.left - layout.right) <= 3, `${label}: unequal internal gutters ${JSON.stringify(layout)}`);
+        assert.ok(layout.outerLeft >= -2 && layout.outerRight >= -2 && Math.abs(layout.outerLeft - layout.outerRight) <= 3, `${label}: asymmetric outer space ${JSON.stringify(layout)}`);
+        assert.ok(layout.pageAlignment <= 2, `${label}: page does not fill the root layout viewport ${JSON.stringify(layout)}`);
+        assert.ok(Math.abs(layout.searchAlignment) <= 3 && Math.abs(layout.headerLeft - layout.headerRight) <= 3, `${label}: header misalignment ${JSON.stringify(layout)}`);
+        assert.ok(layout.width <= 840 && layout.overflow <= 2, `${label}: layout overflow ${JSON.stringify(layout)}`);
+        if (layoutScreenshotDir) await layoutPage.screenshot({ path: join(layoutScreenshotDir, `${theme}-${route.replaceAll("/", "-")}-${width}.png`) });
+        console.log(`${label} layout: ${JSON.stringify(layout)}`);
+      }
+      const beforeSidebar = await measureLayout();
+      for (const summary of await layoutPage.locator(".sidebar-content details:not([open]) > summary").all()) {
+        if (await summary.isVisible()) await summary.click();
+      }
+      const sidebar = layoutPage.locator(".sidebar-pane");
+      await sidebar.hover();
+      await layoutPage.mouse.wheel(0, 500);
+      await layoutPage.waitForFunction(() => document.querySelector(".sidebar-pane").scrollTop > 0);
+      assert.deepEqual(await measureLayout(), beforeSidebar, `${theme} ${route}: sidebar expansion/scroll shifted the document`);
+      for (const width of [320, 375, 390, 768, 1024]) {
+        await layoutPage.setViewportSize({ width, height: 900 });
+        assert.ok(await layoutPage.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2), `${theme} ${route} ${width}: page overflow`);
+      }
+    }
+    await layoutPage.close();
   }
-  await layoutPage.close();
 
   const recovery = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await recovery.route("**/search-index.json", route => route.fulfill({ json: {} }));
@@ -369,6 +536,8 @@ try {
     releaseResponse();
     await slowPage.close();
   }
+  await auditSearchRaces(browser, origin);
+  await runMotionNetworkAudit(browser, origin);
   console.log(`Verified ${storyCount} visual scenes and ${exampleCount} interactive examples at both viewport widths plus interaction contracts.`);
   await page.close();
 } finally {

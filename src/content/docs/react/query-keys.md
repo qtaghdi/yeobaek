@@ -42,7 +42,7 @@ await queryClient.invalidateQueries({
 
 관련 캐시를 오래된 것으로 표시하고 조건에 맞는 활성 쿼리를 다시 조회할 수 있습니다. 모든 캐시를 무효화하기보다는 어떤 데이터가 실제로 바뀌었는지 구분합니다.
 
-예를 들어 상세 정보 하나를 수정했다면 그 사용자의 상세 키와 수정 결과가 목록에 반영되는 쿼리를 갱신할 수 있습니다. 페이지나 검색어가 다른 목록 모두에 영향을 주는 변경이라면 목록을 공통 접두사로 묶어둔 것이 유용합니다.
+예를 들어 항목의 상세 정보를 수정했다면 그 항목의 상세 키와 수정 결과가 목록에 반영되는 쿼리를 갱신할 수 있습니다. 페이지나 검색어가 다른 목록 모두에 영향을 주는 변경이라면 목록을 공통 접두사로 묶어둔 것이 유용합니다.
 
 [TanStack Query: Query Keys](https://tanstack.com/query/latest/docs/framework/react/guides/query-keys) · [Query Invalidation](https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation)
 

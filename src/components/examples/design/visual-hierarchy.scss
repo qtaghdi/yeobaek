@@ -142,6 +142,10 @@
       color: var(--background);
       background: var(--text);
     }
+
+    :focus-visible {
+      outline-color: var(--focus);
+    }
   }
 
   &__card--hierarchy {

@@ -58,8 +58,11 @@ export const highlightDocumentMatch = (scroll = true) => {
   const target = element.querySelector(".search-document-match");
   if (!target) return;
   if (!scroll) return;
+  const address = location.href;
   let frame = requestAnimationFrame(() => {
-    frame = requestAnimationFrame(() => target.scrollIntoView({ block: "center", behavior: "instant" }));
+    frame = requestAnimationFrame(() => {
+      if (target.isConnected && location.href === address) target.scrollIntoView({ block: "center", behavior: "instant" });
+    });
   });
   return () => cancelAnimationFrame(frame);
 };

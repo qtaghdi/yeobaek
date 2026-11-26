@@ -77,17 +77,23 @@ const animateDisclosure = (details: HTMLDetailsElement, onChange: (open: boolean
   let animation: Animation | undefined;
   let desired = details.open;
 
+  const settle = () => {
+    animation?.cancel();
+    animation = undefined;
+    details.open = desired;
+    list.style.removeProperty("overflow");
+  };
+  reducedMotion.addEventListener("change", () => {
+    if (reducedMotion.matches) settle();
+  }, { signal: controller.signal });
   summary.addEventListener("click", (event) => {
+    event.preventDefault();
     if (reducedMotion.matches) {
-      animation?.cancel();
-      animation = undefined;
-      list.style.removeProperty("overflow");
-      list.style.removeProperty("height");
-      desired = !details.open;
+      desired = !desired;
+      settle();
       onChange(desired);
       return;
     }
-    event.preventDefault();
     const wasOpen = details.open;
     const from = wasOpen ? list.getBoundingClientRect().height : 0;
     desired = animation ? !desired : !wasOpen;
@@ -103,13 +109,10 @@ const animateDisclosure = (details: HTMLDetailsElement, onChange: (open: boolean
     animation = current;
     current.onfinish = () => {
       if (animation !== current) return;
-      details.open = desired;
-      current.cancel();
-      list.style.removeProperty("overflow");
-      animation = undefined;
+      settle();
     };
   }, { signal: controller.signal });
-  return () => { controller.abort(); animation?.cancel(); list.style.removeProperty("overflow"); details.open = desired; };
+  return () => { controller.abort(); settle(); };
 };
 
 const mountSidebar = (sidebar: HTMLElement) => {
