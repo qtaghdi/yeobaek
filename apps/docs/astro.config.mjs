@@ -17,7 +17,8 @@ export default defineConfig({
       locales: { root: { label: "한국어", lang: "ko" } },
       social: [{ icon: "github", label: "GitHub", href: "https://github.com/qtaghdi/yeobaek" }],
       customCss: ["./src/styles/archive.scss"],
-      components: { Head: "./src/components/document-head.astro" },
+      pagefind: false,
+      components: { Head: "./src/components/document-head.astro", Search: "./src/components/document-search.astro" },
       sidebar: [
         { label: "첫 장", items: [{ label: "여백 소개", slug: "start" }] },
         { label: "01 · 웹 플랫폼과 접근성", collapsed: true, items: ["browser/events","accessibility/semantic-controls","accessibility/focus-ring","accessibility/tab-order","accessibility/dialog-focus","accessibility/disabled-state","browser/storage"] },
