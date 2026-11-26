@@ -476,3 +476,36 @@ mobile-starlight-toc .dropdown {
 @supports not (scrollbar-gutter: stable) {
   .sidebar-pane { overflow-y: scroll; }
 }
+
+.sl-markdown-content {
+  sup:has([data-footnote-ref]) {
+    margin-inline-start: .18em;
+    font-size: .72em;
+    vertical-align: super;
+    line-height: 0;
+  }
+  a[data-footnote-ref] {
+    color: var(--text-muted);
+    padding: .1em .22em;
+    border-radius: var(--radius-small);
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+    &:hover, &:focus-visible { background: var(--selection); color: var(--text); }
+    &::before { content: "["; }
+    &::after { content: "]"; }
+  }
+  section[data-footnotes] {
+    border-block-start: 1px solid var(--border);
+    margin-block-start: 3rem;
+    padding-block-start: 1rem;
+    font-size: .88rem;
+    color: var(--text-muted);
+    .reference-notes-heading { font-size: 1.1rem; color: var(--text); margin-block: 0 .75rem; }
+    ol { padding-inline-start: 1.5rem; }
+    li { padding: .45rem .5rem; border-radius: var(--radius-control); scroll-margin-block-start: 6rem; }
+    li:target { background: var(--selection); color: var(--text); }
+    li p { margin: 0; }
+    a { color: var(--text); }
+    a[data-footnote-backref] { margin-inline-start: .35rem; text-decoration: none; }
+  }
+}

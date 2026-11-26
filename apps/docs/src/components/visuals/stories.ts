@@ -1,13 +1,14 @@
 type Tone = "idle" | "active" | "done" | "muted" | "warning";
 type NodeState = { value: string; tone?: Tone };
 type Frame = { label: string; note: string; key?: string; states: NodeState[] };
-export type Story = { title: string; illustration?: "loading" | "stacking" | "text-width" | "scrollbar" | "viewport" | "flex"; layout: "flow" | "comparison" | "keyboard"; nodes: string[]; frames: Frame[] };
+export type Story = { title: string; interaction?: "event" | "focus" | "tab" | "controls" | "dialog" | "disabled" | "counter" | "filter" | "request"; illustration?: "loading" | "stacking" | "text-width" | "scrollbar" | "viewport" | "flex"; layout: "flow" | "comparison" | "keyboard"; nodes: string[]; frames: Frame[] };
 
 const s = (value: string, tone: Tone = "idle"): NodeState => ({ value, tone });
 const f = (label: string, note: string, states: NodeState[], key?: string): Frame => ({ label, note, states, key });
 
 export const stories = {
   "event-propagation": {
+    interaction: "event",
     title: "클릭이 부모에서 자식으로, 다시 부모로",
     layout: "flow",
     nodes: ["부모 · Capture", "버튼 · Target", "부모 · Bubble"],
@@ -19,6 +20,7 @@ export const stories = {
     ],
   },
   "focus-ring": {
+    interaction: "focus",
     title: "마우스 없이 Tab을 눌러보면",
     layout: "keyboard",
     nodes: ["버튼 01", "버튼 02", "버튼 03"],
@@ -30,6 +32,7 @@ export const stories = {
     ],
   },
   "tab-order": {
+    interaction: "tab",
     title: "tabindex=-1이 두 번째 버튼을 건너뛰는 과정",
     layout: "keyboard",
     nodes: ["버튼 A", "버튼 B", "버튼 C"],
@@ -41,6 +44,7 @@ export const stories = {
     ],
   },
   "semantic-controls": {
+    interaction: "controls",
     title: "버튼과 div의 키보드 동작 비교",
     layout: "comparison",
     nodes: ["div + onClick", "네이티브 button"],
@@ -51,6 +55,7 @@ export const stories = {
     ],
   },
   "dialog-focus": {
+    interaction: "dialog",
     title: "모달을 열고 닫을 때 포커스의 이동",
     layout: "keyboard",
     nodes: ["열기 버튼", "모달 내부", "배경 화면"],
@@ -62,6 +67,7 @@ export const stories = {
     ],
   },
   "disabled-state": {
+    interaction: "disabled",
     title: "보이는 상태와 실제 비활성 상태는 다르다",
     layout: "comparison",
     nodes: ["CSS만 회색", "disabled", "aria-disabled"],
@@ -158,6 +164,7 @@ export const stories = {
     ],
   },
   "state-snapshot": {
+    interaction: "counter",
     title: "setCount 호출 세 번의 실제 차이",
     layout: "comparison",
     nodes: ["직접 갱신", "함수형 갱신"],
@@ -168,6 +175,7 @@ export const stories = {
     ],
   },
   "request-order": {
+    interaction: "request",
     title: "늦게 도착한 응답이 화면을 덮는 상황",
     layout: "comparison",
     nodes: ["요청 A", "요청 B", "현재 화면"],
@@ -179,6 +187,7 @@ export const stories = {
     ],
   },
   "controlled-input": {
+    interaction: "filter",
     title: "편집 중인 값과 실제 적용값",
     layout: "comparison",
     nodes: ["draft", "applied", "조회 결과"],

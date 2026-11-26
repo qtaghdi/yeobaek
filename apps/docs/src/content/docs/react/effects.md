@@ -33,6 +33,8 @@ useEffect(() => {
 
 [React: You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect)
 
+사용자가 저장 버튼을 눌렀을 때 API를 호출해야 한다면 버튼의 이벤트 핸들러에서 요청을 시작하는 편이 훨씬 직접적입니다. 저장 여부를 state로 바꾼 뒤 Effect가 그 값을 감지해 요청하도록 만들면 왜 요청이 시작됐는지 찾기가 어려워질 수 있습니다. 외부 시스템과 지속적으로 동기화해야 하는 경우와 특정 사용자 행동을 처리하는 경우를 구분하면 Effect의 개수도 자연스럽게 줄어듭니다.
+
 ## Effect가 계속 늘어날 때
 
 Juliya처럼 브라우저 크기나 글꼴 변화를 관찰할 때는 Effect가 자연스러운 선택입니다. 반대로 관찰한 입력으로부터 결과를 계산하는 일까지 각각 Effect로 만들 필요는 없습니다. [#121](https://github.com/Oddmash/juliya/issues/121)처럼 크기가 같다면 불필요한 재계산도 줄일 수 있습니다. API 호출의 경우에는 [서버 상태 글](../server-state/)에서 조금 더 자세히 이야기해보겠습니다.
