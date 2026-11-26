@@ -173,8 +173,8 @@ importers:
         specifier: ^0.37.0
         version: 0.37.7(astro@5.18.2(@types/node@26.6.7)(lightningcss@1.33.0)(rollup@4.68.8)(sass@1.108.1)(typescript@5.9.3)(yaml@2.9.1))
       '@oddmash/juliya':
-        specifier: 0.4.1
-        version: 0.4.1(react@19.3.1)
+        specifier: 0.4.2
+        version: 0.4.2(react@19.3.1)
       astro:
         specifier: ^5.16.0
         version: 5.18.2(@types/node@26.6.7)(lightningcss@1.33.0)(rollup@4.68.8)(sass@1.108.1)(typescript@5.9.3)(yaml@2.9.1)
@@ -985,8 +985,8 @@ packages:
       '@emnapi/core': ^1.7.1 || ^2.0.0-alpha.4
       '@emnapi/runtime': ^1.7.1 || ^2.0.0-alpha.4
 
-  '@oddmash/juliya@0.4.1':
-    resolution: {integrity: sha512-sbbRNpabWZNdbw+dxTq7yZKS0do3rzhT+YXBO7uBsCssZCGctSIRd1AQPwn7ppZHnd2ue8+5CB7kiDnsBUKe3g==}
+  '@oddmash/juliya@0.4.2':
+    resolution: {integrity: sha512-QgXspB3g80/gUG9sc+JRBS7BwtiPZGoBxQvhu8F9+/DcV5ZKXznvM+DEk+UHkdolKkUgzz58ItVrS1ET/bmkAQ==}
     engines: {node: '>=20'}
     peerDependencies:
       react: ^18.2.0 || ^19.0.0
@@ -3999,7 +3999,7 @@ snapshots:
       '@emnapi/runtime': 1.11.3
       '@tybys/wasm-util': 0.10.4
 
-  '@oddmash/juliya@0.4.1(react@19.3.1)':
+  '@oddmash/juliya@0.4.2(react@19.3.1)':
     optionalDependencies:
       react: 19.3.1
 

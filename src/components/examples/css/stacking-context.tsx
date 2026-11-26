@@ -63,16 +63,21 @@ const Playground = (args: StackArgs) => (
 
 export const StackingContextExample = () => {
   const [args, setArgs] = useState<StackArgs>(defaults);
+  const [childDraft, setChildDraft] = useState(String(defaults.childZ));
   return <div className="example-workbench">
     <div className="example-workbench__controls">
       <label>부모 A z-index <select value={args.parentZ} onChange={(event) => setArgs({ ...args, parentZ: event.target.value === "auto" ? "auto" : Number(event.target.value) })}>
         {["auto", 0, 1, 2, 3].map((z) => <option key={z}>{z}</option>)}
       </select></label>
-      <label>자식 A z-index <input type="number" value={args.childZ} onChange={(event) => setArgs({ ...args, childZ: Number(event.target.value) })} /></label>
+      <label>자식 A z-index <input type="number" step="1" value={childDraft} onChange={(event) => {
+        const value = event.target.value;
+        setChildDraft(value);
+        if (/^-?\d+$/.test(value) && Number.isSafeInteger(Number(value))) setArgs(previous => ({ ...previous, childZ: Number(value) }));
+      }} onBlur={() => setChildDraft(String(args.childZ))} /></label>
       <label><input type="checkbox" checked={args.transform} onChange={(event) => setArgs({ ...args, transform: event.target.checked })} /> transform</label>
       <label><input type="checkbox" checked={args.isolate} onChange={(event) => setArgs({ ...args, isolate: event.target.checked })} /> isolation</label>
       <label>opacity <input type="range" min="0.1" max="1" step="0.1" value={args.opacity} onChange={(event) => setArgs({ ...args, opacity: Number(event.target.value) })} /></label>
-      <button type="button" onClick={() => setArgs(defaults)}>초기화</button>
+      <button type="button" onClick={() => { setArgs(defaults); setChildDraft(String(defaults.childZ)); }}>초기화</button>
     </div>
     <Playground {...args} />
   </div>;

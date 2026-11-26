@@ -595,3 +595,8 @@ mobile-starlight-toc .dropdown {
 .example-frame :where(output, .inline-example__log, .stack-demo__context) { overflow-wrap: anywhere; }
 .example-frame .example-workbench__controls { min-inline-size: 0; }
 .example-frame .example-workbench__controls > * { min-inline-size: 0; max-inline-size: 100%; }
+
+@media (max-width: 49.999rem) {
+  :root:not([data-has-sidebar]) header.header .right-group { display: flex; }
+  :root:not([data-has-sidebar]) header.header .right-group .social-icons { display: none; }
+}

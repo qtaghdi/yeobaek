@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { searchArticles, relatedQueries, getMatchRanges, makeSearchPreview, isMultiCharacterQuery } from "../src/features/search/search-index.ts";
+import { isSearchIndex, searchArticles, relatedQueries, getMatchRanges, makeSearchPreview, isMultiCharacterQuery } from "../src/features/search/search-index.ts";
 
 const article = (id, title, keywords, text) => ({
   id, title, keywords, description: title, category: "테스트", url: "/" + id + "/",
@@ -93,4 +93,17 @@ test("한 글자 검색은 본문 검색과 연관 검색의 범위를 제한한
   assert.equal(isMultiCharacterQuery("."), false);
   assert.deepEqual(searchArticles([article("body", "제목", [], "상태")], "상"), []);
   assert.deepEqual(searchArticles(entries, "포").map(result => result.article.id).sort(), ["dialog", "focus"]);
+});
+
+test("같은 섹션에서도 별개의 문단을 연결하지 않는다", () => {
+  const entry = article("paragraph", "문서", [], "유지합니다. 실제 레이아웃");
+  entry.sections[0].blocks = ["유지합니다.", "실제 레이아웃"];
+  assert.deepEqual(searchArticles([entry], "유지합니다. 실제 레이아웃"), []);
+  assert.equal(searchArticles([entry], "실제 레이아웃")[0].snippet, "실제 레이아웃");
+});
+test("잘못된 인덱스를 거부한다", () => {
+  assert.equal(isSearchIndex(entries), true);
+  assert.equal(isSearchIndex({}), false);
+  assert.equal(isSearchIndex([null]), false);
+  assert.equal(isSearchIndex([{ ...entries[0], sections: [{ title: "본문", text: 3 }] }]), false);
 });

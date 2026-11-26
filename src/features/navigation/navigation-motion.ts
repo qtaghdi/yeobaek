@@ -177,7 +177,8 @@ const syncToc = () => {
   const header = document.querySelector("header.header");
   let frame = 0;
   const update = () => {
-    const threshold = (header?.getBoundingClientRect().height ?? 64) + 42;
+    const mobileToc = document.querySelector("mobile-starlight-toc");
+    const threshold = (header?.getBoundingClientRect().height ?? 64) + (mobileToc?.getBoundingClientRect().height ?? 0) + 42;
     let active = entries[0].id;
     for (const { id, element } of entries) {
       if (element.getBoundingClientRect().top <= threshold) active = id;
@@ -185,6 +186,16 @@ const syncToc = () => {
     }
     if (scrollY > 0 && Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight - 2) {
       active = entries.at(-1)?.id ?? active;
+    }
+    if (new URLSearchParams(location.search).has("highlight")) {
+      const mark = document.querySelector(".search-document-match");
+      const bounds = mark?.getBoundingClientRect();
+      if (bounds && bounds.top >= threshold - 42 && bounds.bottom <= innerHeight) {
+        try {
+          const id = decodeURIComponent(location.hash.slice(1));
+          if (entries.some(entry => entry.id === id)) active = id;
+        } catch { active = active || entries[0].id; }
+      }
     }
     for (const root of roots) {
       let currentLabel = "";
@@ -217,6 +228,29 @@ const syncToc = () => {
   return () => { controller.abort(); cancelAnimationFrame(frame); resize.disconnect(); mutation.disconnect(); };
 };
 
+const mountMobileMenu = () => {
+  const host = document.querySelector<HTMLElement>("starlight-menu-button");
+  const button = host?.querySelector<HTMLButtonElement>("button");
+  const main = document.querySelector<HTMLElement>(".main-frame");
+  if (!host || !button || !main) return () => undefined;
+  const controller = new AbortController();
+  const narrow = matchMedia("(max-width: 49.999rem)");
+  const sync = () => {
+    const expanded = host.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(expanded && narrow.matches));
+    main.inert = expanded && narrow.matches;
+    if (expanded && !narrow.matches) {
+      host.setAttribute("aria-expanded", "false");
+      document.body.removeAttribute("data-mobile-menu-expanded");
+    }
+  };
+  const observer = new MutationObserver(sync);
+  observer.observe(host, { attributes: true, attributeFilter: ["aria-expanded"] });
+  narrow.addEventListener("change", sync, { signal: controller.signal });
+  sync();
+  return () => { observer.disconnect(); controller.abort(); main.inert = false; };
+};
+
 export const mountNavigationMotion = () => {
   const sidebar = document.querySelector<HTMLElement>(".sidebar-content sl-sidebar-state-persist");
   const cleanups: (() => void)[] = [];
@@ -224,6 +258,6 @@ export const mountNavigationMotion = () => {
   for (const toc of document.querySelectorAll<HTMLElement>("starlight-toc nav, mobile-starlight-toc .dropdown")) {
     cleanups.push(mountMarker(toc, 'a[aria-current="true"]'));
   }
-  cleanups.push(syncToc());
+  cleanups.push(syncToc(), mountMobileMenu());
   return () => cleanups.forEach((cleanup) => cleanup());
 };
