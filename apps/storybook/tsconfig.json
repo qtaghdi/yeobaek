@@ -1,0 +1,12 @@
+{
+  "extends": "@yeobaek/config/tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "vite/client"
+    ]
+  },
+  "include": [
+    "src",
+    ".storybook"
+  ]
+}

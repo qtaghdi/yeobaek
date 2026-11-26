@@ -1,0 +1,24 @@
+:root {
+  --paper: #f8f6ef;
+  --surface: #fffdf7;
+  --ink: #292823;
+  --pencil: #67645b;
+  --edge: #dedad0;
+  --marker: #f4e89b;
+  --correction: #a53d35;
+  --focus: #554b28;
+  --grid: #dedad080;
+  --font: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --mono: ui-monospace, "SF Mono", Consolas, monospace;
+}
+:root[data-theme="dark"], [data-theme="dark"] {
+  --paper: #24231f;
+  --surface: #302e28;
+  --ink: #f1ede0;
+  --pencil: #bbb5a6;
+  --edge: #57544a;
+  --marker: #70602b;
+  --correction: #ff9e92;
+  --focus: #f4e89b;
+  --grid: #57544a60;
+}

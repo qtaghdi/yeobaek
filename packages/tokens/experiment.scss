@@ -1,15 +1,15 @@
-$paper: #efebe3;
-$ink: #26253a;
-$surface: #fffcf6;
-$accent: #5625d5;
-$edge: #b8b0a3;
+$paper: #f8f6ef;
+$ink: #292823;
+$surface: #fffdf7;
+$accent: #554b28;
+$edge: #b6b0a3;
 $mono: ui-monospace, "SF Mono", Consolas, monospace;
 
 @mixin stage {
   box-sizing: border-box;
   display: grid;
   place-items: center;
-  min-block-size: max(240px, 100dvh);
+  min-block-size: var(--experiment-height, max(240px, 100dvh));
   padding: clamp(12px, 3vw, 32px);
   color: $ink;
 }

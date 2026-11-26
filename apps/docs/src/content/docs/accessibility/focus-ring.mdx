@@ -1,0 +1,41 @@
+---
+title: 포커스 링은 왜 필요할까?
+description: focus, focus-visible, 키보드 조작과 포커스 표시를 비교합니다.
+---
+
+import Lab from "../../../components/Lab.astro";
+import { FocusLab } from "@yeobaek/experiments/focus";
+
+## 문제
+
+마우스 없이 Tab을 눌러 이동할 때, 현재 어떤 버튼에 도달했는지 확인할 수 있어야 합니다. `outline: none`만 적용하면 포커스는 이동하지만 화면에서 위치가 사라질 수 있습니다.
+
+## 직접 실험
+
+Tab과 Shift + Tab을 사용하세요. 표시 방식과 두 번째 버튼의 비활성화 상태를 바꿔 비교할 수 있습니다.
+
+<Lab story="001-focus-ring--focus-vs-focus-visible" label="포커스 링 비교">
+  <FocusLab client:load />
+</Lab>
+
+## 동작 원리
+
+- `:focus`는 포커스된 요소에 일치합니다.
+- `:focus-visible`은 브라우저가 포커스 표시가 필요하다고 판단하는 상황에 일치합니다. 키보드 입력뿐 아니라 요소 종류 등도 고려합니다.
+- `outline`은 일반적인 박스 크기를 변경하지 않으므로 포커스 표시를 추가해도 레이아웃이 흔들리지 않습니다.
+
+## 개선
+
+```css
+button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 4px;
+}
+```
+
+기본 표시를 제거하려면 대체 포커스 표시를 먼저 마련하세요. 밝거나 어두운 배경에서도 구분되는지, 실제 Tab 순서와 함께 확인합니다. 자동 검사만으로 WCAG 적합성을 단정하지 않습니다.
+
+## 참고
+
+- [MDN: :focus-visible](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible)
+- [W3C: Focus Visible](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html)

@@ -1,4 +1,4 @@
-@use "../../shared/experiment";
+@use "../../../tokens/experiment.scss" as experiment;
 
 .design-demo {
   @include experiment.stage;
@@ -138,7 +138,7 @@
 
     .design-demo__intro > p:last-child,
     .design-demo__note {
-      color: #5e586b;
+      color: #67645b;
     }
 
     button {
@@ -169,7 +169,7 @@
     }
 
     button:hover {
-      background: #451bad;
+      background: #3d3620;
     }
   }
 
