@@ -130,6 +130,42 @@ const coreFlow = async (browser, engine) => {
   } finally { await context.close(); }
 };
 
+const checkDialogBeforeHydration = async (browser, engine) => {
+  const page = await browser.newPage({ viewport: { width: 320, height: 568 }, reducedMotion: "reduce" });
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+
+  try {
+    await page.route("**/dialog-focus.*.js", async route => {
+      await gate;
+      await route.continue();
+    });
+    await page.goto(origin + "accessibility/dialog-focus/", { waitUntil: "domcontentloaded" });
+    const frame = page.locator(".example-frame");
+    const island = frame.locator("astro-island[ssr]");
+    const trigger = frame.getByRole("button", { name: "모달 열기" });
+    const dialog = frame.getByRole("dialog", { name: "확인 대화상자" });
+
+    await trigger.click();
+    assert.equal(await island.count(), 1, `${engine}: modal example script should still be pending`);
+    assert.ok(await dialog.isVisible(), `${engine}: the first click should open the modal before hydration`);
+
+    release();
+    await island.waitFor({ state: "detached" });
+    assert.ok(await dialog.isVisible(), `${engine}: modal should remain open when hydration completes`);
+    await page.keyboard.press("Escape");
+    await dialog.waitFor({ state: "hidden" });
+    assert.ok(await focusIs(trigger));
+    assert.deepEqual(errors, []);
+    console.log(`${engine}: initial click opened the modal before hydration`);
+  } finally {
+    release();
+    await page.close();
+  }
+};
+
 const checkBackDuringHydration = async (browser) => {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   const errors = [];
@@ -179,6 +215,40 @@ const checkBackDuringHydration = async (browser) => {
     assert.ok(await page.evaluate(() => window.qaBackDuringHydration.released > 0), "React scheduler should have queued work");
     assert.deepEqual(errors, [], "WebKit: runtime errors when leaving during hydration");
     console.log("webkit: rapid back while React scheduler work is queued passed");
+  } finally {
+    await page.close();
+  }
+};
+
+const checkLoadingExample = async (browser, engine) => {
+  const page = await browser.newPage({ hasTouch: true, isMobile: true, reducedMotion: "reduce" });
+  try {
+    for (const [width, height] of [[320, 568], [390, 844], [560, 800], [768, 1024]]) {
+      await page.setViewportSize({ width, height });
+      await go(page, "design/loading-states/");
+      const frame = page.locator(".example-frame");
+      const improved = frame.locator(".inline-example--comparison > div").nth(1);
+      const skeleton = improved.getByRole("status", { name: "로딩 중" });
+      const title = improved.getByText("문서 제목", { exact: true });
+      const positions = () => frame.locator(".inline-example__next").evaluateAll(markers => markers.map(marker =>
+        marker.getBoundingClientRect().top - marker.closest(".inline-example").getBoundingClientRect().top));
+
+      await skeleton.waitFor();
+      assert.ok(!await title.isVisible(), "Loading card text should be hidden");
+      const before = await positions();
+      await frame.getByRole("button", { name: "로딩 완료" }).tap();
+      await title.waitFor();
+      await skeleton.waitFor({ state: "hidden" });
+      const after = await positions();
+      assert.ok(after[0] > before[0], `${engine} ${width}px: unreserved card should move the next content`);
+      assert.ok(Math.abs(after[1] - before[1]) <= 2, `${engine} ${width}px: skeleton moved the next content by ${after[1] - before[1]}px`);
+
+      await frame.getByRole("button", { name: "다시 로딩" }).tap();
+      await skeleton.waitFor();
+      assert.deepEqual(await positions(), before);
+      await assertNoOverflow(page, `${engine} ${width}px loading example`);
+    }
+    console.log(`${engine}: loading example kept its skeleton position across four touch viewport sizes`);
   } finally {
     await page.close();
   }
@@ -302,6 +372,8 @@ try {
     const browser = await playwright[engine].launch();
     try {
       await coreFlow(browser, engine);
+      await checkDialogBeforeHydration(browser, engine);
+      if (engine !== "firefox") await checkLoadingExample(browser, engine);
       if (engine === "chromium") await mobileFlow(browser);
       if (engine === "webkit") await checkBackDuringHydration(browser);
     } finally { await browser.close(); }
