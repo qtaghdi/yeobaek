@@ -1,3 +1,5 @@
+import { getStoredSearchMatchLocation } from "src/features/search/search-location";
+
 type MarkerGeometry = { x: number; y: number; width: number; height: number };
 type SidebarState = { groups: Record<string, boolean>; scroll: number };
 
@@ -190,15 +192,10 @@ const syncToc = () => {
     if (scrollY > 0 && Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight - 2) {
       active = entries.at(-1)?.id ?? active;
     }
-    if (new URLSearchParams(location.search).has("highlight")) {
-      const mark = document.querySelector(".search-document-match");
-      const bounds = mark?.getBoundingClientRect();
-      if (bounds && bounds.top >= threshold - 42 && bounds.bottom <= innerHeight) {
-        try {
-          const id = decodeURIComponent(location.hash.slice(1));
-          if (entries.some(entry => entry.id === id)) active = id;
-        } catch { active = active || entries[0].id; }
-      }
+    const searchAnchor = !location.hash && getStoredSearchMatchLocation()?.anchor;
+    if (searchAnchor && entries.some(entry => entry.id === searchAnchor)) {
+      const bounds = document.querySelector(".search-document-match")?.getBoundingClientRect();
+      if (bounds && bounds.top >= threshold - 42 && bounds.bottom <= innerHeight) active = searchAnchor;
     }
     for (const root of roots) {
       let currentLabel = "";

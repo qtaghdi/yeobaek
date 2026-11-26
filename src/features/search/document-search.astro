@@ -28,6 +28,8 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
 </yeobaek-search>
 
 <script>
+  import { navigate } from "astro:transitions/client";
+  import { searchMatchStateKey, type SearchMatchLocation } from "src/features/search/search-location";
   import { isSearchIndex, isMultiCharacterQuery, getMatchRanges, makeSearchPreview, normalizeSearch, recommendedQueries, relatedQueriesFromMatches, searchArticles, type SearchArticle } from "src/features/search/search-index";
 
   type QueryRecord = { query: string; lastUsed: number };
@@ -308,7 +310,8 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         const link = item.querySelector<HTMLAnchorElement>("a") ?? el("a", "search-result");
         const anchor = target ? "#" + encodeURIComponent(target) : "";
         const range = bodyMatches && !titleMatches ? getMatchRanges(snippet, query)[0] : undefined;
-        const highlight = range ? "?highlight=" + encodeURIComponent(snippet.slice(range.start, range.end)) : "";
+        const matchedText = range ? snippet.slice(range.start, range.end) : "";
+        const highlight = matchedText ? "?highlight=" + encodeURIComponent(matchedText) : "";
         link.href = article.url + highlight + anchor;
         const category = el("span", "search-result-category", article.category);
         const title = el("strong", "search-result-title");
@@ -334,6 +337,14 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
           }
           saveHistory(query);
           this.dialog.close();
+          if (matchedText && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+            event.preventDefault();
+            const destination = new URL(article.url, location.href);
+            const match: SearchMatchLocation = { pathname: destination.pathname, query: matchedText.slice(0, 100), anchor: target };
+            // Astro only creates a history entry when the destination URL changes.
+            if (destination.href === location.href) destination.searchParams.set("highlight", match.query);
+            void navigate(destination.href, { sourceElement: link, state: { [searchMatchStateKey]: match } });
+          }
         };
         link.onauxclick = (event) => {
           if (!this.isCurrentRender(query, version)) {

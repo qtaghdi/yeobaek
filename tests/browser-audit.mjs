@@ -76,9 +76,10 @@ try {
         assert.ok(example.width > 0 && example.scroll <= example.width + 3, `${width} ${route}: ${example.label} leaked overflow ${example.scroll} > ${example.width}`);
       }
       for (const scene of await page.locator(".visual-story").all()) {
-        await scene.scrollIntoViewIfNeeded();
+        await scene.locator(".visual-story__stage").evaluate(stage => stage.scrollIntoView({ block: "center", behavior: "instant" }));
+        await scene.locator("xpath=ancestor::astro-island[@ssr]").waitFor({ state: "detached" });
         await scene.getByRole("button", { name: "자동 재생 시작" }).click();
-        await page.waitForFunction(() => document.querySelector(".visual-story")?.getAttribute("data-playing") === "true");
+        await scene.and(page.locator('[data-playing="true"]')).waitFor();
         const count = Number(await scene.getAttribute("data-frame-count"));
         assert.ok(count > 1);
         for (let step = 1; step < count; step++) {
@@ -449,6 +450,7 @@ try {
 
   const historyPage = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   await historyPage.goto(origin + "/yeobaek/design/loading-states/?highlight=" + encodeURIComponent("상태를 다뤘습니다.") + "#" + encodeURIComponent("접근성과-모션"));
+  await historyPage.waitForURL(origin + "/yeobaek/design/loading-states/");
   await historyPage.locator(".search-document-match").waitFor();
   await historyPage.locator("starlight-toc a[aria-current=true]").filter({hasText: "접근성과 모션"}).waitFor();
   await historyPage.evaluate(() => window.scrollTo({top: 0, behavior: "instant"}));
@@ -456,7 +458,7 @@ try {
   await historyPage.locator(".sidebar-content a[href$='/design/feedback/']").click();
   await historyPage.waitForURL("**/design/feedback/");
   await historyPage.goBack();
-  await historyPage.waitForURL("**/design/loading-states/**");
+  await historyPage.waitForURL(origin + "/yeobaek/design/loading-states/");
   await historyPage.locator(".search-document-match").waitFor();
   assert.ok(await historyPage.evaluate(() => scrollY < 100), "history restoration must not jump to search highlight");
   await historyPage.close();
