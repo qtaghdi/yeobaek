@@ -249,7 +249,7 @@ try {
   await first.locator(".theme-trigger").click();
   await first.locator("[data-theme-value=dark]").click();
   await second.waitForFunction(() => document.documentElement.dataset.theme === "dark");
-  assert.equal(await second.locator(".theme-trigger").getAttribute("aria-label"), "테마 선택: 어두움");
+  await second.waitForFunction(() => [...document.querySelectorAll(".theme-trigger")].every(button => button.getAttribute("aria-label") === "테마 선택: 어두움"));
   await first.locator(".theme-trigger").click();
   await first.locator("[data-theme-value=light]").click();
   await second.waitForFunction(() => document.documentElement.dataset.theme === "light");
