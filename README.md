@@ -1,8 +1,12 @@
-# 알고 꺼드럭대자
+# 여백
 
-Velog 기술 블로그 시리즈를 위한 프론트엔드 실험실입니다. 브라우저 동작을 작은 Story로 구현하고, 실제 입력으로 비교한 결과를 글과 이미지 또는 GIF에 활용합니다.
+> 아는 것과 이해하는 것 사이의 여백을 채웁니다.
 
-[배포된 Storybook 열기](https://qtaghdi.github.io/frontend-details/)
+프론트엔드의 동작 원리와 놓치기 쉬운 디테일을 기록하고 직접 실험하는 한국어 기술 노트입니다. 기존 Storybook 실험을 보존하면서 문서와 실험실을 결합한 지식 아카이브로 발전시키고 있습니다.
+
+[콘텐츠 및 디자인 기획](docs/plan.md)
+
+[배포된 Storybook 열기](https://qtaghdi.github.io/yeobaek/)
 
 `main`에 변경이 올라가면 GitHub Actions가 Storybook을 빌드해 GitHub Pages에 배포합니다.
 
@@ -40,10 +44,10 @@ Canvas의 **Viewport size**에서 **GIF · 640 × 360**을 선택하면 실험 �
 
 | Story                  | 캡처 링크                                                                                                               |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Browser Default        | [열기](https://qtaghdi.github.io/frontend-details/iframe.html?id=001-focus-ring--browser-default&viewMode=story)        |
-| Outline Removed        | [열기](https://qtaghdi.github.io/frontend-details/iframe.html?id=001-focus-ring--outline-removed&viewMode=story)        |
-| Custom Focus Ring      | [열기](https://qtaghdi.github.io/frontend-details/iframe.html?id=001-focus-ring--custom-focus-ring&viewMode=story)      |
-| Focus vs Focus Visible | [열기](https://qtaghdi.github.io/frontend-details/iframe.html?id=001-focus-ring--focus-vs-focus-visible&viewMode=story) |
+| Browser Default        | [열기](https://qtaghdi.github.io/yeobaek/iframe.html?id=001-focus-ring--browser-default&viewMode=story)        |
+| Outline Removed        | [열기](https://qtaghdi.github.io/yeobaek/iframe.html?id=001-focus-ring--outline-removed&viewMode=story)        |
+| Custom Focus Ring      | [열기](https://qtaghdi.github.io/yeobaek/iframe.html?id=001-focus-ring--custom-focus-ring&viewMode=story)      |
+| Focus vs Focus Visible | [열기](https://qtaghdi.github.io/yeobaek/iframe.html?id=001-focus-ring--focus-vs-focus-visible&viewMode=story) |
 
 종이색과 잉크색을 기본으로 쓰고, 커스텀 링은 밝은 배경에서 보라색, 어두운 배경에서 연보라색으로 표시합니다. 색상, 버튼 규격, 간격, 링 두께는 `focus-ring.scss`의 CSS 변수로 조절합니다.
 
@@ -56,7 +60,7 @@ Canvas의 **Viewport size**에서 **GIF · 640 × 360**을 선택하면 실험 �
 
 커스텀 설정으로 녹화할 때는 Controls를 조절한 뒤 Canvas 툴바에서 **Open in isolation mode**를 선택하세요. 위 표의 링크는 기본 설정으로 열립니다. 호버와 누름은 버튼 배경에, 포커스는 테두리나 바깥 링에 표시됩니다.
 
-## 에피소드 목록
+## 기존 실험 목록
 
 | 회차 | 주제                         | Velog     |
 | ---- | ---------------------------- | --------- |
@@ -64,7 +68,7 @@ Canvas의 **Viewport size**에서 **GIF · 640 × 360**을 선택하면 실험 �
 | 002  | 왜 내 웹만 구릴까?           | 게시 예정 |
 | 003  | z-index: 9999도 안 되는 이유 | 게시 예정 |
 
-게시 후 Velog 열의 ‘게시 예정’을 해당 글의 링크로 교체합니다.
+기존 회차는 실험 ID 호환을 위해 유지합니다. 새 문서는 주제별로 구성할 예정입니다.
 
 ### 001. 포커스 링
 
