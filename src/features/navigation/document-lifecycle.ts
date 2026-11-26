@@ -76,8 +76,13 @@ document.addEventListener("astro:before-preparation", (event) => {
 document.addEventListener("astro:before-swap", (event) => {
   const transition = event as Event & { navigationType?: string; newDocument: Document; viewTransition: ViewTransition; info?: unknown };
   restoreScroll = transition.navigationType === "traverse";
-  if (transition.info === searchNavigation) transition.viewTransition.skipTransition();
-  else if (typeof document.startViewTransition === "function") pageTransition = transition.viewTransition.finished;
+  if (transition.info === searchNavigation) {
+    // Skipping the snapshot intentionally prevents the ready promise from resolving.
+    void transition.viewTransition.ready.catch(() => {});
+    transition.viewTransition.skipTransition();
+  } else if (typeof document.startViewTransition === "function") {
+    pageTransition = transition.viewTransition.finished;
+  }
   const theme = document.documentElement.dataset.theme;
   if (theme) transition.newDocument.documentElement.dataset.theme = theme;
   clearLoading();
