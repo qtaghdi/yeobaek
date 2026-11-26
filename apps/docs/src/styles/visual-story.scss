@@ -110,7 +110,7 @@
       &:disabled { opacity: .4; cursor: not-allowed; }
     }
     > .visual-story__play { background: var(--text); border-color: var(--text); color: var(--background); min-inline-size: 6.5rem; }
-    > .visual-story__play:hover { opacity: .85; }
+    > .visual-story__play:hover { background: var(--text); color: var(--background); opacity: .85; }
   }
   &__steps { display: flex; flex: 1; gap: .25rem; min-inline-size: 0; }
   &__steps button {
