@@ -123,6 +123,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    grid-row: 3;
     align-self: start;
     gap: var(--key-gap);
     margin-block-start: 24px;
