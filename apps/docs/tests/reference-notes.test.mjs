@@ -44,4 +44,5 @@ test("reference labels are localized without changing anchors", () => {
   assert.equal(heading.children[0].value, "참고 자료 요약");
   assert.equal(back.properties.ariaLabel, "본문의 인용 위치로 돌아가기");
   assert.equal(back.properties.href, "#ref");
+  assert.equal(back.children[0].value, "본문으로");
 });

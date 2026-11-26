@@ -48,7 +48,7 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
   const hasKeys = story.frames.some((step) => step.key);
 
   return (
-    <figure className="visual-story not-content" aria-label={story.title} data-playing={playing}>
+    <figure className="visual-story not-content" aria-label={story.title} data-playing={playing} data-frame={index} data-frame-count={story.frames.length}>
       <div ref={stageRef} className={`visual-story__stage visual-story__stage--${story.layout}`}>
         {story.interaction ? <InteractionScene story={story} step={index} /> : <>
         {hasKeys ? <div className="visual-story__input">
