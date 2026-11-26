@@ -27,7 +27,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
 <script>
   import { isSearchIndex, isMultiCharacterQuery, getMatchRanges, makeSearchPreview, normalizeSearch, recommendedQueries, relatedQueriesFromMatches, searchArticles, type SearchArticle } from "src/features/search/search-index";
 
-  type QueryRecord = { query: string; count: number; lastUsed: number };
+  type QueryRecord = { query: string; lastUsed: number };
   const historyKey = "yeobaek-search-history-v1";
   const indexCache = new Map<string, Promise<SearchArticle[]>>();
 
@@ -37,7 +37,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       if (!Array.isArray(parsed)) return [];
       return parsed.filter((item): item is QueryRecord =>
         typeof item === "object" && item !== null &&
-        typeof item.query === "string" && typeof item.count === "number" && typeof item.lastUsed === "number"
+        typeof item.query === "string" && item.query.trim().length > 0 && Number.isFinite(item.lastUsed)
       ).slice(0, 30);
     } catch {
       return [];
@@ -49,8 +49,8 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
     if (!term) return;
     const records = readHistory();
     const index = records.findIndex((record) => normalizeSearch(record.query) === normalizeSearch(term));
-    if (index >= 0) records[index] = { query: term, count: records[index].count + 1, lastUsed: Date.now() };
-    else records.push({ query: term, count: 1, lastUsed: Date.now() });
+    if (index >= 0) records[index] = { query: term, lastUsed: Date.now() };
+    else records.push({ query: term, lastUsed: Date.now() });
     try {
       localStorage.setItem(historyKey, JSON.stringify(records.sort((a, b) => b.lastUsed - a.lastUsed).slice(0, 30)));
     } catch { return; }
@@ -118,8 +118,10 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         this.scheduleRender();
       }, { signal });
       this.dialog.addEventListener("close", () => {
+        if (this.dialog.open) return;
         window.clearTimeout(this.renderTimer);
-        this.previousFocus?.focus();
+        this.composing = false;
+        this.previousFocus?.focus({ preventScroll: true });
         this.previousFocus = null;
       }, { signal });
       this.dialog.addEventListener("click", (event) => {
@@ -151,7 +153,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       if (this.dialog.open) return;
       this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : this.trigger;
       this.dialog.showModal();
-      this.input.focus();
+      this.input.focus({ preventScroll: true });
       this.input.select();
       this.render();
       void this.load();
@@ -183,11 +185,12 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
 
     private chooseQuery(query: string) {
       this.input.value = query;
-      this.input.focus();
+      saveHistory(query);
+      this.input.focus({ preventScroll: true });
       this.render();
     }
 
-    private renderChips(target: HTMLElement, label: string, values: string[], clearable = false) {
+    private renderQueries(target: HTMLElement, label: string, values: string[], clearable = false) {
       const signature = JSON.stringify([label, values]);
       if (target.dataset.signature === signature) return;
       target.dataset.signature = signature;
@@ -207,12 +210,14 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         });
         heading.append(clear);
       }
-      const chips = el("div", "search-chips");
+      const chips = el("ul", "search-queries");
       for (const value of values) {
-        const chip = el("button", "search-chip", value);
+        const chip = el("button", "search-query", value);
         chip.type = "button";
         chip.addEventListener("click", () => this.chooseQuery(value));
-        chips.append(chip);
+        const item = el("li");
+        item.append(chip);
+        chips.append(item);
       }
       target.replaceChildren(heading, chips);
     }
@@ -226,12 +231,12 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       this.renderedQuery = query;
       if (changed) this.content.scrollTop = 0;
       if (!query) {
-        this.renderChips(this.suggestions, "추천 검색어", recommendedQueries);
-        const popular = readHistory().sort((a, b) => b.count - a.count || b.lastUsed - a.lastUsed).slice(0, 5).map((entry) => entry.query);
-        this.renderChips(this.history, "내가 자주 찾은 검색어", popular, true);
+        this.renderQueries(this.suggestions, "추천 검색어", recommendedQueries);
+        const recent = readHistory().sort((a, b) => b.lastUsed - a.lastUsed).slice(0, 5).map((entry) => entry.query);
+        this.renderQueries(this.history, "검색 기록", recent, true);
       } else {
-        this.renderChips(this.history, "", []);
-        this.renderChips(this.suggestions, "연관 검색어", relatedQueriesFromMatches(matches, query));
+        this.renderQueries(this.history, "", []);
+        this.renderQueries(this.suggestions, "연관 검색어", relatedQueriesFromMatches(matches, query));
       }
       if (this.loadingError) {
         this.results.replaceChildren();
@@ -249,6 +254,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       }
       const status = matches.length ? `${matches.length}개 글${isMultiCharacterQuery(query) ? "" : " · 결과를 선택해 열어 주세요."}` : "검색 결과가 없습니다. 다른 검색어를 입력해 보세요.";
       if (this.status.textContent !== status) this.status.textContent = status;
+      const focusedId = document.activeElement?.closest<HTMLElement>(".search-results li")?.dataset.id;
       const existing = new Map([...this.results.children].map((item) => [(item as HTMLElement).dataset.id, item]));
       const items = document.createDocumentFragment();
       for (const { article, snippet, target, bodyMatches, titleMatches, matchedKeywords } of matches) {
@@ -288,26 +294,47 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         items.append(item);
       }
       this.results.replaceChildren(items);
+      if (focusedId && this.dialog.open) {
+        const focused = [...this.results.querySelectorAll<HTMLAnchorElement>("a")].find(link => link.parentElement?.dataset.id === focusedId);
+        (focused ?? this.input).focus({ preventScroll: true });
+      }
+    }
+
+    private focusOption(option: HTMLElement) {
+      option.focus({ preventScroll: true });
+      if (!this.content.contains(option)) return;
+      const item = option.getBoundingClientRect();
+      const viewport = this.content.getBoundingClientRect();
+      if (item.top < viewport.top + 4) this.content.scrollTop += item.top - viewport.top - 4;
+      else if (item.bottom > viewport.bottom - 4) this.content.scrollTop += item.bottom - viewport.bottom + 4;
     }
 
     private onDialogKey(event: KeyboardEvent) {
       if (this.composing || event.isComposing || event.keyCode === 229 || event.altKey || event.ctrlKey || event.metaKey) return;
       if (this.renderedQuery !== this.input.value.trim()) this.render();
-      const links = [...this.results.querySelectorAll<HTMLAnchorElement>("a")];
       const active = document.activeElement;
       if (event.key === "Enter" && active === this.input) {
         event.preventDefault();
+        if (this.input.value.trim()) saveHistory(this.input.value);
         return;
       }
-      if (!links.length) return;
-      const index = links.findIndex((link) => active === link);
-      if (event.key === "ArrowDown" && (active === this.input || index >= 0)) {
-        event.preventDefault();
-        links[Math.min(index + 1, links.length - 1)]?.focus();
-      } else if (event.key === "ArrowUp" && index >= 0) {
-        event.preventDefault();
-        if (index === 0) this.input.focus();
-        else links[index - 1]?.focus();
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+      event.preventDefault();
+      const results = [...this.results.querySelectorAll<HTMLAnchorElement>("a")];
+      const queries = [...this.content.querySelectorAll<HTMLButtonElement>(".search-query, .search-retry")];
+      const options = active instanceof HTMLElement && queries.includes(active as HTMLButtonElement)
+        ? [...queries, ...results]
+        : results.length ? results : queries;
+      if (!options.length) return;
+      const index = options.findIndex(option => option === active);
+      if (event.key === "ArrowDown") {
+        this.focusOption(options[Math.min(index + 1, options.length - 1)]);
+      } else if (index > 0) {
+        this.focusOption(options[index - 1]);
+      } else if (index === 0) {
+        this.input.focus({ preventScroll: true });
+      } else if (active === this.input) {
+        this.focusOption(options[options.length - 1]);
       }
     }
   }
