@@ -85,36 +85,169 @@
 .notebook-experiment__controls {
   display: flex;
   flex-wrap: wrap;
-  gap: .75rem 1rem;
-  align-items: center;
-  padding: .75rem;
+  gap: .85rem 1rem;
+  align-items: flex-end;
+  padding: .8rem .25rem 1rem;
   border-block-end: 1px solid var(--edge);
+  font-size: .875rem;
 }
-.notebook-experiment__controls label {
+
+.notebook-experiment__controls > label:not(:has(input[type="checkbox"])) {
+  display: grid;
+  gap: .35rem;
+  min-inline-size: 0;
+  flex: 1 1 7rem;
+  color: var(--pencil);
+  font-weight: 600;
+}
+
+.notebook-experiment__controls > label:has(input[type="checkbox"]) {
   display: inline-flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: .4rem;
-  font-size: .85rem;
+  gap: .55rem;
+  min-block-size: 2.5rem;
+  cursor: pointer;
 }
-.notebook-experiment__controls :is(select, input:not([type="checkbox"]), button) {
+
+.notebook-experiment__controls :is(select, input[type="number"], button) {
+  box-sizing: border-box;
+  min-block-size: 2.5rem;
   max-inline-size: 100%;
   color: var(--ink);
-  background: var(--surface);
-  border: 1px solid var(--pencil);
-  padding: .3rem .5rem;
+  background-color: var(--surface);
+  border: 1px solid var(--edge);
+  border-radius: .375rem;
+  padding: .45rem .7rem;
   font: inherit;
 }
-.notebook-experiment__controls input[type="number"] {
-  inline-size: 6rem;
+
+.notebook-experiment__controls select {
+  appearance: none;
+  inline-size: 100%;
+  padding-inline-end: 2rem;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right .9rem center, right .6rem center;
+  background-size: .3rem .3rem;
+  background-repeat: no-repeat;
+  cursor: pointer;
 }
+
+.notebook-experiment__controls button {
+  cursor: pointer;
+  font-weight: 650;
+  background-color: var(--paper);
+}
+
+.notebook-experiment__controls :is(select, input[type="number"], button):hover {
+  border-color: var(--pencil);
+}
+
+.notebook-experiment__controls button:hover {
+  background-color: var(--marker);
+}
+
+.notebook-experiment__controls :is(input[type="checkbox"], input[type="range"], input[type="radio"]) {
+  accent-color: var(--focus);
+  cursor: pointer;
+}
+
+.notebook-experiment__controls input[type="checkbox"] {
+  inline-size: 1.15rem;
+  block-size: 1.15rem;
+  margin: 0;
+  flex: none;
+}
+
+.notebook-experiment__controls input[type="range"] {
+  min-block-size: 2.5rem;
+  margin: 0;
+  max-inline-size: 100%;
+}
+
+.notebook-experiment__controls input[type="number"] {
+  inline-size: 100%;
+}
+
+.notebook-experiment__controls :focus-visible,
+.notebook-lab__footer a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.notebook-choices {
+  flex: 1 1 100%;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.notebook-choices legend {
+  margin-block-end: .5rem;
+  color: var(--pencil);
+  font-weight: 600;
+}
+
+.notebook-choices__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.notebook-choices__options label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 2.5rem;
+  padding: .4rem .7rem;
+  border: 1px solid var(--edge);
+  border-radius: .375rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.notebook-choices__options label:has(input:checked) {
+  background: var(--marker);
+  border-color: var(--focus);
+  font-weight: 650;
+}
+
+.notebook-choices__options label:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.notebook-choices__options input {
+  position: absolute;
+  inset-inline-start: .55rem;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.notebook-choices__options label:hover {
+  border-color: var(--pencil);
+}
+
+@media (forced-colors: active) {
+  .notebook-experiment__controls select {
+    appearance: auto;
+    background-image: none;
+  }
+
+  .notebook-choices__options label:has(input:checked) {
+    border-color: Highlight;
+    outline: 2px solid Highlight;
+  }
+}
+
 .notebook-experiment > :is(.focus-ring, .design-demo, .stack-demo) {
   background-image: linear-gradient(to right, #b6b0a326 1px, transparent 1px), linear-gradient(to bottom, #b6b0a326 1px, transparent 1px);
   background-size: 20px 20px;
 }
 .notebook-lab__footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
@@ -122,6 +255,9 @@
   font-size: .8rem;
   color: var(--pencil);
   padding-block-start: .6rem;
+
+  a { color: var(--pencil); text-decoration: underline; text-underline-offset: .2em; }
+  a:hover { color: var(--ink); }
 }
 .notebook-index {
   display: grid;
