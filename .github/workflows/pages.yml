@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -74,7 +74,7 @@ jobs:
         shell: bash
         run: |
           npm install --prefix "$RUNNER_TEMP/yeobaek-browser" --no-save playwright@1.65.0
-          node "$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/cli.js" install --with-deps chromium
+          node "$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/cli.js" install chromium
           PLAYWRIGHT_MODULE="$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/index.mjs" node apps/docs/tests/browser-audit.mjs
       - uses: actions/upload-pages-artifact@v4
         if: github.ref == 'refs/heads/main'
