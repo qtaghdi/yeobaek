@@ -1,4 +1,4 @@
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import { articleKeywords, searchTopics, type SearchArticle } from "src/lib/search/search-index";
 
 export const prerender = true;
@@ -11,7 +11,7 @@ const clean = (text: string) => text
   .replace(/\s+/g, " ")
   .trim();
 
-const sectionsOf = (body: string) => {
+const sectionsOf = (body: string, headings: { text: string; slug: string }[]) => {
   const sections: SearchArticle["sections"] = [];
   const source = body.replace(/^```[^\n]*\n[\s\S]*?^```\s*$/gm, " ")
     .replace(/^import .*$/gm, "")
@@ -20,7 +20,7 @@ const sectionsOf = (body: string) => {
   let lines: string[] = [];
   const flush = () => {
     const text = clean(lines.join("\n"));
-    if (text) sections.push({ title, text });
+    if (text || title) sections.push({ title, text, anchor: headings.find((heading) => clean(heading.text) === title)?.slug });
     lines = [];
   };
   for (const line of source.split("\n")) {
@@ -37,7 +37,9 @@ const sectionsOf = (body: string) => {
 export const GET = async () => {
   const articles = await getCollection("docs", ({ id, data }) => id.includes("/") && !data.draft);
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-  const index: SearchArticle[] = articles.map(({ id, data, body }) => {
+  const index: SearchArticle[] = await Promise.all(articles.map(async (entry) => {
+    const { id, data, body } = entry;
+    const { headings } = await render(entry);
     const topic = searchTopics[id.split("/")[0]];
     return {
       id,
@@ -46,8 +48,8 @@ export const GET = async () => {
       category: id === "browser/layout-observation" ? "CSS·텍스트·렌더링" : ["architecture/testing", "architecture/delivery"].includes(id) ? "검증·배포·운영" : topic?.category ?? "",
       url: base + "/" + id + "/",
       keywords: [...new Set([...(articleKeywords[id] ?? []), ...(topic?.keywords ?? [])])],
-      sections: sectionsOf(body ?? ""),
+      sections: sectionsOf(body ?? "", headings),
     };
-  });
+  }));
   return new Response(JSON.stringify(index), { headers: { "Content-Type": "application/json; charset=utf-8" } });
 };

@@ -1,0 +1,73 @@
+yeobaek-theme-select {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  font-family: var(--font);
+
+  [hidden] { display: none !important; }
+  &.theme-enhanced .theme-native { display: none; }
+}
+
+.theme-trigger, .theme-option {
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  color: var(--text);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: background var(--motion-control) var(--ease-out), border-color var(--motion-control) var(--ease-out);
+}
+
+.theme-trigger {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: .46rem .65rem;
+  min-block-size: 2.4rem;
+  font-size: .8rem;
+  white-space: nowrap;
+  &:hover, &[aria-expanded="true"] { background: var(--selection); border-color: var(--border-control); }
+}
+
+.theme-chevron { transition: transform var(--motion-control) var(--ease-out); }
+.theme-trigger[aria-expanded="true"] .theme-chevron { transform: rotate(180deg); }
+
+.theme-options {
+  position: absolute;
+  inset: calc(100% + .45rem) 0 auto auto;
+  z-index: 20;
+  display: grid;
+  min-inline-size: 10.75rem;
+  gap: .15rem;
+  padding: .35rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-surface);
+  box-shadow: 0 8px 24px #0002;
+  animation: theme-open 150ms var(--ease-out);
+  transform-origin: top right;
+}
+
+.theme-option {
+  padding: .55rem .65rem;
+  min-block-size: 2.5rem;
+  border: 0;
+  background: transparent;
+  font-size: .83rem;
+  text-align: start;
+  > span { flex: 1; white-space: nowrap; }
+  > svg { flex: none; }
+  &:hover, &[aria-pressed="true"] { background: var(--selection); }
+  &[aria-pressed="true"] { font-weight: 650; }
+  &[aria-pressed="false"] .theme-check { visibility: hidden; }
+}
+
+@keyframes theme-open {
+  from { opacity: 0; transform: translateY(-.25rem) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-options { animation: none; }
+  .theme-trigger, .theme-option, .theme-chevron { transition: none; }
+}

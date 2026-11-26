@@ -9,8 +9,10 @@
   --selection: #e9e9ec;
   --danger: #b91c1c;
   --focus: #2563eb;
-  --radius-control: .5rem;
-  --radius-surface: .75rem;
+  --radius-control: .625rem;
+  --search-highlight: #fff0a0;
+  --search-highlight-text: #302500;
+  --radius-surface: .875rem;
   --motion-control: 140ms;
   --ease-out: cubic-bezier(.2,.7,.25,1);
   --font: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
@@ -28,4 +30,6 @@
   --selection: #29292e;
   --danger: #fca5a5;
   --focus: #93c5fd;
+  --search-highlight: #786020;
+  --search-highlight-text: #fff5bf;
 }
