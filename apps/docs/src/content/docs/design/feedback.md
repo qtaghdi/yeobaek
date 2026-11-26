@@ -31,3 +31,20 @@ Toast의 성공 메시지와 긴급 오류를 같은 방식으로 알리면 과�
 복사 성공처럼 일반적인 결과는 정중한 알림으로, 즉시 주의가 필요한 오류는 상황에 맞는 알림으로 전달한다. 실제 비동기 결과를 받은 뒤 성공을 표시하며 실패 시 다시 시도할 수 있게 한다.
 
 [관련 이슈 · oddmash-ui #40](https://github.com/Oddmash/oddmash-ui/issues/40)
+
+## 복사와 Toast의 수명주기
+
+[Oddmash UI #95](https://github.com/Oddmash/oddmash-ui/issues/95)에서 공용 clipboard와 Toast를 정리할 때, 버튼 클릭 자체와 실제 작업 성공은 다른 사건이라는 점이 중요했다. 복사 요청이 거절될 수 있으므로 쓰기 작업을 완료하기 전에 성공을 표시해서는 안 된다.
+
+```ts
+const copy = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    notify({ message: "복사했어요", status: "success" });
+  } catch {
+    notify({ message: "복사하지 못했어요", status: "error" });
+  }
+};
+```
+
+연속으로 복사했을 때 이전 알림의 만료 타이머가 새 알림을 닫지 않도록 각 알림을 독립적으로 식별한다. 여러 알림이 중첩될 경우 화면을 가리지 않도록 표시 개수의 상한을 정한다. 성공 여부와 읽을 기회가 보장된 다음에야 애니메이션을 고려한다.

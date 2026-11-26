@@ -35,3 +35,19 @@ main {
 window.innerWidth, document.documentElement.clientWidth, 실제 요소의 bounding box를 구분해 측정한다. 고정된 100vw 대신 가능한 영역을 기준으로 배치하고, 본문 스크롤 잠금 전후의 정렬을 비교한다.
 
 [관련 이슈 · oddmash-ui #81](https://github.com/Oddmash/oddmash-ui/issues/81)
+
+## 320px이 항상 320px은 아니다
+
+[Oddmash UI #81](https://github.com/Oddmash/oddmash-ui/issues/81)에서는 320px 화면에 15px 클래식 스크롤바가 나타날 때 문서의 사용 가능한 폭이 305px이었다. 288px Toast가 좌우 1px와 16px로 배치되면 같은 중심으로 보이지 않는다.
+
+```css
+:root {
+  scrollbar-gutter: stable;
+}
+.toast-region {
+  max-inline-size: calc(100% - 2rem);
+  margin-inline: auto;
+}
+```
+
+scrollbar-gutter는 스크롤바가 나타날 때 공간이 달라지는 상황에 대응하는 선택지다. 하지만 실제 Toast가 어느 containing block에 배치되는지 확인하지 않고 두 속성을 추가하는 것만으로 모든 환경이 해결되지는 않는다. 클래식 스크롤바와 오버레이 스크롤바, 잠금 전후를 나눠서 확인해야 한다.

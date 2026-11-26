@@ -354,3 +354,5 @@ header.header { border-block-end: 1px solid var(--edge); }
   from { opacity: .8; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.site-title img { width: auto; height: 2rem; max-width: 100%; }
