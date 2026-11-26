@@ -24,6 +24,16 @@ const checkPaintOrder = async (page, frame) => {
 const checkMotion = async (browser, origin) => {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
   try {
+    const setMotion = async (reducedMotion) => {
+      await page.evaluate(() => {
+        delete document.documentElement.dataset.qaMotion;
+        matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", event => {
+          document.documentElement.dataset.qaMotion = event.matches ? "reduce" : "no-preference";
+        }, { once: true });
+      });
+      await page.emulateMedia({ reducedMotion });
+      await page.waitForFunction(expected => document.documentElement.dataset.qaMotion === expected, reducedMotion);
+    };
     await page.clock.install();
     await page.goto(base(origin) + "css/stacking-context/");
     const story = page.locator(storySelector);
@@ -69,19 +79,18 @@ const checkMotion = async (browser, origin) => {
     });
     await page.waitForFunction(() => document.querySelector(".visual-story")?.dataset.playing === "true");
 
-    await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.waitForFunction(() => !matchMedia("(prefers-reduced-motion: reduce)").matches);
-    await page.emulateMedia({ reducedMotion: "reduce" });
+    await setMotion("no-preference");
+    await setMotion("reduce");
     await page.waitForFunction(() => document.querySelector(".visual-story")?.dataset.playing === "false");
     assert.equal(await story.getByRole("button", { name: "자동 재생 시작" }).count(), 1);
 
-    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await setMotion("no-preference");
     const summary = page.locator(".sidebar-content summary").filter({ hasText: "03 · React와 상태·데이터" });
     const group = summary.locator("..");
     await summary.click();
     await page.waitForFunction(() => [...document.querySelectorAll(".sidebar-content details")].some(details =>
       details.querySelector("summary")?.textContent?.includes("03 · React") && details.querySelector("ul")?.style.overflow === "hidden"));
-    await page.emulateMedia({ reducedMotion: "reduce" });
+    await setMotion("reduce");
     await page.waitForFunction(() => [...document.querySelectorAll(".sidebar-content details")].some(details =>
       details.querySelector("summary")?.textContent?.includes("03 · React") && details.open && details.querySelector("ul")?.style.overflow === ""));
     await summary.click();

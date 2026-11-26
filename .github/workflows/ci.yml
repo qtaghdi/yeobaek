@@ -34,6 +34,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
@@ -45,15 +47,34 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm test:build
-      - name: 브라우저 회귀 검증
+      - name: 브라우저 검증 준비
+        id: browser_setup
         run: |
           npm install --prefix "$RUNNER_TEMP/yeobaek-browser" --no-save playwright@1.65.0
           node "$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/cli.js" install chromium
-          PLAYWRIGHT_MODULE="$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/index.mjs" pnpm test:browser
+      - name: 브라우저 매트릭스 범위 결정
+        id: browser_scope
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]] && ! git diff --quiet HEAD^1 HEAD -- tests/browser-matrix.mjs .github/workflows/ci.yml; then
+            echo 'full=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'full=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: 브라우저 회귀 검증
+        run: LAYOUT_SCREENSHOT_DIR="$RUNNER_TEMP/yeobaek-layout" PLAYWRIGHT_MODULE="$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/index.mjs" pnpm test:browser
       - name: 모바일 터치 및 핵심 브라우저 사용자 흐름
+        if: ${{ !cancelled() && steps.browser_setup.outcome == 'success' }}
         run: PLAYWRIGHT_MODULE="$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/index.mjs" node tests/browser-matrix.mjs
       - name: Firefox 및 WebKit 회귀 검증
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.full_browser_matrix }}
+        if: ${{ !cancelled() && steps.browser_setup.outcome == 'success' && (steps.browser_scope.outputs.full == 'true' || (github.event_name == 'workflow_dispatch' && inputs.full_browser_matrix)) }}
         run: |
           node "$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/cli.js" install --with-deps firefox webkit
           PLAYWRIGHT_MODULE="$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/index.mjs" BROWSER_ENGINES=firefox,webkit node tests/browser-matrix.mjs
+      - name: 레이아웃 검증 스크린샷
+        if: ${{ !cancelled() && steps.browser_setup.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-screenshots
+          path: ${{ runner.temp }}/yeobaek-layout
+          if-no-files-found: ignore
+          retention-days: 7
