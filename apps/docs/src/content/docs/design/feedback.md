@@ -3,6 +3,8 @@ title: "로딩·성공·실패를 어떻게 보여줄까?"
 description: "비동기 복사와 Toast의 수명주기, 독립적인 알림 큐, 접근 가능한 피드백을 설계합니다."
 ---
 
+## 복사 버튼을 눌렀다고 복사가 된 건 아닙니다
+
 저장 버튼을 클릭했다고 저장이 완료된 것은 아닙니다. 사용자의 요청, 실제 처리 결과, 화면에 보이는 피드백은 서로 다른 사건입니다. 잘못된 성공 메시지는 단순한 시각 오류가 아니라 사용자가 실패를 성공으로 믿도록 만듭니다.
 
 Oddmash UI에서 ClipboardButton과 ToastProvider를 제공하게 된 [#95](https://github.com/Oddmash/oddmash-ui/issues/95)는 여러 소비자가 반복해서 구현하던 복사와 알림의 상태를 공용으로 다루기 위한 사례입니다.
@@ -83,18 +85,13 @@ const dismiss = (id: string) => {
 
 모션 감소 환경에서는 실제 성공·실패와 닫힌 상태가 그대로 제공되며, 애니메이션은 상태의 의미를 대신하지 않습니다.
 
-## 검증 기준
+## 사용자가 믿을 수 있는 피드백
 
-- 실제 Clipboard API의 성공과 거절을 구분합니다.
-- 복사 중 연속 요청, 코드 변경, 컴포넌트 해제 후 늦은 결과가 기존 상태를 덮지 않는지 확인합니다.
-- 알림을 빠르게 여러 번 생성해도 표시 개수의 한계를 지킵니다.
-- 포인터와 키보드로 읽는 동안 타이머가 일시 정지되고, 재개 시 남은 시간이 반영됩니다.
-- 알림 종료 후 다음 조작 위치가 예측 가능하고 포커스가 이미 다른 곳에 있으면 그대로 유지됩니다.
-- 모션 감소 환경에서도 성공, 오류, 닫힌 상태가 동일합니다.
+복사 요청이 끝나기 전에 성공 알림을 띄우면 사용자는 붙여넣기 전까지 실패를 모릅니다. 요청이 연속으로 발생하는 경우에는 이전 결과가 새 상태를 덮어쓰지 않게 해야 합니다. 같은 알림이 여러 개 쌓일 때도 읽고 있는 알림이 갑자기 사라지면 내용을 확인하기 어렵습니다.
 
-공개 브라우저 테스트에는 clipboard fixture의 성공·거절, 실제 Chromium clipboard, 관리되는 알림 개수와 모션 감소 환경의 포커스 동작을 확인하는 테스트가 포함되어 있습니다. fixture 기반 검증과 실제 브라우저 권한을 사용하는 검증은 구분합니다.
+Toast를 잘 만든다는 건 예쁜 애니메이션을 추가하는 일만은 아닙니다. 읽는 동안 타이머를 멈추거나 키보드로 닫은 뒤 다음 위치를 예측할 수 있도록 하는 것도 포함됩니다. 화면에서 실제로 일어난 일을 정확하게 알려주는 것부터 시작해봅시다.
 
-## 참고
+## 참고 자료
 
 - [Oddmash UI #40](https://github.com/Oddmash/oddmash-ui/issues/40) · [#64](https://github.com/Oddmash/oddmash-ui/issues/64) · [#95](https://github.com/Oddmash/oddmash-ui/issues/95) · [#120](https://github.com/Oddmash/oddmash-ui/issues/120)
 - [실제 ClipboardButton](https://github.com/Oddmash/oddmash-ui/blob/25ecce212b4c3a2a2100d6190a191722087135cb/src/clipboard-button.tsx) · [ToastProvider 구현](https://github.com/Oddmash/oddmash-ui/blob/25ecce212b4c3a2a2100d6190a191722087135cb/src/toast-provider.tsx)

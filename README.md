@@ -24,22 +24,28 @@
   - [모달을 열 때 화면이 옆으로 밀리는 이유](https://qtaghdi.github.io/yeobaek/css/scrollbar/)
   - [한국어 줄바꿈을 다루는 방법](https://qtaghdi.github.io/yeobaek/css/text-wrap/)
   - [요소 크기와 글꼴의 변화를 관찰하기](https://qtaghdi.github.io/yeobaek/browser/layout-observation/)
+  - [프론트엔드 렌더링은 언제, 어디에서 하는 것이 좋을까?](https://qtaghdi.github.io/yeobaek/css/rendering-strategies/)
 - React와 상태·데이터
   - [TypeScript 타입은 런타임에도 안전할까?](https://qtaghdi.github.io/yeobaek/language/type-runtime/)
   - [상태를 바꿨는데 값이 그대로인 이유](https://qtaghdi.github.io/yeobaek/react/state-snapshot/)
   - [입력 상태는 누가 관리해야 할까?](https://qtaghdi.github.io/yeobaek/react/controlled-input/)
   - [useEffect는 언제 사용해야 할까?](https://qtaghdi.github.io/yeobaek/react/effects/)
+  - [API 통신에 useEffect 쓰면 안됨?](https://qtaghdi.github.io/yeobaek/react/server-state/)
   - [상태는 어디에 두는 것이 좋을까?](https://qtaghdi.github.io/yeobaek/react/state-location/)
   - [서버 상태와 Query Key](https://qtaghdi.github.io/yeobaek/react/query-keys/)
   - [비동기 요청의 실패와 응답 순서](https://qtaghdi.github.io/yeobaek/language/async-requests/)
+  - [프론트는 에러 전처리가 불가능할까?](https://qtaghdi.github.io/yeobaek/react/error-handling/)
+  - [Auth가 쉽다는 당신에게](https://qtaghdi.github.io/yeobaek/react/auth-lifecycle/)
 - 컴포넌트와 디자인 시스템
   - [디자인 토큰은 왜 필요할까?](https://qtaghdi.github.io/yeobaek/design-system/tokens/)
+  - [디자이너 없는 환경에서 디자인 시스템을 만든 이유](https://qtaghdi.github.io/yeobaek/design-system/why-design-system/)
   - [재사용 가능한 컴포넌트의 API](https://qtaghdi.github.io/yeobaek/design-system/component-api/)
   - [공통 컴포넌트의 호환성과 변경](https://qtaghdi.github.io/yeobaek/design-system/compatibility/)
 - 복합 인터랙션과 제품 UI
   - [왜 내 웹만 구릴까?](https://qtaghdi.github.io/yeobaek/design/visual-hierarchy/)
   - [로딩이 끝날 때 화면이 움직이는 이유](https://qtaghdi.github.io/yeobaek/design/loading-states/)
   - [로딩·성공·실패를 어떻게 보여줄까?](https://qtaghdi.github.io/yeobaek/design/feedback/)
+  - [팀을 짜는 웹사이트 때문에 알고리즘을 다시 공부했습니다](https://qtaghdi.github.io/yeobaek/design/team-balance/)
 - 아키텍처와 개발자 경험
   - [폴더 구조보다 중요한 모듈 경계](https://qtaghdi.github.io/yeobaek/architecture/module-boundaries/)
   - [모노레포가 필요한 상황](https://qtaghdi.github.io/yeobaek/architecture/monorepo/)

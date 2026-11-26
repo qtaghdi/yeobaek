@@ -3,9 +3,9 @@ title: "서버 상태와 Query Key"
 description: "쿼리 키가 캐시를 식별하는 방식과 갱신 범위."
 ---
 
-목록 API에 검색어와 페이지 번호가 있다면 단순한 문자열 키 하나로는 서로 다른 결과를 구분하기 어렵습니다. TanStack Query에서는 데이터를 식별할 수 있는 키가 필요합니다.
+사용자 목록을 호출하고 응답을 state에 저장했습니다. 잘 동작하네요. 그런데 페이지를 나갔다 돌아오면 또 불러오고, 같은 목록을 쓰는 다른 컴포넌트에서도 또 호출하고, 사용자 수정 후에는 어디를 갱신해야 할지 고민하게 됩니다. 이쯤 되면 API를 호출하는 것과 가져온 데이터를 관리하는 것을 구분할 필요가 있습니다.
 
-## 키와 요청 조건
+## Query Key는 데이터의 주소다
 
 다음 예시는 객체 기반 API를 사용하는 TanStack Query v5 스타일입니다.
 
@@ -18,7 +18,21 @@ const query = useQuery({
 
 조회 결과를 바꾸는 조건은 키에 포함합니다. 같은 데이터를 여러 곳에서 불러올 때 키 생성 규칙을 공통으로 관리하면 오타와 일관성 문제를 줄일 수 있습니다.
 
-## 변경 후 갱신
+여기서 keyword를 키에서 빼면 어떻게 될까요? 검색어가 달라져도 캐시에는 같은 데이터로 기록됩니다. 반대로 화면에만 사용하는 모달의 열림 상태까지 키에 추가하면 같은 API 결과를 불필요하게 다른 데이터로 취급하게 됩니다.
+
+```ts
+const itemKeys = {
+  all: ["items"] as const,
+  list: (keyword: string, page: number) =>
+    ["items", "list", { keyword, page }] as const,
+  detail: (id: string) =>
+    ["items", "detail", id] as const,
+};
+```
+
+여러 화면에서 목록과 상세 정보를 사용한다면 이런 식으로 키의 생성 규칙을 정할 수 있습니다. 목록 하나만 다시 가져올지, 관련된 모든 목록을 갱신할지 표현하기도 편해집니다. 캐시의 신선도와 생명주기는 [API 통신에 useEffect 쓰면 안됨?](../server-state/)에서 이어서 설명했습니다.
+
+## 수정한 뒤에는 무엇을 갱신할까?
 
 ```ts
 await queryClient.invalidateQueries({
@@ -28,16 +42,12 @@ await queryClient.invalidateQueries({
 
 관련 캐시를 오래된 것으로 표시하고 조건에 맞는 활성 쿼리를 다시 조회할 수 있습니다. 모든 캐시를 무효화하기보다는 어떤 데이터가 실제로 바뀌었는지 구분합니다.
 
-캐시의 신선도와 메모리 유지 시간은 다른 개념입니다. 사용하는 버전에 따라 옵션과 API 차이를 확인합니다.
+예를 들어 상세 정보 하나를 수정했다면 그 사용자의 상세 키와 수정 결과가 목록에 반영되는 쿼리를 갱신할 수 있습니다. 페이지나 검색어가 다른 목록 모두에 영향을 주는 변경이라면 목록을 공통 접두사로 묶어둔 것이 유용합니다.
 
 [TanStack Query: Query Keys](https://tanstack.com/query/latest/docs/framework/react/guides/query-keys) · [Query Invalidation](https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation)
 
-## 프로젝트에서 이어진 고민
+## 입력 중인 값과 실제 요청의 차이
 
-기간 선택 UI가 지나치게 많아 공통 기간을 먼저 제공하고 초 단위의 상세 범위는 별도로 다루자는 논의가 있었다. 화면의 임시 입력값과 서버 요청의 조건을 구분하면 캐시 키도 실제로 적용한 조건만 표현할 수 있다.
+기간 필터를 만들 때 입력 중인 시작일과 종료일이 바뀔 때마다 조회를 할 이유는 없습니다. [Oddmash Agents #273](https://github.com/Oddmash/oddmash-agents/issues/273)처럼 적용된 기간만 요청 조건과 키로 사용하면 화면의 편집 상태와 서버 캐시가 뒤섞이지 않습니다.
 
-### 검증 기준
-
-queryKey에 정규화된 시작·종료 시간을 포함하고 임시 draft는 포함하지 않는다. 같은 의미의 기간은 같은 키를 생성하고 기간을 바꾸면 다른 결과를 독립적으로 캐시할 수 있게 한다.
-
-[관련 이슈 · oddmash-agents #273](https://github.com/Oddmash/oddmash-agents/issues/273)
+이 글은 벨로그의 [API 통신에 useEffect 쓰면 안됨?](https://velog.io/@qtaghdi/API-통신에-useEffect-쓰면-안되나)에서 이야기했던 서버 상태를 Query Key 중심으로 다시 정리한 글입니다.

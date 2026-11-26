@@ -3,9 +3,9 @@ title: "비활성화와 접근성 상태"
 description: "disabled, aria-disabled와 inert가 담당하는 동작."
 ---
 
-버튼을 흐리게 표시하는 것만으로는 비활성화 상태가 되지 않습니다. 외형, 동작, 보조 기술에 전달되는 상태를 함께 맞춰야 합니다.
+버튼을 회색으로 바꾸고 커서를 not-allowed로 만들었습니다. 여전히 클릭이 된다면 비활성화된 버튼일까요? 당연히 아닙니다. 그런데 접근성 상태와 실제 동작이 따로 움직이는 문제는 커스텀 UI를 만들 때 꽤 쉽게 발생합니다.
 
-## 구분하기
+## disabled와 aria-disabled는 같은 말이 아니다
 
 | 방법 | 실제 의미 |
 | --- | --- |
@@ -15,7 +15,9 @@ description: "disabled, aria-disabled와 inert가 담당하는 동작."
 
 `aria-disabled`를 선택한다면 이벤트 처리에서 실행을 별도로 막고, 동작 불가능 상태가 시각적으로도 명확해야 합니다.
 
-## 적용 기준
+aria-disabled를 사용하면 요소의 상태를 보조 기술에 설명할 수 있지만 이벤트 핸들러의 실행을 자동으로 막아주는 것은 아닙니다. 일반 폼 버튼이라면 disabled가 간단하고, 비활성 기능이 있는 이유를 포커스로 안내해야 하는 위젯에서는 별도의 정책이 필요할 수 있습니다.
+
+## 사용자가 이유를 알아야 한다면
 
 유효하지 않은 폼을 제출할 수 없도록 막는 경우 보통 네이티브 disabled가 간단합니다. 사용자가 특정 메뉴의 존재와 이용 불가능한 이유를 알아야 할 때에는 포커스를 유지하는 접근을 고려할 수 있습니다.
 
@@ -23,12 +25,6 @@ description: "disabled, aria-disabled와 inert가 담당하는 동작."
 
 [MDN: disabled](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled) · [MDN: inert](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert)
 
-## 프로젝트에서 이어진 고민
+## 기본 입력 요소를 없앨 이유가 있을까?
 
-Slider를 브라우저별로 꾸미면서 비활성 상태, 접근 가능한 이름, Home/End 키의 기본 동작까지 유지해야 한다는 요구가 있었다. 커스텀 스타일을 적용한다는 이유만으로 네이티브 동작을 다시 구현할 필요는 없다.
-
-### 검증 기준
-
-실제 input의 disabled와 CSS의 시각적 비활성화를 구분한다. 값 변경 불가 상태에서 포인터, 방향키, Home/End를 확인한다. 단순 aria-disabled는 동작을 자동으로 막지 않는다는 점도 기억한다.
-
-[관련 이슈 · oddmash-ui #104](https://github.com/Oddmash/oddmash-ui/issues/104)
+Slider를 커스텀 스타일로 꾸며도 키보드 조작과 비활성화 기능까지 새로 만들 필요는 없습니다. [Oddmash UI #104](https://github.com/Oddmash/oddmash-ui/issues/104)에서처럼 실제 input의 상태를 기준으로 시각적 표현을 맞추면 브라우저가 제공하는 동작을 유지할 수 있습니다.

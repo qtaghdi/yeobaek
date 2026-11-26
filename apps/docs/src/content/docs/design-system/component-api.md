@@ -3,6 +3,8 @@ title: "재사용 가능한 컴포넌트의 API"
 description: "Oddmash UI의 Select를 사례로 공개 API, 선택·탐색 상태, 네이티브 폼 계약과 오버레이를 설계합니다."
 ---
 
+## 버튼 하나 공통화하는 건 쉬웠는데 Select는 왜 어려울까?
+
 공통 컴포넌트의 가치는 여러 화면에서 같은 모양을 보여 주는 것만으로 생기지 않습니다. 비슷한 사용 방식과 일관된 동작을 보장하고, 소비자가 내부 구현을 모르더라도 원하는 결과를 만들 수 있어야 합니다.
 
 [Oddmash UI #65](https://github.com/Oddmash/oddmash-ui/issues/65)에서는 네이티브 Select와 커스텀 SelectDropdown이라는 두 가지 API를 하나의 대표 Select로 정리했습니다. 단순히 이름을 바꾸는 작업이 아니라 기존 소비자가 의존하던 입력, 이벤트, DOM과 접근성 계약을 다시 정의하는 일이었습니다.
@@ -110,8 +112,11 @@ CSS만으로 충분하지 않은 경우 실제 목록의 scrollTop, clientHeight
 | 좁은 화면·viewport 변화 | 목록이 트리거에 맞고 화면에 들어옴 |
 | 이전 import 이름 | 지원하기로 한 별칭과 타입 유지 |
 
-## 참고
+## 재사용은 내부 구현을 감추는 것부터
 
+Select를 공통화했다고 사용처마다 포커스를 직접 옮기고 스크롤 위치를 직접 조정해야 한다면 어느 부분을 공통화한 걸까요? 단순히 같은 UI를 렌더링하는 컴포넌트보다 상태의 책임과 이벤트의 계약까지 일관되게 제공하는 컴포넌트가 더 유용하다고 생각합니다.
+
+## 참고 자료
 - [Oddmash UI #65](https://github.com/Oddmash/oddmash-ui/issues/65) · [PR #66](https://github.com/Oddmash/oddmash-ui/pull/66) · [PR #122](https://github.com/Oddmash/oddmash-ui/pull/122)
 - [실제 Select 구현](https://github.com/Oddmash/oddmash-ui/blob/25ecce212b4c3a2a2100d6190a191722087135cb/src/select-dropdown.tsx) · [공개 export](https://github.com/Oddmash/oddmash-ui/blob/25ecce212b4c3a2a2100d6190a191722087135cb/src/select.tsx)
 - [React: Passing Props](https://react.dev/learn/passing-props-to-a-component) · [입력 상태는 누가 관리해야 할까?](../../react/controlled-input/)
