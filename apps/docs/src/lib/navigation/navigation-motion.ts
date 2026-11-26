@@ -1,7 +1,7 @@
 type MarkerGeometry = { x: number; y: number; width: number; height: number };
-type PendingMarker = { path: string; geometry: MarkerGeometry; timestamp: number };
+type SidebarState = { groups: Record<string, boolean>; scroll: number };
 
-const storageKey = "yeobaek-navigation-marker";
+const sidebarStorageKey = "yeobaek-sidebar-state-v1";
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 const measure = (root: HTMLElement, target: HTMLElement): MarkerGeometry | undefined => {
@@ -18,17 +18,7 @@ const applyGeometry = (marker: HTMLElement, geometry: MarkerGeometry) => {
   marker.style.height = `${geometry.height}px`;
 };
 
-const readPendingMarker = (): PendingMarker | undefined => {
-  try {
-    const raw = sessionStorage.getItem(storageKey);
-    sessionStorage.removeItem(storageKey);
-    if (!raw) return;
-    const value = JSON.parse(raw) as PendingMarker;
-    if (value.path === location.pathname && Date.now() - value.timestamp < 10_000 && Object.values(value.geometry).every(Number.isFinite)) return value;
-  } catch { return; }
-};
-
-const mountMarker = (root: HTMLElement, currentSelector: string, pending?: PendingMarker) => {
+const mountMarker = (root: HTMLElement, currentSelector: string) => {
   const marker = document.createElement("span");
   marker.className = "navigation-marker";
   marker.setAttribute("aria-hidden", "true");
@@ -71,36 +61,12 @@ const mountMarker = (root: HTMLElement, currentSelector: string, pending?: Pendi
   const mutation = new MutationObserver(schedule);
   mutation.observe(root, { attributes: true, attributeFilter: ["aria-current", "open"], subtree: true });
 
-  if (pending && !reducedMotion.matches && measure(root, root.querySelector<HTMLElement>(currentSelector) ?? root)) {
-    marker.style.transition = "none";
-    last = pending.geometry;
-    applyGeometry(marker, pending.geometry);
-    marker.style.opacity = "1";
-    root.classList.add("navigation-marker-ready");
-    requestAnimationFrame(() => requestAnimationFrame(() => update()));
-  } else update(false);
-
-  if (root.matches("sl-sidebar-state-persist")) {
-    document.addEventListener("click", (event) => {
-      if (!(event instanceof MouseEvent) || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      const link = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>("a[href]");
-      if (!link || link.target === "_blank") return;
-      const url = new URL(link.href);
-      if (url.origin !== location.origin || url.pathname === location.pathname) return;
-      if (![...root.querySelectorAll<HTMLAnchorElement>("a[href]")].some((entry) => new URL(entry.href).pathname === url.pathname)) return;
-      const active = root.querySelector<HTMLElement>(currentSelector);
-      const geometry = active ? measure(root, active) : undefined;
-      if (!geometry) return;
-      try {
-        sessionStorage.setItem(storageKey, JSON.stringify({ path: url.pathname, geometry, timestamp: Date.now() }));
-      } catch { return; }
-    });
-  }
+  update(false);
   document.fonts?.ready.then(schedule);
   window.addEventListener("pageshow", schedule);
 };
 
-const animateDisclosure = (details: HTMLDetailsElement) => {
+const animateDisclosure = (details: HTMLDetailsElement, onChange: (open: boolean) => void) => {
   const summary = details.querySelector<HTMLElement>(":scope > summary");
   const list = details.querySelector<HTMLElement>(":scope > ul");
   if (!summary || !list) return;
@@ -114,12 +80,14 @@ const animateDisclosure = (details: HTMLDetailsElement) => {
       list.style.removeProperty("overflow");
       list.style.removeProperty("height");
       desired = !details.open;
+      onChange(desired);
       return;
     }
     event.preventDefault();
     const wasOpen = details.open;
     const from = wasOpen ? list.getBoundingClientRect().height : 0;
     desired = animation ? !desired : !wasOpen;
+    onChange(desired);
     animation?.cancel();
     if (desired) details.open = true;
     const to = desired ? list.scrollHeight : 0;
@@ -136,6 +104,49 @@ const animateDisclosure = (details: HTMLDetailsElement) => {
       list.style.removeProperty("overflow");
       animation = undefined;
     };
+  });
+};
+
+const mountSidebar = (sidebar: HTMLElement) => {
+  const pane = sidebar.closest<HTMLElement>(".sidebar-pane");
+  const groups = [...sidebar.querySelectorAll<HTMLDetailsElement>("details")].flatMap((details) => {
+    const link = details.querySelector<HTMLAnchorElement>("a[href]");
+    return link ? [{ key: new URL(link.href).pathname, details }] : [];
+  });
+  let previous: SidebarState | undefined;
+  try {
+    const raw = sessionStorage.getItem(sidebarStorageKey);
+    if (raw) {
+      const value = JSON.parse(raw) as SidebarState;
+      if (typeof value.groups === "object" && value.groups && Number.isFinite(value.scroll)) previous = value;
+    }
+  } catch { previous = undefined; }
+
+  const state: SidebarState = { groups: {}, scroll: previous?.scroll ?? pane?.scrollTop ?? 0 };
+  const persist = () => {
+    state.scroll = pane?.scrollTop ?? 0;
+    try { sessionStorage.setItem(sidebarStorageKey, JSON.stringify(state)); } catch { return; }
+  };
+
+  for (const { key, details } of groups) {
+    const active = Boolean(details.querySelector('a[aria-current="page"]'));
+    const stored = previous?.groups[key];
+    details.open = active || (typeof stored === "boolean" ? stored : details.open);
+    state.groups[key] = details.open;
+    animateDisclosure(details, (open) => {
+      state.groups[key] = open;
+      persist();
+    });
+  }
+  if (pane && previous) {
+    const savedScroll = previous.scroll;
+    pane.scrollTop = savedScroll;
+    requestAnimationFrame(() => { pane.scrollTop = savedScroll; });
+  }
+  window.addEventListener("pagehide", persist);
+  document.addEventListener("click", (event) => {
+    const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
+    if (link && new URL(link.href).origin === location.origin) persist();
   });
 };
 
@@ -193,10 +204,7 @@ const syncToc = () => {
 
 export const mountNavigationMotion = () => {
   const sidebar = document.querySelector<HTMLElement>(".sidebar-content sl-sidebar-state-persist");
-  if (sidebar) {
-    for (const details of sidebar.querySelectorAll<HTMLDetailsElement>("details")) animateDisclosure(details);
-    mountMarker(sidebar, 'a[aria-current="page"]', readPendingMarker());
-  }
+  if (sidebar) mountSidebar(sidebar);
   for (const toc of document.querySelectorAll<HTMLElement>("starlight-toc nav, mobile-starlight-toc .dropdown")) {
     mountMarker(toc, 'a[aria-current="true"]');
   }

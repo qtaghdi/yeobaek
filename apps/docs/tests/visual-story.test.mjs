@@ -19,3 +19,15 @@ test("키보드 설명은 실제 문서 포커스를 변경하지 않고 입력 
   assert.equal(stories["dialog-focus"].frames.at(-1).key, "Escape");
   assert.equal(stories["dialog-focus"].frames.at(-1).states[0].value, "포커스 복원");
 });
+
+test("시각 예제는 읽을 시간을 주고 마지막 단계에서 더 오래 머문다", async () => {
+  const { frameDuration, nextFrame, shouldPlay } = await import("../src/components/visuals/playback-policy.ts");
+  assert.ok(frameDuration("짧은 설명", false) >= 3000);
+  assert.ok(frameDuration("긴 설명".repeat(25), false) > frameDuration("짧은 설명", false));
+  assert.equal(frameDuration("같은 설명", true) - frameDuration("같은 설명", false), 1000);
+  assert.equal(nextFrame(2, 3), 0);
+  assert.equal(shouldPlay(true, false, true), false);
+  assert.equal(shouldPlay(true, true, false), false);
+  assert.equal(shouldPlay(false, true, true), false);
+  assert.equal(shouldPlay(true, true, true), true);
+});
