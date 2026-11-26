@@ -25,3 +25,13 @@ import { LoadingStatesExample } from "src/components/examples/design/loading-sta
 스켈레톤을 사용한다고 모든 레이아웃 변화가 사라지는 것은 아닙니다. 실제 데이터의 길이와 화면 크기가 다를 수 있으므로 좁은 화면과 긴 텍스트도 검증합니다.
 
 [web.dev: Cumulative Layout Shift](https://web.dev/articles/cls)
+
+## 프로젝트에서 이어진 고민
+
+Skeleton은 실제 콘텐츠의 배치를 예고하는 장식이다. 접근성 트리에 가짜 제목과 항목을 노출하면 화면 읽기 도구 사용자는 아직 존재하지 않는 정보를 읽게 된다.
+
+### 검증 기준
+
+로드 전후의 요소 높이와 정렬을 맞추고 Skeleton 자체는 aria-hidden으로 처리한다. 필요한 로딩 상태만 별도로 알린다. 이미 표시된 데이터의 갱신에서는 기존 내용을 유지하는 대안도 검토한다.
+
+[관련 이슈 · oddmash-ui #39](https://github.com/Oddmash/oddmash-ui/issues/39)

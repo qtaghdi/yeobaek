@@ -24,3 +24,13 @@ const parseUser = (value: unknown): User | null => {
 API나 파일처럼 외부 값이 들어오는 경계에서 검증하고, 검증을 마친 데이터는 내부에서 정해진 타입으로 사용하는 구조가 좋습니다. 모든 컴포넌트에서 동일한 검증을 반복하지 않습니다.
 
 [TypeScript: Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
+
+## 프로젝트에서 이어진 고민
+
+실제 Next.js와 Vite 소비자에서 alias 해석 및 공개 계약 호환성을 검증하는 일이 논의되었다. TypeScript 컴파일 성공만으로 런타임 모듈 해석과 설정 파일의 실제 값이 올바르다는 것을 보장할 수 없다는 사례다.
+
+### 검증 기준
+
+외부 입력은 런타임에서 검사하고 타입 선언에만 의존하지 않는다. 타입이 통과하는 가짜 예제 대신 실제 소비자 프로젝트에서 import와 build를 실행한다.
+
+[관련 이슈 · boundra #43](https://github.com/Oddmash/boundra/issues/43)

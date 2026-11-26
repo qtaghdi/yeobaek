@@ -32,3 +32,13 @@ import { TabOrderExample } from "src/components/examples/accessibility/tab-order
 포커스 이동 순서를 바꾸는 것과 화면을 읽는 순서를 바꾸는 것은 다른 문제입니다. CSS `order`로 시각적 배치만 바꾼다고 DOM 순서가 바뀌는 것은 아닙니다. 커스텀 위젯에서 한 항목만 Tab 순서에 남기고 방향키로 이동시키는 패턴은 별도 키보드 처리가 필요합니다.
 
 [MDN: tabindex](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/tabindex)
+
+## 프로젝트에서 이어진 고민
+
+모바일 탐색 메뉴에서 Escape를 눌러도 메뉴가 열린 채 유지되는 사례가 있었다. 메뉴가 보이는 상태와 aria-expanded가 일치하는지뿐 아니라 닫은 다음 키보드가 어디로 돌아가는지도 중요하다.
+
+### 검증 기준
+
+375px 환경에서 메뉴를 키보드로 열고 내부 항목으로 이동한 다음 Escape로 닫는다. 닫힌 항목에 Tab이 들어가지 않고 트리거를 다시 사용할 수 있어야 한다.
+
+[관련 이슈 · oddmash-ui #23](https://github.com/Oddmash/oddmash-ui/issues/23)

@@ -31,3 +31,13 @@ await queryClient.invalidateQueries({
 캐시의 신선도와 메모리 유지 시간은 다른 개념입니다. 사용하는 버전에 따라 옵션과 API 차이를 확인합니다.
 
 [TanStack Query: Query Keys](https://tanstack.com/query/latest/docs/framework/react/guides/query-keys) · [Query Invalidation](https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation)
+
+## 프로젝트에서 이어진 고민
+
+기간 선택 UI가 지나치게 많아 공통 기간을 먼저 제공하고 초 단위의 상세 범위는 별도로 다루자는 논의가 있었다. 화면의 임시 입력값과 서버 요청의 조건을 구분하면 캐시 키도 실제로 적용한 조건만 표현할 수 있다.
+
+### 검증 기준
+
+queryKey에 정규화된 시작·종료 시간을 포함하고 임시 draft는 포함하지 않는다. 같은 의미의 기간은 같은 키를 생성하고 기간을 바꾸면 다른 결과를 독립적으로 캐시할 수 있게 한다.
+
+[관련 이슈 · oddmash-agents #273](https://github.com/Oddmash/oddmash-agents/issues/273)

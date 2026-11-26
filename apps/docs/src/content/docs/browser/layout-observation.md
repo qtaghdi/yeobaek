@@ -27,3 +27,13 @@ const dispose = () => observer.disconnect();
 관찰 콜백에서 같은 요소의 너비를 반복적으로 바꾸면 다시 관찰이 발생할 수 있습니다. 측정과 변경을 분리하고 실제로 결과가 달라졌을 때만 적용합니다. 컴포넌트가 사라지면 관찰도 해제합니다.
 
 [MDN: ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) · [MDN: FontFaceSet.ready](https://developer.mozilla.org/en-US/docs/Web/API/FontFaceSet/ready)
+
+## 프로젝트에서 이어진 고민
+
+ResizeObserver 콜백에서 줄바꿈을 다시 계산하면 요소의 높이가 변하고 다시 관찰이 발생할 수 있다. WebKit 375px 환경에서 이런 반복 관찰이 이슈로 기록되었다. #121에서는 너비와 폰트가 같고 높이만 변한 경우 불필요한 계산을 피하는 조건이 논의되었다.
+
+### 검증 기준
+
+관찰한 변화 중 실제 계산 입력인 너비와 글꼴 변화를 구분한다. 입력이 같다면 중복 작업을 줄이되 사용자가 명시적으로 요청한 refresh는 무시하지 않는다. 관찰 대상 해제도 수명주기의 일부다.
+
+[관련 이슈 · juliya #6](https://github.com/Oddmash/juliya/issues/6)

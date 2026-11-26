@@ -21,3 +21,13 @@ description: "테스트 수준을 문제의 성격에 맞게 선택합니다."
 접근성 검사 도구가 발견하지 못하는 문제도 존재합니다. 자동 검사 결과와 실제 키보드 조작을 구분하고 모바일이나 다른 브라우저에서의 차이도 확인합니다.
 
 [Testing Library: Guiding Principles](https://testing-library.com/docs/guiding-principles/) · [Playwright: Best Practices](https://playwright.dev/docs/best-practices)
+
+## 프로젝트에서 이어진 고민
+
+증분 스캔의 성능을 개선하기 전 전체 스캔과 결과가 일치해야 한다는 요구가 있었다. 빠르게 동작하더라도 놓친 진단이 있으면 개선이라고 할 수 없다.
+
+### 검증 기준
+
+동일한 fixture에서 전체 검사와 변경 후 증분 검사의 진단을 비교한다. 정확성 테스트를 먼저 만들고 이후 시간과 메모리 측정을 별도로 진행한다. 정상뿐 아니라 파일 추가·수정·삭제를 포함한다.
+
+[관련 이슈 · boundra #142](https://github.com/Oddmash/boundra/issues/142)

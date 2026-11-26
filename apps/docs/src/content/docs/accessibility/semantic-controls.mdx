@@ -30,3 +30,13 @@ import { SemanticControlsExample } from "src/components/examples/accessibility/s
 폼 안에서 제출하지 않는 버튼에는 `type="button"`을 명시합니다. 버튼처럼 보이는 링크가 필요한 경우에도 이동이라는 역할은 유지합니다. 기존 요소를 재구성해야 할 이유가 없다면 ARIA와 키보드 이벤트를 직접 구현할 필요가 없습니다.
 
 [MDN: button](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button) · [MDN: a](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a)
+
+## 프로젝트에서 이어진 고민
+
+페이지네이션은 현재 페이지를 변경하는 컨트롤이면서 URL이 있는 경우 탐색 수단이다. 앵커로 이동할 수 있는 페이지를 버튼으로만 구현하면 새 탭 열기와 기본 브라우저 이동 기능을 잃을 수 있다.
+
+### 검증 기준
+
+실제 URL로 이동하는 항목은 링크, 같은 화면의 상태만 변경하는 항목은 버튼으로 설계한다. aria-current는 실제 현재 페이지 하나에만 적용하고 이전/다음 의미도 이름으로 제공한다.
+
+[관련 이슈 · oddmash-ui #41](https://github.com/Oddmash/oddmash-ui/issues/41)

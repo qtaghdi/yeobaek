@@ -25,3 +25,13 @@ description: "모바일 브라우저 UI 변화와 뷰포트 높이 단위."
 키보드가 화면을 덮는 경우는 브라우저와 기기 설정에 따라 달라집니다. 모든 문제를 dvh 하나로 해결한다고 가정하지 않고 실제 모바일 브라우저에서 확인합니다.
 
 [MDN: CSS length](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/length)
+
+## 프로젝트에서 이어진 고민
+
+긴 한국어 제목이나 좁은 브라우저에서 Hero가 잘리는 문제를 확인할 때 고정 높이와 실제 콘텐츠 높이를 구분해야 한다. 모바일 주소 표시줄이 움직일 때에는 화면 전체와 현재 보이는 영역의 차이도 발생한다.
+
+### 검증 기준
+
+높이가 꼭 필요한 모달·패널은 dvh를 검토하고 이전 브라우저용 vh fallback을 확보한다. 일반 문서는 min-height와 자연스러운 스크롤을 우선한다. 짧은 화면과 긴 문장을 함께 확인한다.
+
+[관련 이슈 · oddmash-website #30](https://github.com/Oddmash/oddmash-website/issues/30)

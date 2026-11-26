@@ -1,0 +1,32 @@
+---
+import Default from "@astrojs/starlight/components/Head.astro";
+---
+<Default><slot /></Default>
+<script>
+  import { mountKowrap } from "@oddmash/juliya/dom";
+
+  const selectors = ".hero h1, .hero .tagline, h1[data-page-title], .sl-markdown-content :is(h2, h3, p)";
+  const elements = document.querySelectorAll<HTMLElement>(selectors);
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting || !(entry.target instanceof HTMLElement)) continue;
+      const element = entry.target;
+      observer.unobserve(element);
+      if (element.dataset.juliyaWrapped || element.clientWidth === 0) continue;
+      try {
+        mountKowrap(element, { inline: true, locale: "ko" });
+        element.dataset.juliyaWrapped = "true";
+      } catch {
+        delete element.dataset.juliyaWrapped;
+      }
+    }
+  }, { rootMargin: "160px" });
+
+  for (const element of elements) {
+    const text = element.textContent?.trim() ?? "";
+    if (!/[가-힣]/.test(text) || text.length < 12 || text.length > 180) continue;
+    if (element.closest(".not-content, .notebook-lab, .chapter-index") || element.querySelector("a, code, pre, button, input, select, textarea, svg, astro-island")) continue;
+    if ([...element.children].some(child => !["MARK", "STRONG", "EM", "SPAN", "BR"].includes(child.tagName))) continue;
+    observer.observe(element);
+  }
+</script>
