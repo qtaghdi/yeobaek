@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'astro.config.mjs'
+      - 'tsconfig.json'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'tests/**'
+      - 'eslint.config.js'
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: 검증
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm test:build
+      - name: 브라우저 회귀 검증
+        run: |
+          npm install --prefix "$RUNNER_TEMP/yeobaek-browser" --no-save playwright@1.65.0
+          node "$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/cli.js" install chromium
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/index.mjs" pnpm test:browser

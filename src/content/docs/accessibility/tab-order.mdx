@@ -1,0 +1,45 @@
+---
+title: "tabindex와 키보드 이동 순서"
+description: "DOM 순서와 tabindex가 키보드 이동에 미치는 영향."
+---
+
+import VisualStory from "src/components/visuals/visual-story.astro";
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import { TabOrderExample } from "src/components/examples/accessibility/tab-order";
+
+탭 키를 계속 눌러 폼을 채우다가 갑자기 화면 위로 포커스가 뛰어간다면 어떨까요? 마우스로는 아무 문제 없어 보이던 레이아웃도 DOM 순서와 시각적 순서가 다르면 키보드 사용자에게 꽤 불편합니다.
+
+## 숫자를 붙이면 해결될까요?
+
+| 값 | 동작 |
+| --- | --- |
+| 기본 | 버튼, 링크, 입력 등은 브라우저가 정한 기본 순서에 참여 |
+| 0 | 일반적인 순차 포커스 탐색에 참여 |
+| -1 | 순차 탐색은 제외하지만 코드로 포커스 가능 |
+| 양수 | 양수 그룹 안에서 값 순서로 우선 탐색 |
+
+그렇다면 양수 값을 주면 원하는 순서를 직접 정할 수 있겠네요. 문제는 화면 전체에 그런 숫자가 퍼지기 시작하면 새로운 입력 필드를 추가할 때마다 순서를 다시 맞춰야 한다는 것입니다.
+
+예를 들어 A, B, C가 DOM에 순서대로 있고 CSS로 C를 가장 앞에 배치한 경우를 생각해봅시다. Tab 순서는 자동으로 C부터 시작하지 않습니다. 이런 경우에는 양수 `tabindex`로 순서를 억지로 맞추기보다 처음부터 읽는 순서대로 DOM을 구성하는 편이 단순합니다.
+
+## Tab으로 순서를 비교해봅시다
+
+아래 자동 재생 예제로 일반 순서와 두 번째 버튼을 건너뛰는 순서를 먼저 비교해보세요. 그 아래에서는 직접 Tab으로 조작해볼 수도 있습니다. 양수는 문서 전체의 탐색 순서에 영향을 줄 수 있으므로 이 예제에서는 적용하지 않습니다.
+
+<VisualStory story="tab-order" />
+
+<ExampleFrame label="Tab 이동 순서 비교">
+  <TabOrderExample client:load />
+</ExampleFrame>
+
+`tabindex="-1"`도 포커스 자체를 없애는 속성은 아닙니다. 순차 탐색에서 제외할 뿐, 필요한 시점에 코드로 포커스를 줄 수 있습니다. 모달이 열린 뒤 제목으로 포커스를 이동시키고 싶지만 평소에는 제목이 Tab 순서에 포함될 필요가 없는 상황에서 이 차이가 유용합니다.
+
+## CSS로 위치를 옮겼다고 순서까지 바뀌는 건 아니다
+
+앞의 예제처럼 어떤 요소를 Tab 순서에서 빼는 것과 화면의 배치 순서를 바꾸는 것은 별개의 문제입니다. CSS `order`는 DOM을 재배열하지 않습니다. 한편 메뉴와 같은 커스텀 위젯 내부에서 방향키로 항목을 이동하게 만드는 경우에는 별도의 키보드 처리도 필요합니다.
+
+[MDN: tabindex](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/tabindex)
+
+## 메뉴를 닫고 나면 어디에 있을까?
+
+모바일 메뉴는 열기만큼 닫기도 중요합니다. [Oddmash UI #23](https://github.com/Oddmash/oddmash-ui/issues/23)에서 Escape로 메뉴를 닫는 문제를 다룬 이유도 여기에 있습니다. 닫힌 메뉴에 Tab이 들어가거나 현재 위치를 잃어버린다면 화면에서 메뉴가 사라졌다는 사실만으로는 부족합니다.
