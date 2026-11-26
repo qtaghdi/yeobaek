@@ -1,0 +1,14 @@
+---
+import Default from "@astrojs/starlight/components/Hero.astro";
+import LandingNotes from "src/features/landing/landing-notes.astro";
+import "./landing-hero.scss";
+
+const isHome = Astro.locals.starlightRoute.id === "";
+---
+
+{isHome ? (
+  <div class="landing-hero">
+    <Default />
+    <LandingNotes />
+  </div>
+) : <Default />}
