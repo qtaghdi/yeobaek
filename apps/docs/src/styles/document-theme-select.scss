@@ -2,6 +2,8 @@ yeobaek-theme-select {
   display: inline-flex;
   position: relative;
   align-items: center;
+  flex: none;
+  inline-size: 7.3rem;
   font-family: var(--font);
 
   [hidden] { display: none !important; }
@@ -23,8 +25,18 @@ yeobaek-theme-select {
   background: var(--surface);
   border: 1px solid var(--border);
   padding: .46rem .65rem;
-  min-block-size: 2.4rem;
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: 2.5rem;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) 15px;
+  gap: .45rem;
   font-size: .8rem;
+  line-height: 1.2;
+  font-weight: 550;
+  > svg { flex: none; inline-size: 18px; block-size: 18px; }
+  > .theme-chevron { inline-size: 15px; block-size: 15px; }
+  > .theme-label { text-align: center; min-inline-size: 0; }
   white-space: nowrap;
   &:hover, &[aria-expanded="true"] { background: var(--selection); border-color: var(--border-control); }
 }

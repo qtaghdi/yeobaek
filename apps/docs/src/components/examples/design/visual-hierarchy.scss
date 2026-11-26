@@ -68,8 +68,8 @@
     }
 
     :focus-visible {
-      outline: 2px solid experiment.$accent;
-      outline-offset: 3px;
+      outline: var(--focus-width) solid currentColor;
+      outline-offset: var(--focus-offset);
     }
   }
 
@@ -118,30 +118,36 @@
   }
 
   &__card--color {
-    border-color: experiment.$edge;
-    color: experiment.$ink;
-    background: experiment.$surface;
+    border-color: var(--border);
+    color: var(--text);
+    background: var(--background);
 
     .design-demo__brand {
-      color: experiment.$accent;
+      color: var(--text);
     }
 
     .design-demo__intro > p:last-child,
     .design-demo__note {
-      color: #52525b;
+      color: var(--text-muted);
+    }
+
+    input {
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--border-control);
     }
 
     button {
-      border-color: experiment.$accent;
-      color: white;
-      background: experiment.$accent;
+      border-color: var(--text);
+      color: var(--background);
+      background: var(--text);
     }
   }
 
   &__card--hierarchy {
     .design-demo__form {
       padding-block-end: calc(var(--space) * 2);
-      border-block-end: 1px solid experiment.$edge;
+      border-block-end: 1px solid var(--border);
     }
 
     button {
@@ -150,16 +156,16 @@
   }
 
   &__card--after {
-    border-radius: 14px;
+    border-radius: var(--radius-surface);
     box-shadow: 0 6px 24px rgb(38 37 58 / 8%);
 
     input,
     button {
-      border-radius: 8px;
+      border-radius: var(--radius-control);
     }
 
     button:hover {
-      background: #1d4ed8;
+      opacity: .8;
     }
   }
 

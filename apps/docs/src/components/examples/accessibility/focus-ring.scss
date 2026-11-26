@@ -10,7 +10,7 @@
   --key-active: var(--selection);
   --key-disabled-ink: var(--text-muted);
   --key-size: 56px;
-  --key-radius: 8px;
+  --key-radius: var(--radius-control);
   --key-gap: 16px;
   --ring-color: var(--focus);
   --ring-width: 3px;
@@ -22,6 +22,7 @@
   min-block-size: var(--experiment-height, 19rem);
   color: var(--ink);
   background: var(--surface);
+  border-radius: var(--radius-control);
 
   &--split {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -40,7 +41,7 @@
       --key-hover: #303036;
       --key-active: #29292e;
       --key-disabled-ink: #a1a1aa;
-      --ring-color: #93c5fd;
+      --ring-color: #e4e4e7;
 
       color: var(--ink);
       background: var(--surface);
