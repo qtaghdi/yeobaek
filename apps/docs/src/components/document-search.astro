@@ -242,8 +242,8 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         const link = item.querySelector<HTMLAnchorElement>("a") ?? el("a", "search-result");
         const anchor = target ? "#" + encodeURIComponent(target) : "";
         const range = bodyMatches && !titleMatches ? getMatchRanges(snippet, query)[0] : undefined;
-        const fragment = range ? ":~:text=" + encodeURIComponent(snippet.slice(range.start, range.end)).replace(/-/g, "%2D") : "";
-        link.href = article.url + (fragment ? (anchor || "#") + fragment : anchor);
+        const highlight = range ? "?highlight=" + encodeURIComponent(snippet.slice(range.start, range.end)) : "";
+        link.href = article.url + highlight + anchor;
         const category = el("span", "search-result-category", article.category);
         const title = el("strong", "search-result-title");
         appendHighlighted(title, article.title, query);
