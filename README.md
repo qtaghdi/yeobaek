@@ -11,7 +11,7 @@
 Node.js 24, pnpm 12.14.0.
 
 ```sh
-pnpm install --no-frozen-lockfile
+pnpm install --frozen-lockfile
 pnpm dev
 pnpm storybook
 pnpm check
@@ -19,7 +19,7 @@ pnpm lint
 pnpm build
 ```
 
-모노레포 전환으로 잠금 파일 갱신이 필요합니다. 생성한 잠금 파일은 검토 후 커밋합니다.
+의존성은 lockfile을 기준으로 설치합니다. Storybook의 GIF 뷰포트(640 × 360)와 격리 화면으로 동일한 조건에서 실험을 캡처할 수 있습니다.
 
 ## 구조
 

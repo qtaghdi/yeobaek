@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 24
       - uses: pnpm/action-setup@v4
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm lint
       - run: pnpm build
@@ -33,10 +33,6 @@ jobs:
           test -f apps/docs/dist/lab/index.html
           test -f apps/docs/dist/lab/iframe.html
           test -f apps/docs/dist/accessibility/focus-ring/index.html
-      - uses: actions/upload-artifact@v4
-        with:
-          name: pnpm-lockfile
-          path: pnpm-lock.yaml
       - uses: actions/upload-pages-artifact@v4
         if: github.ref == 'refs/heads/main'
         with:
