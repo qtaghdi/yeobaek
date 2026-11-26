@@ -4,7 +4,7 @@
   --sl-font: var(--font);
   --sl-font-mono: var(--mono);
   --sl-content-width: 48rem;
-  --sl-sidebar-width: 17.5rem;
+  --sl-sidebar-width: 18.5rem;
   --sl-line-height: 1.8;
   --sl-color-white: var(--text);
   --sl-color-gray-1: var(--text);
@@ -450,4 +450,29 @@ mobile-starlight-toc .dropdown {
 @media (prefers-reduced-motion: reduce) {
   .navigation-track .navigation-marker,
   .sidebar-content summary .caret { transition: none; }
+}
+
+.sidebar-pane {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-control) transparent;
+  overflow-x: hidden;
+}
+
+.sidebar-content,
+.sidebar-content sl-sidebar-state-persist {
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.sidebar-content sl-sidebar-state-persist { display: block; }
+
+.sidebar-content a[aria-current="page"] {
+  background: var(--selection);
+  color: var(--text);
+  box-shadow: none;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  .sidebar-pane { overflow-y: scroll; }
 }
