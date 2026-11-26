@@ -22,7 +22,7 @@ export default defineConfig({
       social: [{ icon: "github", label: "GitHub", href: "https://github.com/qtaghdi/yeobaek" }],
       customCss: ["./src/styles/document.scss"],
       pagefind: false,
-      components: { Head: "./src/features/navigation/document-head.astro", Search: "./src/features/search/document-search.astro", ThemeSelect: "./src/features/theme/document-theme-select.astro" },
+      components: { Hero: "./src/features/landing/landing-hero.astro", Head: "./src/features/navigation/document-head.astro", Search: "./src/features/search/document-search.astro", ThemeSelect: "./src/features/theme/document-theme-select.astro" },
       sidebar: [
         { label: "첫 장", items: [{ label: "여백 소개", slug: "start" }] },
         { label: "01 · 웹 플랫폼과 접근성", collapsed: true, items: ["browser/events","accessibility/semantic-controls","accessibility/focus-ring","accessibility/tab-order","accessibility/dialog-focus","accessibility/disabled-state","browser/storage"] },

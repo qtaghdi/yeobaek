@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { auditLandingHandwriting } from "./landing-handwriting-audit.mjs";
 import { auditInteractionScenes } from "./interaction-scenes-audit.mjs";
 
 const base = (origin) => origin + "/yeobaek/";
@@ -234,6 +235,7 @@ const checkDocumentLoading = async (browser, origin) => {
 export const runMotionNetworkAudit = async (browser, origin) => {
   await checkMotion(browser, origin);
   await auditInteractionScenes(browser, origin);
+  await auditLandingHandwriting(browser, origin);
   await checkDelayedFont(browser, origin);
   await checkFixedWidthWrapping(browser, origin);
   await checkDocumentLoading(browser, origin);
