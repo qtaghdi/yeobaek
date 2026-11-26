@@ -30,6 +30,9 @@ export const searchTopics: Record<string, { category: string; keywords: string[]
   "design-system": { category: "컴포넌트와 디자인 시스템", keywords: ["디자인 시스템", "컴포넌트"] },
   "design": { category: "복합 인터랙션과 제품 UI", keywords: ["UI", "UX"] },
   "architecture": { category: "아키텍처와 개발자 경험", keywords: ["아키텍처", "개발자 경험"] },
+  "integrations": { category: "도구 연동과 파일 형식", keywords: ["도구 연동", "파일 형식"] },
+  "backend": { category: "데이터와 쓰기 요청", keywords: ["백엔드", "데이터"] },
+  "ai": { category: "개발을 돕는 에이전트", keywords: ["AI", "에이전트"] },
 };
 
 export const articleKeywords: Record<string, string[]> = {
@@ -70,6 +73,11 @@ export const articleKeywords: Record<string, string[]> = {
   "architecture/monorepo": ["모노레포", "monorepo", "pnpm", "workspace", "Turbo"],
   "architecture/testing": ["테스트", "검증", "Boundra", "성능"],
   "architecture/delivery": ["배포", "빌드", "CI", "GitHub Pages"],
+  "ai/review-ci-gating": ["Oddmash Agents", "리뷰 에이전트", "GitHub Actions", "CI 재실행"],
+  "backend/error-grouping": ["Jabso", "오류 수집", "이벤트 ID", "오류 지문"],
+  "backend/workbook-revisions": ["Foloom", "XLSX", "baseRevision", "낙관적 동시성 제어"],
+  "integrations/apple-music-presence": ["Apple Music", "Discord Presence", "재생 시간"],
+  "integrations/docx-dropdown-choice": ["Foloom", "DOCX", "Word 드롭다운", "lastValue"],
 };
 
 export const normalizeSearch = (value: string) =>

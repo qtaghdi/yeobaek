@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-const expectedTopics = ["프론트엔드", "접근성", "CSS", "렌더링", "React", "디자인", "Dev Tools", "테스트"];
+const expectedTopics = ["프론트엔드", "접근성", "CSS", "렌더링", "React", "디자인", "Dev Tools", "테스트", "Backend", "AI"];
 
 const checkGeometry = async (surface, topics) => {
   const geometry = await surface.locator("[data-topic]").evaluateAll(notes => notes.map(note => {
@@ -73,7 +73,7 @@ export const auditLandingHandwriting = async (browser, origin) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     const toggle = page.getByRole("button", { name: "손글씨 애니메이션 일시 정지" });
     await toggle.waitFor();
-    await page.clock.runFor(135000);
+    await page.clock.runFor(160000);
     const cycle = await page.evaluate(() => ({
       completed: [...window.landingHandwritingAudit.completed],
       contained: [...window.landingHandwritingAudit.contained],

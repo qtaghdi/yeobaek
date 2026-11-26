@@ -61,3 +61,17 @@
 - 검증·배포·운영
   - [테스트는 어떤 문제를 막아야 할까?](https://qtaghdi.github.io/yeobaek/architecture/testing/)
   - [빌드와 배포를 분리해서 생각하기](https://qtaghdi.github.io/yeobaek/architecture/delivery/)
+- 도구 연동과 파일 형식
+  - [재생 위치가 40초면 Discord에는 무엇을 보내야 할까?](https://qtaghdi.github.io/yeobaek/integrations/apple-music-presence/)
+  - [Word 드롭다운에서 항목 하나를 고르면 문서에는 뭐가 바뀔까?](https://qtaghdi.github.io/yeobaek/integrations/docx-dropdown-choice/)
+
+### 백엔드
+
+- 데이터와 쓰기 요청
+  - [사람과 AI가 같은 시트를 편집하면 누구의 변경을 남겨야 할까?](https://qtaghdi.github.io/yeobaek/backend/workbook-revisions/)
+  - [같은 오류가 세 번 들어오면 세 건으로 세어야 할까?](https://qtaghdi.github.io/yeobaek/backend/error-grouping/)
+
+### AI
+
+- 개발을 돕는 에이전트
+  - [CI가 통과했는데 리뷰 에이전트는 왜 기다리고 있을까?](https://qtaghdi.github.io/yeobaek/ai/review-ci-gating/)

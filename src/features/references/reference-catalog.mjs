@@ -458,5 +458,89 @@ export default {
   "https://docs.github.com/en/pages": {
     "title": "GitHub Pages",
     "summary": "저장소의 정적 사이트 배포, 프로젝트 경로와 GitHub Pages 설정에 관한 공식 문서입니다."
-  }
+  },
+  "https://github.com/Oddmash/oddmash-agents/pull/140": {
+    "title": "수정과 검증 기록",
+    "summary": "취소된 실행과 성공한 대체 실행을 구분하고 명시적인 리뷰 요청을 다시 확인하도록 고친 PR입니다."
+  },
+  "https://github.com/Oddmash/oddmash-agents/blob/efc44d42fea19197f0808e45a1ec9d62799d973b/src/checks.ts": {
+    "title": "검사 결과를 판별하는 구현",
+    "summary": "같은 공개 PR 헤드에 연결된 워크플로 실행과 check suite를 대조해 현재 검사 결과를 고르는 구현입니다."
+  },
+  "https://github.com/Oddmash/oddmash-agents/blob/efc44d42fea19197f0808e45a1ec9d62799d973b/src/webhook-review.ts": {
+    "title": "명시적 리뷰 요청 처리",
+    "summary": "명시적인 리뷰 요청을 받았을 때 CI 상태를 확인하고, 대기 응답 뒤 다시 확인하는 흐름입니다."
+  },
+  "https://github.com/Oddmash/oddmash-ui/pull/51": {
+    "title": "Oddmash UI #51",
+    "summary": "같은 커밋에서 취소된 실행과 성공한 대체 실행의 데이터를 재현에 사용한 PR입니다."
+  },
+  "https://github.com/qtaghdi/jabso/blob/c9630a9a7802d9f3c86e1bd46b84e08b0e07ccf9/apps/server/src/adapters/persistence/postgres-ingest-event-store.ts#L38-L145": {
+    "title": "이벤트 저장과 집계 코드",
+    "summary": "프로젝트와 이벤트 ID로 중복 삽입을 차단하고, 이벤트가 새로 저장된 경우에만 이슈 발생 횟수를 늘립니다."
+  },
+  "https://github.com/qtaghdi/jabso/blob/c9630a9a7802d9f3c86e1bd46b84e08b0e07ccf9/domains/ingestion/server/fingerprint.ts": {
+    "title": "기본 지문과 커스텀 지문 구현",
+    "summary": "메시지와 앱 프레임을 정규화한 기본 지문 또는 사용자가 전달한 커스텀 지문을 사용하는 코드입니다."
+  },
+  "https://github.com/qtaghdi/foloom/blob/6966fe653a43dd5c1dd720f6fd1cac8dd2596f25/internal/transport/httpapi/mcp.go#L329-L357": {
+    "title": "MCP 도구 등록",
+    "summary": "AI와 브라우저의 편집 도구가 같은 워크북 세션의 Apply를 호출하는 등록 코드입니다."
+  },
+  "https://github.com/qtaghdi/foloom/blob/6966fe653a43dd5c1dd720f6fd1cac8dd2596f25/internal/formats/xlsx/session.go#L157-L183": {
+    "title": "세션의 리비전 비교",
+    "summary": "워크북 세션 잠금 안에서 편집 요청의 기준 리비전을 현재 리비전과 비교하는 코드입니다."
+  },
+  "https://github.com/qtaghdi/foloom/blob/6966fe653a43dd5c1dd720f6fd1cac8dd2596f25/internal/formats/xlsx/session.go#L181-L205": {
+    "title": "후보를 준비하는 부분",
+    "summary": "현재 파일 바이트로 편집 후보를 열고, 실패하면 기존 메모리 상태를 복원하는 코드입니다."
+  },
+  "https://github.com/qtaghdi/foloom/blob/6966fe653a43dd5c1dd720f6fd1cac8dd2596f25/internal/formats/xlsx/session.go#L281-L312": {
+    "title": "바이트 비교와 저장 순서",
+    "summary": "후보 바이트의 해시를 비교하고, 이력을 준비해 파일을 교체한 뒤 리비전을 갱신합니다."
+  },
+  "https://github.com/qtaghdi/apple-music-discord-presence/blob/81cc2f87a5708e8f71f1bfd70635f25a6a63a489/src/presence.ts#L41-L48": {
+    "title": "프로젝트에서 재생 시간을 만드는 부분",
+    "summary": "재생 중이며 유효한 길이와 위치가 있을 때 시작과 끝을 Unix 시각으로 계산하는 코드입니다."
+  },
+  "https://github.com/qtaghdi/apple-music-discord-presence/blob/81cc2f87a5708e8f71f1bfd70635f25a6a63a489/src/index.ts#L84-L108": {
+    "title": "재생 상태를 읽고 갱신하는 코드",
+    "summary": "곡과 재생 상태가 바뀌거나 실제 재생 위치가 예상치에서 2.5초 넘게 벗어날 때 활동을 갱신하는 코드입니다."
+  },
+  "https://github.com/qtaghdi/apple-music-discord-presence/blob/81cc2f87a5708e8f71f1bfd70635f25a6a63a489/test/presence.test.ts": {
+    "title": "일시정지와 진행 시각을 검증하는 테스트",
+    "summary": "일시정지 설정과 재생 중 남은 시간을 비롯한 Discord 활동 데이터의 테스트입니다."
+  },
+  "https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.sdtcontentdropdownlist?view=openxml-3.0.1": {
+    "title": "Open XML의 드롭다운 구조",
+    "summary": "Open XML의 드롭다운 콘텐츠 컨트롤과 목록 항목 구조를 설명합니다."
+  },
+  "https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.sdtcontentdropdownlist.lastvalue?view=openxml-3.0.1": {
+    "title": "마지막 저장 값 속성",
+    "summary": "Open XML 드롭다운에서 w:lastValue가 마지막 저장 값 속성임을 정의합니다."
+  },
+  "https://github.com/qtaghdi/foloom/pull/334": {
+    "title": "Foloom 선택 변경 구현",
+    "summary": "일반 본문의 지원 가능한 Word 드롭다운에서 선택을 바꾸는 편집을 도입한 PR입니다."
+  },
+  "https://github.com/qtaghdi/foloom/blob/fd09964689a41471ede3eb74b6a1ab79ea4f1050/internal/formats/docx/control_choice.go#L85-L108": {
+    "title": "실제 XML 갱신 코드",
+    "summary": "선택된 항목의 내부 값과 본문 문자열에 필요한 XML 변경을 함께 만드는 코드입니다."
+  },
+  "https://github.com/qtaghdi/foloom/blob/fd09964689a41471ede3eb74b6a1ab79ea4f1050/internal/formats/docx/control_choice.go#L17-L83": {
+    "title": "지원 범위를 검사하는 코드",
+    "summary": "구조가 단순하고 현재 표시 문자열과 저장 값이 일치하는 드롭다운만 선택 변경 대상으로 허용합니다."
+  },
+  "https://github.com/qtaghdi/foloom/blob/fd09964689a41471ede3eb74b6a1ab79ea4f1050/internal/formats/docx/control_choice_test.go#L12-L57": {
+    "title": "저장과 재열기 테스트",
+    "summary": "드롭다운 선택을 바꾼 파일을 다시 열어 선택 값, 목록, ID와 서식 보존을 확인하는 테스트입니다."
+  },
+  "https://github.com/qtaghdi/foloom/pull/336": {
+    "title": "새 목록 삽입 PR",
+    "summary": "표시 이름과 내부 값, 초기 선택값을 정의해 Word 드롭다운을 삽입하는 기능입니다."
+  },
+  "https://github.com/qtaghdi/foloom/issues/304": {
+    "title": "Word 편집·저장 검증",
+    "summary": "Microsoft Word에서 파일을 직접 편집하고 저장한 뒤 다시 여는 호환성 검증을 추적합니다."
+  },
 };
