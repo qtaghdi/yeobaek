@@ -1,5 +1,5 @@
 import { useId, useRef } from "react";
-import "../example.scss";
+import "src/components/examples/example.scss";
 
 export const DialogFocusExample = () => {
   const dialog = useRef<HTMLDialogElement>(null);

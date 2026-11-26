@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../example.scss";
+import "src/components/examples/example.scss";
 
 export const TabOrderExample = () => {
   const [skip, setSkip] = useState(false);
