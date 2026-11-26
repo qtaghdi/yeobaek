@@ -1,0 +1,19 @@
+.loading-demo {
+  &__comparison {
+    @media (max-width: 35rem) {
+      grid-auto-rows: 1fr;
+    }
+  }
+
+  &__card {
+    display: grid;
+
+    > * {
+      grid-area: 1 / 1;
+    }
+  }
+
+  &__content[aria-hidden="true"] {
+    visibility: hidden;
+  }
+}
