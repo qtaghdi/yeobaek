@@ -25,7 +25,7 @@ import Default from "@astrojs/starlight/components/Head.astro";
   for (const element of elements) {
     const text = element.textContent?.trim() ?? "";
     if (!/[가-힣]/.test(text) || text.length < 12 || text.length > 180) continue;
-    if (element.closest(".not-content, .notebook-lab, .chapter-index") || element.querySelector("a, code, pre, button, input, select, textarea, svg, astro-island")) continue;
+    if (element.closest(".not-content, .example-frame, .chapter-index") || element.querySelector("a, code, pre, button, input, select, textarea, svg, astro-island")) continue;
     if ([...element.children].some(child => !["MARK", "STRONG", "EM", "SPAN", "BR"].includes(child.tagName))) continue;
     observer.observe(element);
   }

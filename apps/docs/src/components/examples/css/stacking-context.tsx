@@ -63,8 +63,8 @@ const Playground = (args: StackArgs) => (
 
 export const StackingContextExample = () => {
   const [args, setArgs] = useState<StackArgs>(defaults);
-  return <div className="notebook-experiment">
-    <div className="notebook-experiment__controls">
+  return <div className="example-workbench">
+    <div className="example-workbench__controls">
       <label>부모 A z-index <select value={args.parentZ} onChange={(event) => setArgs({ ...args, parentZ: event.target.value === "auto" ? "auto" : Number(event.target.value) })}>
         {["auto", 0, 1, 2, 3].map((z) => <option key={z}>{z}</option>)}
       </select></label>

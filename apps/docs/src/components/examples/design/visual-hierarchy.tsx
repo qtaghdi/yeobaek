@@ -76,11 +76,11 @@ export const VisualHierarchyExample = () => {
   const group = useId();
 
   return (
-    <div className="notebook-experiment">
-      <div className="notebook-experiment__controls">
-        <fieldset className="notebook-choices">
+    <div className="example-workbench">
+      <div className="example-workbench__controls">
+        <fieldset className="example-choices">
           <legend>개선 단계</legend>
-          <div className="notebook-choices__options">
+          <div className="example-choices__options">
             {stages.map((step) => (
               <label key={step}>
                 <input type="radio" name={group} value={step} checked={stage === step} onChange={() => setStage(step)} />
