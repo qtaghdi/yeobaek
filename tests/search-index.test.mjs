@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { searchArticles, relatedQueries, getMatchRanges, makeSearchPreview } from "../src/features/search/search-index.ts";
+import { searchArticles, relatedQueries, getMatchRanges, makeSearchPreview, canOpenFirstResult } from "../src/features/search/search-index.ts";
 
 const article = (id, title, keywords, text) => ({
   id, title, keywords, description: title, category: "테스트", url: "/" + id + "/",
@@ -59,4 +59,38 @@ test("제목이 아닌 본문 검색은 일치하는 섹션으로 연결한다",
   assert.equal(result.bodyMatches, true);
   assert.equal(result.titleMatches, false);
   assert.equal(searchArticles([entry], "포커스 링")[0].target, undefined);
+});
+
+test("문장 검색은 단어를 분리하지 않고 원문의 연속된 구절만 검색한다", () => {
+  const records = [
+    article("exact", "실제 문장", [], "접근성 상태를 다뤘습니다."),
+    article("scattered", "다른 상태를 설명하는 글", ["상태를"], "별도로 접근성을 다뤘습니다."),
+    { ...article("split", "개별 절", [], "상태를"), sections: [{title: "첫 절", text: "상태를"}, {title: "다음 절", text: "다뤘습니다."}] },
+  ];
+  assert.deepEqual(searchArticles(records, "상태를 다뤘습니다.").map(result => result.article.id), ["exact"]);
+  assert.deepEqual(getMatchRanges("상태를 따로 다뤘습니다.", "상태를 다뤘습니다."), []);
+});
+
+test("초성은 한글 원문과 연속된 초성으로 비교하고 실제 범위를 강조한다", () => {
+  assert.equal(searchArticles(entries, "ㅍㅋㅅㄹ")[0].article.id, "focus");
+  assert.equal(searchArticles(entries, "ㅈ ㅂ ㄲ")[0].article.id, "wrap");
+  assert.equal(searchArticles(entries, "ᄌᄇᄁ")[0].article.id, "wrap");
+  const text = "본문의 포커스 링과 😀";
+  const range = getMatchRanges(text, "ㅍㅋㅅㄹ")[0];
+  assert.equal(text.slice(range.start, range.end), "포커스 링");
+  assert.deepEqual(getMatchRanges("포커스 ABC 링", "ㅍㅋㅅㄹ"), []);
+  assert.equal(searchArticles([article("double", "쌍자음", [], "")], "ㅆㅈㅇ")[0].article.id, "double");
+  const decomposed = "포커스 링".normalize("NFD");
+  const decomposedRange = getMatchRanges(decomposed, "ㅍㅋㅅㄹ")[0];
+  assert.equal(decomposed.slice(decomposedRange.start, decomposedRange.end), decomposed);
+});
+
+test("한 글자는 명시적인 결과 선택 없이 이동하지 않고 본문 검색을 제한한다", () => {
+  assert.equal(canOpenFirstResult("상"), false);
+  assert.equal(canOpenFirstResult("ㅍ"), false);
+  assert.equal(canOpenFirstResult("ㅍㅋ"), true);
+  assert.equal(canOpenFirstResult(" "), false);
+  assert.equal(canOpenFirstResult("."), false);
+  assert.deepEqual(searchArticles([article("body", "제목", [], "상태")], "상"), []);
+  assert.deepEqual(searchArticles(entries, "포").map(result => result.article.id).sort(), ["dialog", "focus"]);
 });

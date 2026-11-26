@@ -64,45 +64,62 @@ export const articleKeywords: Record<string, string[]> = {
 export const normalizeSearch = (value: string) =>
   value.normalize("NFKC").toLocaleLowerCase("ko").trim().replace(/\s+/g, " ");
 
-const compact = (value: string) => normalizeSearch(value).replace(/[\s\p{P}\p{S}]+/gu, "");
-const includes = (text: string, term: string) => {
-  const normalized = normalizeSearch(text);
-  const word = normalizeSearch(term);
-  const condensed = compact(word);
-  return normalized.includes(word) || (condensed.length > 0 && compact(text).includes(condensed));
+const separators = /[\s\-‐‑–]+/gu;
+const initialPattern = /^[\u1100-\u1112]+$/u;
+const compact = (value: string) => value.replace(separators, "");
+const initialForm = (value: string) =>
+  [...value].map(char => {
+    const code = char.charCodeAt(0);
+    return code >= 0xac00 && code <= 0xd7a3
+      ? String.fromCharCode(0x1100 + Math.floor((code - 0xac00) / 588))
+      : char;
+  }).join("");
+
+const createQuery = (value: string) => {
+  const normalized = normalizeSearch(value);
+  const term = compact(normalized);
+  const initial = initialPattern.test(term);
+  return { normalized, term, initial, valid: /[\p{L}\p{N}]/u.test(term), short: [...term].length === 1 };
 };
+
+export const canOpenFirstResult = (query: string) => {
+  const parsed = createQuery(query);
+  return parsed.valid && !parsed.short;
+};
+
+type SearchQuery = ReturnType<typeof createQuery>;
+const projection = (value: string, initial: boolean) => {
+  const normalized = compact(normalizeSearch(value));
+  return initial ? initialForm(normalized) : normalized;
+};
+
+const matchesQuery = (text: string, query: SearchQuery) =>
+  query.valid && projection(text, query.initial).includes(query.term);
 
 export type MatchRange = { start: number; end: number };
 
-export const getMatchRanges = (text: string, query: string): MatchRange[] => {
-  const condensed = compact(query);
-  if (!condensed) return [];
+const segmenter = new Intl.Segmenter("ko", { granularity: "grapheme" });
+
+export const getMatchRanges = (text: string, value: string): MatchRange[] => {
+  const query = createQuery(value);
+  if (!query.valid) return [];
   const offsets: MatchRange[] = [];
   let source = "";
-  let offset = 0;
-  for (const char of text) {
-    const value = compact(char);
-    for (let index = 0; index < value.length; index++) offsets.push({ start: offset, end: offset + char.length });
-    source += value;
-    offset += char.length;
+  for (const { segment, index } of segmenter.segment(text)) {
+    const normalized = projection(segment, query.initial);
+    for (let i = 0; i < normalized.length; i++) offsets.push({ start: index, end: index + segment.length });
+    source += normalized;
   }
-  const find = (term: string) => {
-    const ranges: MatchRange[] = [];
-    let start = source.indexOf(term);
-    while (start >= 0) {
-      ranges.push({ start: offsets[start].start, end: offsets[start + term.length - 1].end });
-      start = source.indexOf(term, start + term.length);
-    }
-    return ranges;
-  };
-  const exact = find(condensed);
-  const ranges = exact.length ? exact : normalizeSearch(query).split(" ").map(compact).filter(Boolean).flatMap(find);
-  return ranges.sort((a, b) => a.start - b.start).reduce<MatchRange[]>((merged, range) => {
-    const last = merged.at(-1);
-    if (last && last.end >= range.start) last.end = Math.max(last.end, range.end);
-    else merged.push({ ...range });
-    return merged;
-  }, []);
+  const ranges: MatchRange[] = [];
+  let start = source.indexOf(query.term);
+  while (start >= 0) {
+    const range = { start: offsets[start].start, end: offsets[start + query.term.length - 1].end };
+    const last = ranges.at(-1);
+    if (last && last.end > range.start) last.end = Math.max(last.end, range.end);
+    else ranges.push(range);
+    start = source.indexOf(query.term, start + query.term.length);
+  }
+  return ranges;
 };
 
 export const makeSearchPreview = (text: string, query: string, limit = 160) => {
@@ -112,45 +129,37 @@ export const makeSearchPreview = (text: string, query: string, limit = 160) => {
   return (start ? "…" : "") + text.slice(start, end) + (end < text.length ? "…" : "");
 };
 
-export const searchArticles = (articles: SearchArticle[], query: string) => {
-  const normalized = normalizeSearch(query);
-  const terms = normalized.split(" ").filter(Boolean);
-  if (!terms.length) return [];
-  return articles.flatMap((article) => {
-    const fields = [article.title, article.description, article.category, ...article.keywords];
-    const content = article.sections.map((section) => section.title + " " + section.text).join(" ");
-    const all = fields.join(" ") + " " + content;
-    if (!includes(all, normalized) && !terms.every((term) => includes(all, term))) return [];
-    const scoreFor = (term: string) =>
-      (includes(article.title, term) ? 45 : 0) +
-      (article.keywords.some((key) => includes(key, term)) ? 28 : 0) +
-      (includes(article.description, term) ? 16 : 0) +
-      (includes(article.category, term) ? 5 : 0) +
-      (includes(content, term) ? 2 : 0);
-    const score = terms.reduce((sum, term) => sum + scoreFor(term), 0) +
-      (includes(article.title, normalized) ? 45 : 0) +
-      (article.keywords.some((key) => normalizeSearch(key) === normalized) ? 35 : 0);
-    const section = article.sections
-      .map((entry) => ({
-        entry,
-        score: terms.reduce((sum, term) => sum + (includes(entry.title, term) ? 3 : 0) + (includes(entry.text, term) ? 4 : 0), 0) +
-          (includes(entry.text, normalized) ? 8 : 0),
-      }))
-      .sort((a, b) => b.score - a.score)[0];
-    const matchSection = section?.score ? section.entry : undefined;
-    const titleMatches = includes(article.title, normalized) || terms.every((term) => includes(article.title, term));
-    const bodyMatches = matchSection && getMatchRanges(matchSection.text, query).length > 0;
-    const snippet = bodyMatches ? matchSection.text : matchSection && getMatchRanges(matchSection.title, query).length ? matchSection.title : article.description;
-    const target = !titleMatches && matchSection ? matchSection.anchor : undefined;
-    const matchedKeywords = article.keywords.filter((keyword) => getMatchRanges(keyword, query).length);
-    return [{ article, score, snippet, target, bodyMatches: Boolean(bodyMatches), titleMatches, matchedKeywords }];
+export const searchArticles = (articles: SearchArticle[], value: string) => {
+  const query = createQuery(value);
+  if (!query.valid) return [];
+  const includes = (text: string) => matchesQuery(text, query);
+  return articles.flatMap(article => {
+    const titleMatches = includes(article.title);
+    const matchedKeywords = article.keywords.filter(includes);
+    const descriptionMatches = includes(article.description);
+    const categoryMatches = !query.short && includes(article.category);
+    const sections = query.short ? [] : article.sections.map(entry => ({
+      entry,
+      textMatches: includes(entry.text),
+      headingMatches: includes(entry.title),
+    }));
+    const section = sections.filter(item => item.textMatches || item.headingMatches)
+      .sort((a, b) => (Number(b.textMatches) * 2 + Number(b.headingMatches)) - (Number(a.textMatches) * 2 + Number(a.headingMatches)))[0];
+    if (!titleMatches && !matchedKeywords.length && !descriptionMatches && !categoryMatches && !section) return [];
+    const score = (titleMatches ? 90 : 0) + (matchedKeywords.length ? 28 : 0) +
+      (matchedKeywords.some(keyword => projection(keyword, query.initial) === query.term) ? 35 : 0) +
+      (descriptionMatches ? 16 : 0) + (categoryMatches ? 5 : 0) + (section ? 2 : 0);
+    const bodyMatches = Boolean(section?.textMatches || section?.headingMatches);
+    const snippet = section?.textMatches ? section.entry.text : section?.headingMatches ? section.entry.title : article.description;
+    const target = !titleMatches && section ? section.entry.anchor : undefined;
+    return [{ article, score, snippet, target, bodyMatches, titleMatches, matchedKeywords }];
   }).sort((a, b) => b.score - a.score || a.article.title.localeCompare(b.article.title, "ko"));
 };
 
-export const relatedQueries = (articles: SearchArticle[], query: string, limit = 6) => {
-  const matches = searchArticles(articles, query).slice(0, 5);
+export const relatedQueriesFromMatches = (matches: ReturnType<typeof searchArticles>, query: string, limit = 6) => {
+  if (!canOpenFirstResult(query)) return [];
   const counts = new Map<string, number>();
-  for (const { article, score } of matches) {
+  for (const { article, score } of matches.slice(0, 5)) {
     for (const keyword of article.keywords) {
       if (normalizeSearch(keyword) === normalizeSearch(query)) continue;
       counts.set(keyword, (counts.get(keyword) ?? 0) + score);
@@ -158,3 +167,6 @@ export const relatedQueries = (articles: SearchArticle[], query: string, limit =
   }
   return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([keyword]) => keyword);
 };
+
+export const relatedQueries = (articles: SearchArticle[], query: string, limit = 6) =>
+  relatedQueriesFromMatches(searchArticles(articles, query), query, limit);

@@ -25,7 +25,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
 </yeobaek-search>
 
 <script>
-  import { getMatchRanges, makeSearchPreview, normalizeSearch, recommendedQueries, relatedQueries, searchArticles, type SearchArticle } from "src/features/search/search-index";
+  import { canOpenFirstResult, getMatchRanges, makeSearchPreview, normalizeSearch, recommendedQueries, relatedQueriesFromMatches, searchArticles, type SearchArticle } from "src/features/search/search-index";
 
   type QueryRecord = { query: string; count: number; lastUsed: number };
   const historyKey = "yeobaek-search-history-v1";
@@ -88,6 +88,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
     private loadingError = false;
     private renderTimer: number | undefined;
     private renderedQuery = "";
+    private composing = false;
 
     connectedCallback() {
       this.controller?.abort();
@@ -106,9 +107,16 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       this.trigger.addEventListener("click", () => this.open(), { signal });
       this.querySelector(".search-close")?.addEventListener("click", () => this.dialog.close(), { signal });
       this.input.addEventListener("input", (event) => {
-        if (!(event instanceof InputEvent) || !event.isComposing) this.scheduleRender();
+        if (!this.composing && (!(event instanceof InputEvent) || !event.isComposing)) this.scheduleRender();
       }, { signal });
-      this.input.addEventListener("compositionend", () => this.scheduleRender(), { signal });
+      this.input.addEventListener("compositionstart", () => {
+        this.composing = true;
+        window.clearTimeout(this.renderTimer);
+      }, { signal });
+      this.input.addEventListener("compositionend", () => {
+        this.composing = false;
+        this.scheduleRender();
+      }, { signal });
       this.dialog.addEventListener("close", () => {
         window.clearTimeout(this.renderTimer);
         this.previousFocus?.focus();
@@ -209,7 +217,9 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
 
     private render() {
       window.clearTimeout(this.renderTimer);
+      if (this.composing) return;
       const query = this.input.value.trim();
+      const matches = query && this.articles ? searchArticles(this.articles, query) : [];
       const changed = this.renderedQuery !== query;
       this.renderedQuery = query;
       if (changed) this.content.scrollTop = 0;
@@ -219,7 +229,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         this.renderChips(this.history, "내가 자주 찾은 검색어", popular, true);
       } else {
         this.renderChips(this.history, "", []);
-        this.renderChips(this.suggestions, "연관 검색어", this.articles ? relatedQueries(this.articles, query) : []);
+        this.renderChips(this.suggestions, "연관 검색어", relatedQueriesFromMatches(matches, query));
       }
       if (this.loadingError) {
         this.results.replaceChildren();
@@ -235,8 +245,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         this.status.textContent = query ? "검색 준비 중…" : "관심 있는 기술이나 글의 제목을 검색해 보세요.";
         return;
       }
-      const matches = searchArticles(this.articles, query);
-      const status = matches.length ? `${matches.length}개 글` : "검색 결과가 없습니다. 다른 검색어를 입력해 보세요.";
+      const status = matches.length ? `${matches.length}개 글${canOpenFirstResult(query) ? "" : " · 결과를 선택해 열어 주세요."}` : "검색 결과가 없습니다. 다른 검색어를 입력해 보세요.";
       if (this.status.textContent !== status) this.status.textContent = status;
       const existing = new Map([...this.results.children].map((item) => [(item as HTMLElement).dataset.id, item]));
       const items = document.createDocumentFragment();
@@ -271,11 +280,16 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
     }
 
     private onDialogKey(event: KeyboardEvent) {
-      if (event.isComposing || event.keyCode === 229 || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (this.composing || event.isComposing || event.keyCode === 229 || event.altKey || event.ctrlKey || event.metaKey) return;
       if (this.renderedQuery !== this.input.value.trim()) this.render();
       const links = [...this.results.querySelectorAll<HTMLAnchorElement>("a")];
-      if (!links.length) return;
       const active = document.activeElement;
+      if (event.key === "Enter" && active === this.input) {
+        event.preventDefault();
+        if (canOpenFirstResult(this.input.value)) links[0]?.click();
+        return;
+      }
+      if (!links.length) return;
       const index = links.findIndex((link) => active === link);
       if (event.key === "ArrowDown" && (active === this.input || index >= 0)) {
         event.preventDefault();
@@ -284,9 +298,6 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         event.preventDefault();
         if (index === 0) this.input.focus();
         else links[index - 1]?.focus();
-      } else if (event.key === "Enter" && active === this.input) {
-        event.preventDefault();
-        links[0]?.click();
       }
     }
   }
