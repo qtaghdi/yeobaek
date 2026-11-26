@@ -37,6 +37,14 @@ const assertNoOverflow = async (page, name) => {
   assert.ok(overflow <= 2, `${name}: document overflow ${overflow}px`);
 };
 const focusIs = (locator) => locator.evaluate(element => element === document.activeElement);
+const watchDialogOpening = (dialog) => dialog.evaluate(element => {
+  element.addEventListener("animationstart", () => {
+    const animations = element.getAnimations();
+    const fades = animations.some(animation => animation.effect?.getKeyframes()
+      .some(frame => frame.opacity !== undefined && Number(frame.opacity) < 1));
+    element.dataset.openingKeepsOpacity = String(animations.length > 0 && !fades);
+  }, { once: true });
+});
 
 const coreFlow = async (browser, engine) => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce", colorScheme: "light" });
@@ -78,7 +86,13 @@ const coreFlow = async (browser, engine) => {
     await page.evaluate(() => window.scrollTo(0, 250));
     const before = await documentScroll(page);
     assert.ok(before > 0);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    const searchDialog = page.locator(".search-dialog");
+    await watchDialogOpening(searchDialog);
     await searchTrigger(page).click();
+    await page.locator(".search-dialog[data-opening-keeps-opacity]").waitFor();
+    assert.equal(await searchDialog.getAttribute("data-opening-keeps-opacity"), "true");
+    await page.emulateMedia({ reducedMotion: "reduce" });
     const input = searchInput(page);
     const field = page.locator(".search-field");
     const icon = field.locator("svg");
@@ -144,7 +158,7 @@ const coreFlow = async (browser, engine) => {
 };
 
 const checkDialogBeforeHydration = async (browser, engine) => {
-  const page = await browser.newPage({ viewport: { width: 320, height: 568 }, reducedMotion: "reduce" });
+  const page = await browser.newPage({ viewport: { width: 320, height: 568 }, reducedMotion: "no-preference" });
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
   let release;
@@ -161,7 +175,10 @@ const checkDialogBeforeHydration = async (browser, engine) => {
     const trigger = frame.getByRole("button", { name: "모달 열기" });
     const dialog = frame.getByRole("dialog", { name: "확인 대화상자" });
 
+    await watchDialogOpening(frame.locator("dialog"));
     await trigger.click();
+    await frame.locator("dialog[data-opening-keeps-opacity]").waitFor();
+    assert.equal(await dialog.getAttribute("data-opening-keeps-opacity"), "true");
     assert.equal(await island.count(), 1, `${engine}: modal example script should still be pending`);
     assert.ok(await dialog.isVisible(), `${engine}: the first click should open the modal before hydration`);
 

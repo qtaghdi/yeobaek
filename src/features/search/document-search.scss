@@ -62,8 +62,8 @@ yeobaek-search {
 }
 
 @keyframes search-appear {
-  from { opacity: 0; transform: translateY(-.35rem); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(-.35rem); }
+  to { transform: translateY(0); }
 }
 
 .search-sr-only {
