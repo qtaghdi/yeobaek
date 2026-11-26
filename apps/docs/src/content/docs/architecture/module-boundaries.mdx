@@ -3,9 +3,14 @@ title: "폴더 구조보다 중요한 모듈 경계"
 description: "공개 진입점과 import 방향, Boundra의 전체 검사·변경 파일 보고·baseline 설계."
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
+
+
 ## 폴더가 깔끔하면 좋은 구조일까요?
 
 폴더를 기능별로 나누는 목적은 코드를 예쁘게 정리하는 것이 아닙니다. 어떤 변경을 어디서 관리해야 하는지와 어떤 코드가 다른 코드를 알아도 되는지를 명확하게 하기 위한 것입니다. 보기에는 잘 정리된 폴더라도 모든 모듈이 서로의 내부 구현을 자유롭게 import할 수 있다면 경계가 존재한다고 보기 어렵습니다.
+
+<VisualStory story="module-boundaries" />
 
 ## 같이 바뀌는 코드를 가까이
 

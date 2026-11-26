@@ -47,7 +47,7 @@ header.header { border-block-end: 1px solid var(--border); }
   background: var(--selection);
   color: var(--text);
   font-weight: 650;
-  border-inline-start: 2px solid var(--text);
+  border-inline-start: 0;
 }
 .sidebar-content a:hover { background: var(--surface); }
 
@@ -242,7 +242,7 @@ mobile-starlight-toc a {
 
 .sidebar-content [aria-current="page"] {
   border-inline-start: 0;
-  box-shadow: inset 3px 0 0 var(--text);
+  box-shadow: none;
 }
 
 .sidebar-content [aria-current="page"]:hover { background: var(--selection); }
@@ -267,7 +267,7 @@ mobile-starlight-toc a[aria-current="true"] {
   font-weight: 650;
   color: var(--text);
   background: var(--selection);
-  box-shadow: inset 3px 0 0 var(--text);
+  box-shadow: none;
 }
 
 mobile-starlight-toc .dropdown {
@@ -405,4 +405,49 @@ mobile-starlight-toc .dropdown {
   .example-frame :is(.example-workbench__controls, .inline-example) input[type="checkbox"] { appearance: auto; }
   .example-frame :is(.example-workbench__controls, .inline-example) input[type="checkbox"]::before { content: none; }
   .example-workbench__controls select { appearance: auto; background-image: none; padding-inline-end: .75rem; }
+}
+
+.sidebar-content details > ul > li {
+  border-inline-start: 0;
+}
+
+.sidebar-content summary {
+  padding-inline: .35rem;
+  padding-block: .4rem;
+  cursor: pointer;
+}
+.sidebar-content summary:hover { background: var(--surface); }
+.sidebar-content summary .caret { transition: transform 240ms var(--ease-out); }
+
+.navigation-track {
+  display: block;
+  position: relative;
+  isolation: isolate;
+}
+
+.navigation-track .navigation-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+  border-radius: var(--radius-control);
+  background: var(--selection);
+  opacity: 0;
+  transition: transform 240ms var(--ease-out), width 240ms var(--ease-out), height 240ms var(--ease-out), opacity 150ms ease;
+}
+
+.navigation-marker-ready a[aria-current="page"],
+.navigation-marker-ready a[aria-current="page"]:hover,
+.navigation-marker-ready a[aria-current="true"],
+.navigation-marker-ready a[aria-current="true"]:hover {
+  background: transparent;
+  box-shadow: none;
+  border-inline-start: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navigation-track .navigation-marker,
+  .sidebar-content summary .caret { transition: none; }
 }

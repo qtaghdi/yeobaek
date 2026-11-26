@@ -3,6 +3,7 @@ title: "클릭 이벤트는 어디까지 전달될까?"
 description: "이벤트 전파와 기본 동작 취소의 차이."
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/example-frame.astro";
 import { EventPropagationExample } from "src/components/examples/browser/event-propagation";
 
@@ -18,7 +19,9 @@ import { EventPropagationExample } from "src/components/examples/browser/event-p
 
 ## 클릭 기록을 확인해봅시다
 
-안쪽 버튼을 누르면 어떤 핸들러부터 실행되는지 기록됩니다. 전파 차단을 켠 경우도 비교해 보세요.
+시각 예제를 재생하면 이벤트가 어떤 순서로 전달되는지 볼 수 있습니다. 바로 아래의 실제 버튼에서 전파 차단을 켜거나 끄면서 기록도 비교해보세요.
+
+<VisualStory story="event-propagation" />
 
 <ExampleFrame label="이벤트 전파 순서">
   <EventPropagationExample client:load />

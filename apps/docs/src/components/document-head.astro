@@ -5,8 +5,10 @@ import Default from "@astrojs/starlight/components/Head.astro";
 <script>
   import { mountKowrap } from "@oddmash/juliya/dom";
   import { highlightDocumentMatch } from "src/lib/search/document-highlight";
+  import { mountNavigationMotion } from "src/lib/navigation/navigation-motion";
 
   highlightDocumentMatch();
+  mountNavigationMotion();
 
   const selectors = ".hero h1, .hero .tagline, h1[data-page-title], .sl-markdown-content :is(h2, h3, p)";
   const elements = document.querySelectorAll<HTMLElement>(selectors);

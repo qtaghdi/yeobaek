@@ -3,6 +3,7 @@ title: "모달이 닫히면 포커스는 어디로 가야 할까?"
 description: "모달을 열고 닫을 때 사용자의 위치를 보존하는 방법."
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/example-frame.astro";
 import { DialogFocusExample } from "src/components/examples/accessibility/dialog-focus";
 
@@ -37,7 +38,9 @@ const dialog = useRef<HTMLDialogElement>(null);
 
 ## 키보드로 모달을 열어봅시다
 
-열기 버튼을 누르고 Tab과 Escape로 이동해 보세요. 닫은 뒤 포커스가 어디로 돌아오는지 확인합니다.
+시각 예제를 재생하면 Enter, Tab, Escape에 따라 포커스가 이동하는 순서를 볼 수 있습니다. 실제 브라우저 동작이 궁금하다면 아래 모달을 직접 열어보세요.
+
+<VisualStory story="dialog-focus" />
 
 <ExampleFrame label="모달 포커스 확인">
   <DialogFocusExample client:load />

@@ -3,6 +3,7 @@ title: "로딩이 끝날 때 화면이 움직이는 이유"
 description: "실제 화면의 구조를 유지하는 스켈레톤."
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/example-frame.astro";
 import { LoadingStatesExample } from "src/components/examples/design/loading-states";
 
@@ -11,6 +12,8 @@ import { LoadingStatesExample } from "src/components/examples/design/loading-sta
 로딩이 끝나기 전후로 제목, 카드, 버튼의 위치가 크게 바뀌면 사용자는 화면을 다시 탐색해야 합니다. 데이터 표시 전에도 레이아웃의 형태를 고려합니다.
 
 ## 두 경우 비교
+
+<VisualStory story="loading-states" />
 
 <ExampleFrame label="스켈레톤 레이아웃 비교">
   <LoadingStatesExample client:load />

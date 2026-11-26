@@ -3,6 +3,7 @@ title: 포커스 링은 왜 필요할까?
 description: focus, focus-visible, 키보드 조작과 포커스 표시를 비교합니다.
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/example-frame.astro";
 import { FocusRingExample } from "src/components/examples/accessibility/focus-ring";
 
@@ -10,7 +11,9 @@ import { FocusRingExample } from "src/components/examples/accessibility/focus-ri
 
 ## 마우스를 내려놓고 확인해봅시다
 
-Tab과 Shift + Tab을 사용하세요. 표시 방식과 두 번째 버튼의 비활성화 상태를 바꿔 비교할 수 있습니다.
+아래 시각 예제를 재생하면 Tab과 Shift + Tab을 누를 때 포커스가 어디로 이동하는지 볼 수 있습니다. 그 아래에서는 실제 키보드로 직접 조작해볼 수도 있습니다.
+
+<VisualStory story="focus-ring" />
 
 <ExampleFrame label="포커스 링 비교">
   <FocusRingExample client:load />
