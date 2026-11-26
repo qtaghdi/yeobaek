@@ -168,8 +168,7 @@
   inline-size: 100%;
 }
 
-.notebook-experiment__controls :focus-visible,
-.notebook-lab__footer a:focus-visible {
+.notebook-experiment__controls :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
@@ -244,20 +243,6 @@
 .notebook-experiment > :is(.focus-ring, .design-demo, .stack-demo) {
   background-image: linear-gradient(to right, #b6b0a326 1px, transparent 1px), linear-gradient(to bottom, #b6b0a326 1px, transparent 1px);
   background-size: 20px 20px;
-}
-.notebook-lab__footer {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  border-block-start: 1px solid var(--edge);
-  font-size: .8rem;
-  color: var(--pencil);
-  padding-block-start: .6rem;
-
-  a { color: var(--pencil); text-decoration: underline; text-underline-offset: .2em; }
-  a:hover { color: var(--ink); }
 }
 .notebook-index {
   display: grid;

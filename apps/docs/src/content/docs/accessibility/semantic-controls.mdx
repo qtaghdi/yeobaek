@@ -1,0 +1,32 @@
+---
+title: "버튼과 링크를 구분하는 이유"
+description: "HTML의 기본 의미와 키보드 동작을 비교합니다."
+---
+
+import Lab from "../../../components/Lab.astro";
+import { SemanticDemo } from "@yeobaek/experiments/inline";
+
+화면에서 똑같이 생긴 두 요소라도 HTML 구조가 다르면 사용자에게 제공하는 기능은 다릅니다. 클릭이 된다는 이유만으로 버튼이 되는 것은 아닙니다.
+
+## 무엇이 다른가
+
+`button`은 동작을 실행하는 요소이고, `a[href]`는 다른 위치나 문서로 이동하는 요소입니다. 브라우저는 각 요소의 역할, 포커스 이동, 키보드 활성화 동작을 기본으로 제공합니다. 반대로 `div`는 일반적인 컨테이너입니다. 클릭 핸들러를 붙여도 자동으로 버튼의 의미나 키보드 활성화 동작이 생기지 않습니다.
+
+## 직접 확인하기
+
+두 컨트롤은 마우스로 클릭하면 숫자가 증가합니다. Tab으로 이동한 뒤 Enter나 Space도 눌러 보세요. 왼쪽은 의도적으로 잘못 구현한 예제입니다.
+
+<Lab label="클릭 요소와 HTML 버튼 비교">
+  <SemanticDemo client:load />
+</Lab>
+
+## 어떻게 작성할까
+
+```html
+<button type="button">저장</button>
+<a href="/settings">설정으로 이동</a>
+```
+
+폼 안에서 제출하지 않는 버튼에는 `type="button"`을 명시합니다. 버튼처럼 보이는 링크가 필요한 경우에도 이동이라는 역할은 유지합니다. 기존 요소를 재구성해야 할 이유가 없다면 ARIA와 키보드 이벤트를 직접 구현할 필요가 없습니다.
+
+[MDN: button](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button) · [MDN: a](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a)

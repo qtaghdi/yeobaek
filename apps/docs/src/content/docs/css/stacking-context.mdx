@@ -10,11 +10,11 @@ import { StackLab } from "@yeobaek/experiments/stack";
 
 모달이나 팝오버에 큰 z-index를 설정했는데 다른 요소 아래에 가려질 수 있습니다. 자식의 숫자를 올리는 것으로 해결되지 않는 경우 먼저 부모의 쌓임 맥락을 확인해야 합니다.
 
-## 직접 실험
+## 직접 확인하기
 
 부모 A의 값을 1로 바꾸고 자식 A의 값을 9999로 유지해 보세요. 부모 B는 2입니다. 이어 부모 A를 3으로 바꾸면 어떻게 될까요?
 
-<Lab story="003-stacking-context--interactive-playground" label="쌓임 맥락 비교">
+<Lab label="쌓임 맥락 비교">
   <StackLab client:load />
 </Lab>
 

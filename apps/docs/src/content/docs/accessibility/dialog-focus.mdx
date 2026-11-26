@@ -1,0 +1,46 @@
+---
+title: "모달이 닫히면 포커스는 어디로 가야 할까?"
+description: "모달을 열고 닫을 때 사용자의 위치를 보존하는 방법."
+---
+
+import Lab from "../../../components/Lab.astro";
+import { DialogDemo } from "@yeobaek/experiments/inline";
+
+모달을 닫았는데 Tab을 다시 누르자 페이지 맨 처음부터 탐색해야 한다면, 열고 닫는 시각적 동작만 완성된 것입니다.
+
+## 모달의 상태 전환
+
+1. 트리거를 통해 열린다.
+2. 모달 안의 적절한 요소에 포커스를 둔다.
+3. 모달이 열린 동안 배경을 조작하지 않도록 한다.
+4. 닫힌 뒤 가능한 한 기존 트리거에 포커스를 돌려준다.
+
+실제 포커스 대상은 콘텐츠에 따라 다릅니다. 위험한 삭제를 확인하는 대화상자에서는 가장 안전한 행동이 적절할 수 있습니다. 긴 설명이라면 처음부터 읽을 수 있도록 제목이나 내용을 대상으로 잡는 것도 방법입니다.
+
+## 기본 요소를 활용하기
+
+```tsx
+const dialog = useRef<HTMLDialogElement>(null);
+
+<button onClick={() => dialog.current?.showModal()}>열기</button>
+<dialog ref={dialog}>
+  <p>내용을 확인하세요.</p>
+  <form method="dialog">
+    <button>닫기</button>
+  </form>
+</dialog>
+```
+
+`showModal()`로 연 네이티브 dialog는 모달의 배경 비활성화 등 기본 동작을 제공하지만, 알맞은 접근 가능한 이름과 초기 포커스는 여전히 설계해야 합니다.
+
+## 직접 확인하기
+
+열기 버튼을 누르고 Tab과 Escape로 이동해 보세요. 닫은 뒤 포커스가 어디로 돌아오는지 확인합니다.
+
+<Lab label="모달 포커스 확인">
+  <DialogDemo client:load />
+</Lab>
+
+중첩 모달, 트리거가 사라지는 상황, 닫기 애니메이션 중의 포커스 복원은 별도로 검증합니다.
+
+[W3C: Dialog Modal Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) · [MDN: dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog)

@@ -8,11 +8,9 @@
   },
   "scripts": {
     "dev": "pnpm --filter @yeobaek/docs dev",
-    "storybook": "pnpm --filter @yeobaek/storybook dev",
     "build": "turbo run build",
     "check": "turbo run check",
     "lint": "turbo run lint",
-    "build-storybook": "pnpm --filter @yeobaek/storybook build",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

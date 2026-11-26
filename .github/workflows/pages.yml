@@ -1,0 +1,80 @@
+name: 여백 검증 및 배포
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: yeobaek-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm lint
+      - run: pnpm build
+      - run: |
+          test -f apps/docs/dist/index.html
+          test -f apps/docs/dist/accessibility/focus-ring/index.html
+          test -f apps/docs/dist/accessibility/semantic-controls/index.html
+          test -f apps/docs/dist/accessibility/tab-order/index.html
+          test -f apps/docs/dist/accessibility/dialog-focus/index.html
+          test -f apps/docs/dist/accessibility/disabled-state/index.html
+          test -f apps/docs/dist/css/stacking-context/index.html
+          test -f apps/docs/dist/css/flex-overflow/index.html
+          test -f apps/docs/dist/css/cascade/index.html
+          test -f apps/docs/dist/css/viewport/index.html
+          test -f apps/docs/dist/css/scrollbar/index.html
+          test -f apps/docs/dist/css/text-wrap/index.html
+          test -f apps/docs/dist/browser/events/index.html
+          test -f apps/docs/dist/browser/storage/index.html
+          test -f apps/docs/dist/browser/layout-observation/index.html
+          test -f apps/docs/dist/language/type-runtime/index.html
+          test -f apps/docs/dist/language/async-requests/index.html
+          test -f apps/docs/dist/react/state-snapshot/index.html
+          test -f apps/docs/dist/react/controlled-input/index.html
+          test -f apps/docs/dist/react/effects/index.html
+          test -f apps/docs/dist/react/state-location/index.html
+          test -f apps/docs/dist/react/query-keys/index.html
+          test -f apps/docs/dist/design/visual-hierarchy/index.html
+          test -f apps/docs/dist/design/loading-states/index.html
+          test -f apps/docs/dist/design/feedback/index.html
+          test -f apps/docs/dist/design-system/tokens/index.html
+          test -f apps/docs/dist/design-system/component-api/index.html
+          test -f apps/docs/dist/design-system/compatibility/index.html
+          test -f apps/docs/dist/architecture/module-boundaries/index.html
+          test -f apps/docs/dist/architecture/monorepo/index.html
+          test -f apps/docs/dist/architecture/testing/index.html
+          test -f apps/docs/dist/architecture/delivery/index.html
+          test ! -d apps/docs/dist/lab
+      - uses: actions/upload-pages-artifact@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: apps/docs/dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

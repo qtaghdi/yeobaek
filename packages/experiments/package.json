@@ -6,7 +6,8 @@
   "exports": {
     "./focus": "./src/focus/FocusRing.tsx",
     "./design": "./src/design/DesignRefinement.tsx",
-    "./stack": "./src/stack/StackingContext.tsx"
+    "./stack": "./src/stack/StackingContext.tsx",
+    "./inline": "./src/inline/InlineExamples.tsx"
   },
   "peerDependencies": {
     "react": "^19.0.0",

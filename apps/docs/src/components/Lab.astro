@@ -1,11 +1,10 @@
 ---
-interface Props { story: string; label: string }
-const { story, label } = Astro.props;
-const href = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/lab/?path=/story/${story}`;
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
 ---
+
 <section class="notebook-lab not-content" aria-label={label}>
   <slot />
-  <div class="notebook-lab__footer">
-    <a href={href}>예제 별도로 보기 <span aria-hidden="true">↗</span></a>
-  </div>
 </section>
