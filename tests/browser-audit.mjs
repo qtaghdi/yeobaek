@@ -387,16 +387,19 @@ try {
       const main = rect(".sl-markdown-content"), sidebar = rect(".sidebar-pane"), toc = rect(".right-sidebar");
       const header = rect("header.header > .header"), search = rect(".search-trigger");
       const clientWidth = document.documentElement.clientWidth;
+      const page = rect(".page"), root = document.documentElement.getBoundingClientRect();
       return {
         left: main.left - sidebar.right,
         right: toc.left - main.right,
-        outerLeft: sidebar.left,
-        outerRight: clientWidth - toc.right,
+        outerLeft: sidebar.left - page.left,
+        outerRight: page.right - toc.right,
+        reservedScrollbar: clientWidth - root.width,
+        pageAlignment: Math.max(Math.abs(page.left - root.left), Math.abs(page.right - root.right)),
         headerLeft: header.left - sidebar.left,
         headerRight: toc.right - header.right,
         searchAlignment: search.left - main.left,
         width: main.width,
-        overflow: document.documentElement.scrollWidth - clientWidth,
+        overflow: document.documentElement.scrollWidth - Math.min(clientWidth, root.width),
       };
     });
     for (const route of ["start", "css/text-wrap"]) {
@@ -410,6 +413,7 @@ try {
         assert.ok(layout.right >= 0 && layout.right <= 50, `${label}: excessive right gutter ${layout.right}`);
         assert.ok(Math.abs(layout.left - layout.right) <= 3, `${label}: unequal internal gutters ${JSON.stringify(layout)}`);
         assert.ok(layout.outerLeft >= -2 && layout.outerRight >= -2 && Math.abs(layout.outerLeft - layout.outerRight) <= 3, `${label}: asymmetric outer space ${JSON.stringify(layout)}`);
+        assert.ok(layout.pageAlignment <= 2, `${label}: page does not fill the root layout viewport ${JSON.stringify(layout)}`);
         assert.ok(Math.abs(layout.searchAlignment) <= 3 && Math.abs(layout.headerLeft - layout.headerRight) <= 3, `${label}: header misalignment ${JSON.stringify(layout)}`);
         assert.ok(layout.width <= 840 && layout.overflow <= 2, `${label}: layout overflow ${JSON.stringify(layout)}`);
         if (layoutScreenshotDir) await layoutPage.screenshot({ path: join(layoutScreenshotDir, `${theme}-${route.replaceAll("/", "-")}-${width}.png`) });
