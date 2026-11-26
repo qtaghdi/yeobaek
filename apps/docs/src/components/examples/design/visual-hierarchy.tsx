@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import "./visualHierarchy.scss";
+import "./visual-hierarchy.scss";
 
 const stages = [
   "before",

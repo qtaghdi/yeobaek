@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import "./focusRing.scss";
+import "./focus-ring.scss";
 
 type ButtonProps = {
   count: 2 | 3 | 4;

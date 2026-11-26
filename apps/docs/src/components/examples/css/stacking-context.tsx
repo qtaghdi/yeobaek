@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./stackingContext.scss";
+import "./stacking-context.scss";
 
 type StackArgs = {
   parentZ: number | "auto";
