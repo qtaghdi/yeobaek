@@ -3,11 +3,16 @@ title: "입력 상태는 누가 관리해야 할까?"
 description: "제어형·비제어형 입력의 책임과 날짜 범위 필터의 draft/applied 상태를 설계합니다."
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
+
+
 ## 입력 중인 값이 곧 서버에 보낼 값일까요?
 
 입력 상태를 어디에 둘지는 사용하는 라이브러리보다 어떤 값이 언제 필요해지는지에 따라 달라집니다. 현재 값이 화면을 실시간으로 바꾼다면 React가 그 값을 관리할 수 있습니다. 폼 제출 시점에만 필요한 값이라면 브라우저가 관리해도 됩니다.
 
 복합 입력에서는 한 걸음 더 생각해야 합니다. 날짜 범위를 편집하는 값이 곧 서버에 전송할 조건인지, 입력 중인 값은 별도로 보존해야 하는지 결정해야 합니다.
+
+<VisualStory story="controlled-input" />
 
 ## 두 방식
 

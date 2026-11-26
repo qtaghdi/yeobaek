@@ -3,6 +3,7 @@ title: "상태를 바꿨는데 값이 그대로인 이유"
 description: "렌더 시점의 상태 값과 함수형 갱신."
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/example-frame.astro";
 import { StateSnapshotExample } from "src/components/examples/react/state-snapshot";
 
@@ -17,6 +18,8 @@ React 컴포넌트는 렌더 시점의 상태와 props로 JSX를 계산합니다
 ## 두 버튼을 눌러봅시다
 
 두 버튼은 각각 증가 연산을 세 번 요청합니다. 어떤 결과가 나오는지 비교해 보세요.
+
+<VisualStory story="state-snapshot" />
 
 <ExampleFrame label="상태 갱신 비교">
   <StateSnapshotExample client:load />

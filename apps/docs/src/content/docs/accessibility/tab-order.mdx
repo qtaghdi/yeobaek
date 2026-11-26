@@ -3,6 +3,7 @@ title: "tabindex와 키보드 이동 순서"
 description: "DOM 순서와 tabindex가 키보드 이동에 미치는 영향."
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/example-frame.astro";
 import { TabOrderExample } from "src/components/examples/accessibility/tab-order";
 
@@ -23,7 +24,9 @@ import { TabOrderExample } from "src/components/examples/accessibility/tab-order
 
 ## Tab으로 순서를 비교해봅시다
 
-일반 순서와 두 번째 버튼에 -1을 적용한 상태를 전환한 뒤, 예제 안으로 Tab을 이동해 보세요. 양수는 문서 전체의 탐색 순서에 영향을 줄 수 있으므로 이 예제에서는 적용하지 않습니다.
+아래 재생 예제로 일반 순서와 두 번째 버튼을 건너뛰는 순서를 먼저 비교해보세요. 그 아래에서는 직접 Tab으로 조작해볼 수도 있습니다. 양수는 문서 전체의 탐색 순서에 영향을 줄 수 있으므로 이 예제에서는 적용하지 않습니다.
+
+<VisualStory story="tab-order" />
 
 <ExampleFrame label="Tab 이동 순서 비교">
   <TabOrderExample client:load />

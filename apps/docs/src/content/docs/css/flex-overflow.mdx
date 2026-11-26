@@ -3,6 +3,7 @@ title: "flex: 1인데 왜 화면 밖으로 넘어갈까?"
 description: "Flex item의 자동 최소 크기와 넘치는 텍스트."
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/example-frame.astro";
 import { FlexOverflowExample } from "src/components/examples/css/flex-overflow";
 
@@ -17,6 +18,8 @@ flex: 1은 남은 공간을 분배하는 방식이지 최소 크기를 없애는
 ## 카드 폭을 줄여봅시다
 
 카드 폭을 줄이고 `min-width: 0`을 켜거나 꺼 보세요.
+
+<VisualStory story="flex-overflow" />
 
 <ExampleFrame label="Flex 최소 크기와 넘침 비교">
   <FlexOverflowExample client:load />

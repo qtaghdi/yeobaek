@@ -3,6 +3,7 @@ title: "비동기 요청의 실패와 응답 순서"
 description: "요청 취소와 최신 응답의 소유권, 실패·취소의 구분과 실제 비동기 UI의 상태 계약."
 ---
 
+import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/example-frame.astro";
 import { RequestOrderExample } from "src/components/examples/language/request-order";
 
@@ -22,6 +23,8 @@ import { RequestOrderExample } from "src/components/examples/language/request-or
 ## 직접 확인하기
 
 동일한 두 요청에서 B가 먼저 완료하고 A가 늦게 도착하도록 고정한 합성 예제입니다. 왼쪽은 완료 순서대로 결과를 표시하고 오른쪽은 최신 요청의 결과만 반영합니다. 실제 서버에 요청하지 않습니다.
+
+<VisualStory story="request-order" />
 
 <ExampleFrame label="응답 순서 비교">
   <RequestOrderExample client:load />

@@ -1,0 +1,8 @@
+---
+import { VisualPlayback } from "src/components/visuals/visual-playback";
+import { stories, type StoryId } from "src/components/visuals/stories";
+import "src/styles/visual-story.scss";
+interface Props { story: StoryId }
+const { story } = Astro.props;
+---
+<VisualPlayback story={stories[story]} client:visible />

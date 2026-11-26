@@ -25,10 +25,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm lint
-      - run: node --experimental-strip-types --test apps/docs/tests/search-index.test.mjs
+      - run: node --experimental-strip-types --test apps/docs/tests/*.test.mjs
       - run: pnpm build
       - run: |
           test -f apps/docs/dist/index.html
+          node -e 'const fs = require("node:fs"); for (const route of ["browser/events", "accessibility/focus-ring", "accessibility/tab-order", "accessibility/dialog-focus", "css/text-wrap", "react/server-state", "design/loading-states"]) { if (!fs.readFileSync("apps/docs/dist/" + route + "/index.html", "utf8").includes("visual-story__stage")) process.exit(1) }'
           test -f apps/docs/dist/search-index.json
           node -e 'const index = require("./apps/docs/dist/search-index.json"); if (index.length < 37 || !index.every(entry => entry.url.startsWith("/yeobaek/") && entry.sections.length)) process.exit(1)'
           test -f apps/docs/dist/accessibility/focus-ring/index.html
