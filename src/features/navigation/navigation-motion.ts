@@ -126,7 +126,10 @@ const mountSidebar = (sidebar: HTMLElement) => {
   for (const link of sidebar.querySelectorAll<HTMLAnchorElement>("a[href]")) link.dataset.astroPrefetch = "hover";
   const groups = [...sidebar.querySelectorAll<HTMLDetailsElement>("details")].flatMap((details) => {
     const link = details.querySelector<HTMLAnchorElement>("a[href]");
-    return link ? [{ key: new URL(link.href).pathname, details }] : [];
+    if (!link) return [];
+    const path = new URL(link.href).pathname;
+    const isSection = Boolean(details.querySelector(":scope > ul > li > details"));
+    return [{ key: isSection ? `section:${path}` : path, details }];
   });
   let previous: SidebarState | undefined;
   try {

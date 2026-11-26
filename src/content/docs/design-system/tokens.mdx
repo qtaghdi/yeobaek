@@ -4,6 +4,8 @@ description: "색상과 간격을 의미 기반으로 관리하는 이유."
 ---
 
 import VisualStory from "src/components/visuals/visual-story.astro";
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import ThemeTokenPreview from "src/components/examples/design-system/theme-token-preview.astro";
 
 공통 버튼을 다섯 화면에 만들고 나서 배경색을 바꿔달라는 요청이 들어왔습니다. 파일을 다섯 개 찾아서 고치면 됩니다. 근데 다음번엔 열 개라면요? 같은 결정을 반복하고 있다면 그 결정을 공유하는 방법부터 고민할 필요가 있습니다.
 
@@ -27,6 +29,12 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 밝은 테마에서 회색 900을 쓰던 본문이 다크 테마에서는 밝은 색을 사용하더라도 컴포넌트는 같은 토큰을 참조합니다. 테마가 바뀌었다고 버튼과 입력 필드를 하나씩 수정할 필요가 없어집니다. 간격이나 테두리, 모션도 같은 방식으로 공유할 수 있습니다.
 
 <VisualStory story="tokens" />
+
+예제의 테마만 바꿔 보세요. 같은 버튼과 본문이 `--text-primary`와 `--surface-default`를 계속 사용하면서, 두 토큰이 가리키는 색만 서로 바뀝니다.
+
+<ExampleFrame label="테마에 따른 실제 토큰 연결">
+  <ThemeTokenPreview />
+</ExampleFrame>
 
 ## 모든 값을 토큰으로 만들 필요는 없다
 

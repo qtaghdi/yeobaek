@@ -1,0 +1,18 @@
+.error-feedback {
+  .inline-example__button[aria-pressed="true"] {
+    color: var(--background);
+    background: var(--text);
+    border-color: var(--text);
+  }
+
+  &__response {
+    align-self: stretch;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+
+    dl { display: grid; gap: .55rem; margin: 0; }
+    dt { color: var(--text-muted); font-size: .82rem; }
+    dd { margin: .15rem 0 0; }
+    output { display: block; }
+  }
+}

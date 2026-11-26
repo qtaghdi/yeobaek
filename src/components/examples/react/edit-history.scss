@@ -1,0 +1,48 @@
+.edit-history {
+  &__board {
+    position: relative;
+    block-size: clamp(9rem, 24vw, 13rem);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+    background-color: var(--background);
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 10% 20%;
+  }
+
+  &__marker, &__origin {
+    position: absolute;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+  }
+
+  &__marker {
+    border: 1px solid var(--text);
+    padding: 0;
+    color: var(--background);
+    background: var(--text);
+    font: inherit;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  &__marker:active { cursor: grabbing; }
+  &__marker:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
+  &__origin { border: 1px dashed var(--text-muted); pointer-events: none; }
+
+  &__readout {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: .65rem;
+    margin: 0;
+    min-inline-size: 0;
+
+    dt { color: var(--text-muted); font-size: .82rem; }
+    dd { margin: .2rem 0 0; font-weight: 650; font-variant-numeric: tabular-nums; }
+  }
+
+  .inline-example__caption { margin: 0; }
+}

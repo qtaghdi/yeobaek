@@ -3,6 +3,9 @@ title: "테스트는 어떤 문제를 막아야 할까?"
 description: "실제 계약을 중심으로 검증 수준을 선택하고, Boundra의 전체·증분 검사 비교에서 정확성과 성능을 분리합니다."
 ---
 
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import { DiagnosticComparison } from "src/components/examples/architecture/diagnostic-comparison";
+
 ## 테스트가 많으면 정말 버그가 줄어들까?
 
 테스트가 많다고 실제 사용자가 만나는 문제가 모두 줄어드는 것은 아닙니다. 내부 함수가 호출되는 것을 확인하는 테스트가 있더라도 사용자가 버튼을 눌렀을 때 원하는 동작까지 보장한다는 뜻은 아니니까요.
@@ -43,6 +46,12 @@ expect(candidate.diagnostics).toEqual(reference.diagnostics);
 ```
 
 이 코드는 원리를 보여 주는 TypeScript 의사 코드입니다. 실제 Boundra의 실험은 Rust 테스트로 구성되어 있습니다. 실제 코드는 진단뿐 아니라 전체 수집 결과 자체도 비교하므로 검사 범위가 줄어드는 문제를 발견할 수 있습니다.
+
+후보에서 진단 한 건의 파일을 바꿔 보세요. 양쪽 모두 두 건인 상태에서 경로와 규칙을 함께 비교하면 누락된 항목과 후보에만 나타난 항목을 찾을 수 있습니다. 아래 비교는 이 글의 원리를 보여주는 작은 입력으로 실행합니다.
+
+<ExampleFrame label="전체 검사와 증분 후보의 진단 비교">
+  <DiagnosticComparison client:visible />
+</ExampleFrame>
 
 ### 무엇을 변경했는지가 중요하다
 

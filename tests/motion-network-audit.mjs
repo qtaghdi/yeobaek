@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { auditPublishedNavigation } from "./published-navigation-audit.mjs";
 import { auditLandingHandwriting } from "./landing-handwriting-audit.mjs";
 import { auditInteractionScenes } from "./interaction-scenes-audit.mjs";
 
@@ -236,6 +237,7 @@ export const runMotionNetworkAudit = async (browser, origin) => {
   await checkMotion(browser, origin);
   await auditInteractionScenes(browser, origin);
   await auditLandingHandwriting(browser, origin);
+  await auditPublishedNavigation(browser, origin);
   await checkDelayedFont(browser, origin);
   await checkFixedWidthWrapping(browser, origin);
   await checkDocumentLoading(browser, origin);

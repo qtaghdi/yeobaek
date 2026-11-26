@@ -5,7 +5,7 @@ import test from "node:test";
 import { runInNewContext } from "node:vm";
 
 test("등록되지 않은 서버 오류 코드에는 기본 문구를 사용한다", async () => {
-  const article = await readFile(new URL("../src/content/docs/react/error-handling.md", import.meta.url), "utf8");
+  const article = await readFile(new URL("../src/content/docs/react/error-handling.mdx", import.meta.url), "utf8");
   const code = article.match(/```ts\n([\s\S]+?)```/)[1];
   const getErrorMessage = runInNewContext(stripTypeScriptTypes(code) + "\ngetErrorMessage");
   const fallback = getErrorMessage({ code: "UNKNOWN", status: null });

@@ -1,0 +1,42 @@
+.storage-lifetime {
+  scroll-margin-block-start: 6rem;
+
+  &__sample {
+    display: grid;
+    align-content: start;
+    align-self: stretch;
+    justify-items: start;
+    gap: .75rem;
+    min-inline-size: 0;
+
+    .inline-example__caption {
+      margin: 0;
+    }
+
+    output {
+      color: var(--text);
+      font-weight: 600;
+    }
+  }
+
+  &__list {
+    display: grid;
+    gap: .55rem;
+    inline-size: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: block;
+      padding-block: .55rem;
+      border-block-end: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    &[data-dense="true"] {
+      gap: .15rem;
+      li { padding-block: .15rem; }
+    }
+  }
+}

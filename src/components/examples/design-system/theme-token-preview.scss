@@ -1,0 +1,50 @@
+.theme-token-preview {
+  --gray-900: #292823;
+  --gray-100: #f8f6ef;
+  --text-primary: var(--gray-900);
+  --surface-default: var(--gray-100);
+
+  &:has(input:checked) {
+    --text-primary: var(--gray-100);
+    --surface-default: var(--gray-900);
+  }
+
+  &__sample {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: .9rem;
+    align-items: start;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background: var(--surface-default);
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+
+    p { margin: .25rem 0 .75rem; }
+
+    dl {
+      margin: 0;
+      padding: .65rem .75rem;
+      border: 1px solid currentColor;
+      border-radius: var(--radius-small);
+      font-size: .875rem;
+    }
+
+    dl > div + div { margin-top: .45rem; }
+    dd { margin: .15rem 0 0; }
+  }
+
+  &__button {
+    min-block-size: var(--control-height);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-control);
+    padding: .5rem .75rem;
+    font: inherit;
+    color: var(--text-primary);
+    background: var(--surface-default);
+  }
+
+  &__dark, &:has(input:checked) &__light { display: none; }
+  &:has(input:checked) &__dark { display: block; }
+}

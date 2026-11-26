@@ -1,0 +1,33 @@
+---
+import { Button } from "@oddmash/ui/button";
+import { Checkbox } from "@oddmash/ui/checkbox";
+import "./theme-token-preview.scss";
+---
+
+<div class="example-workbench theme-token-preview">
+  <div class="example-workbench__controls">
+    <label>
+      <Checkbox />
+      예제에 어두운 테마 적용
+    </label>
+  </div>
+  <div class="theme-token-preview__sample">
+    <div>
+      <strong>문서 알림</strong>
+      <p>새 댓글이 달리면 알려드립니다.</p>
+      <Button type="button" aria-disabled="true" tabIndex={-1} className="theme-token-preview__button">알림 설정</Button>
+    </div>
+    <dl aria-label="현재 토큰 연결">
+      <div>
+        <dt><code>--text-primary</code></dt>
+        <dd class="theme-token-preview__light"><code>--gray-900</code> <code>#292823</code></dd>
+        <dd class="theme-token-preview__dark"><code>--gray-100</code> <code>#f8f6ef</code></dd>
+      </div>
+      <div>
+        <dt><code>--surface-default</code></dt>
+        <dd class="theme-token-preview__light"><code>--gray-100</code> <code>#f8f6ef</code></dd>
+        <dd class="theme-token-preview__dark"><code>--gray-900</code> <code>#292823</code></dd>
+      </div>
+    </dl>
+  </div>
+</div>

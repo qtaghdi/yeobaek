@@ -3,6 +3,9 @@ title: "프론트는 에러 전처리가 불가능할까?"
 description: "HTTP 오류와 사용자가 보는 메시지를 분리하고 전역 처리와 개별 화면의 책임을 설계합니다."
 ---
 
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import { ErrorFeedback } from "src/components/examples/react/error-feedback";
+
 API를 붙이고 성공 케이스까지 잘 나오면 기분이 좋습니다. 그런데 실패 케이스를 처리하기 시작하면 갑자기 손이 멈춥니다. 권한이 없다면 어떻게 하지? 서버가 내려가면? 영어로 전달받은 에러 메시지를 그대로 보여줘야 하나?
 
 이런 고민은 API를 연결할 때마다 반복됩니다.
@@ -31,6 +34,12 @@ const getErrorMessage = (error: AppError) =>
 ```
 
 여기서 중요한 건 모든 오류를 문구 하나로 덮자는 뜻이 아닙니다. 서버 응답을 사용자에게 전달하기 전에 의미를 정리하자는 것입니다. 디버깅에 필요한 정보와 실제 화면에 노출할 문구는 서로 다른 목적을 갖습니다.
+
+예시 응답을 바꿔 보면 화면 문구가 서버의 영어 메시지 대신 오류 코드에 따라 결정됩니다. 서버가 새로 추가한 코드를 프론트가 아직 모르는 경우에는 기본 문구를 사용합니다.
+
+<ExampleFrame label="서버 오류 코드와 사용자 문구 비교">
+  <ErrorFeedback client:load />
+</ExampleFrame>
 
 ## 모달 안에서 요청 하나 실패했는데 에러 페이지로 보내야 할까?
 
