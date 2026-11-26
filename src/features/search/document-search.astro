@@ -1,4 +1,5 @@
 ---
+import { Input } from "@oddmash/ui/input";
 import "src/features/search/document-search.scss";
 const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.json";
 ---
@@ -10,8 +11,10 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
   <dialog id="yeobaek-search-dialog" class="search-dialog" aria-labelledby="search-dialog-title">
     <h2 id="search-dialog-title" class="search-sr-only">여백 글 검색</h2>
     <div class="search-bar">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5" stroke-linecap="round"/></svg>
-      <input type="search" aria-label="검색어" placeholder="제목, 기술 이름, 키워드 검색" autocomplete="off" spellcheck="false" maxlength="100" />
+      <label class="search-field">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5" stroke-linecap="round"/></svg>
+        <Input type="search" aria-label="검색어" placeholder="제목, 기술 이름, 키워드 검색" autoComplete="off" spellCheck={false} maxLength={100} />
+      </label>
       <button type="button" class="search-close" aria-label="검색 닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke-linecap="round"/></svg></button>
     </div>
     <div class="search-content">

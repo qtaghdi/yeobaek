@@ -80,6 +80,19 @@ const coreFlow = async (browser, engine) => {
     assert.ok(before > 0);
     await searchTrigger(page).click();
     const input = searchInput(page);
+    const field = page.locator(".search-field");
+    const icon = field.locator("svg");
+    assert.equal(await icon.getAttribute("aria-hidden"), "true");
+    assert.ok(await field.evaluate(element => {
+      const border = element.getBoundingClientRect();
+      const icon = element.querySelector("svg").getBoundingClientRect();
+      const input = element.querySelector("input").getBoundingClientRect();
+      return icon.left > border.left && icon.right < input.left && icon.top > border.top && icon.bottom < border.bottom
+        && getComputedStyle(element).outlineStyle === "solid"
+        && getComputedStyle(element.querySelector("input")).outlineStyle === "none";
+    }), `${engine}: search icon and focus outline should sit inside and around the field respectively`);
+    await icon.click();
+    assert.ok(await focusIs(input));
     await input.fill("ㅍㅋㅅㄹ");
     await page.locator(".search-result-title mark").filter({ hasText: "포커스 링" }).first().waitFor();
     await input.press("Enter");

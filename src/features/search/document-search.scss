@@ -7,7 +7,8 @@ yeobaek-search {
   align-items: center;
   gap: .65rem;
   min-block-size: 2.5rem;
-  inline-size: min(100%, 34rem);
+  box-sizing: border-box;
+  inline-size: 100%;
   padding: .55rem .7rem;
   background: var(--surface);
   color: var(--text-muted);
@@ -57,7 +58,7 @@ yeobaek-search {
   &, * { box-sizing: border-box; }
   :is(button, input) { font: inherit; }
   button { cursor: pointer; }
-  button:focus-visible, a:focus-visible, input:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
+  button:focus-visible, a:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
 }
 
 @keyframes search-appear {
@@ -84,26 +85,43 @@ yeobaek-search {
   border-block-end: 1px solid var(--border);
   flex: none;
   color: var(--text-muted);
+}
+
+.search-field {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: .65rem;
+  min-inline-size: 0;
+  padding-inline: .75rem;
+  min-block-size: 2.75rem;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-control);
+  cursor: text;
+
+  &:has(> input:focus-visible) {
+    border-color: transparent;
+    outline: var(--focus-width) solid var(--focus);
+    outline-offset: 0;
+  }
 
   > svg { flex: none; }
   > input {
     flex: 1;
     min-inline-size: 0;
-    inline-size: 100%;
-    min-block-size: 2.75rem;
-    padding: .3rem .35rem;
+    padding: .3rem 0;
     color: var(--text);
     background: transparent;
     border: 0;
-    border-radius: var(--radius-control);
     font-size: 1rem;
-
     appearance: none;
+
     &::-webkit-search-cancel-button, &::-webkit-search-decoration { appearance: none; display: none; }
     &::placeholder { color: var(--text-muted); }
-    &:focus-visible { outline-offset: 1px; }
   }
 }
+
+.search-dialog .search-field > input:focus-visible { outline: none; }
 
 .search-close {
   display: grid;
@@ -229,7 +247,7 @@ yeobaek-search {
   > span { display: inline-flex; gap: .25rem; align-items: center; }
 }
 
-@media (max-width: 50rem) {
+@media (max-width: 49.999rem) {
   .search-trigger {
     inline-size: 2.75rem;
     min-block-size: 2.75rem;
