@@ -1,19 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import "./focus-ring.scss";
-
-type ButtonProps = {
-  count: 2 | 3 | 4;
-  size: "compact" | "regular" | "large";
-  labels: "numbers" | "letters";
-  disableSecond: boolean;
-};
-
-type FocusRingArgs = ButtonProps & {
-  showLegend: boolean;
-};
+import { Buttons, type FocusRingArgs } from "@yeobaek/experiments/focus";
 
 const meta = {
-  title: "알고 꺼드럭대자/001. 포커스 링",
+  title: "접근성/포커스 링",
   id: "001-focus-ring",
   args: {
     count: 3,
@@ -40,26 +29,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<FocusRingArgs>;
-
-const buttonLabels = {
-  numbers: ["01", "02", "03", "04"],
-  letters: ["A", "B", "C", "D"],
-};
-
-const Buttons = ({ count, size, labels, disableSecond }: ButtonProps) => (
-  <div className="focus-ring__buttons" data-size={size}>
-    {buttonLabels[labels].slice(0, count).map((label, index) => (
-      <button
-        type="button"
-        key={index}
-        aria-label={`버튼 ${label}`}
-        disabled={disableSecond && index === 1}
-      >
-        {label}
-      </button>
-    ))}
-  </div>
-);
 
 export const BrowserDefault: Story = {
   render: (args) => (

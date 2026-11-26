@@ -1,6 +1,5 @@
 {
-  "name": "frontend-details",
-  "version": "0.1.0",
+  "name": "yeobaek",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.14.0",
@@ -8,29 +7,17 @@
     "node": "^22.13.0 || >=24.0.0"
   },
   "scripts": {
-    "storybook": "storybook dev -p 6006 --no-open --disable-telemetry",
-    "build": "tsc --noEmit",
-    "lint": "eslint .",
+    "dev": "pnpm --filter @yeobaek/docs dev",
+    "storybook": "pnpm --filter @yeobaek/storybook dev",
+    "build": "turbo run build",
+    "check": "turbo run check",
+    "lint": "turbo run lint",
+    "build-storybook": "pnpm --filter @yeobaek/storybook build",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "build-storybook": "storybook build --disable-telemetry"
-  },
-  "dependencies": {
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@storybook/addon-a11y": "10.6.6",
-    "@storybook/react-vite": "10.6.6",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "eslint": "^10.14.0",
-    "prettier": "^3.9.10",
-    "sass": "^1.108.1",
-    "storybook": "10.6.6",
-    "typescript": "~6.0.3",
-    "typescript-eslint": "^8.72.1",
-    "vite": "^8.3.6"
+    "turbo": "^2.5.8",
+    "prettier": "^3.9.10"
   }
 }

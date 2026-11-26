@@ -1,6 +1,7 @@
-name: Deploy Storybook to GitHub Pages
+name: Verify and deploy Yeobaek
 
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
@@ -9,8 +10,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: github-pages
-  cancel-in-progress: false
+  group: yeobaek-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -22,12 +23,23 @@ jobs:
           node-version: 24
       - uses: pnpm/action-setup@v4
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build-storybook
+      - run: pnpm check
+      - run: pnpm lint
+      - run: pnpm build
+      - run: |
+          mkdir -p apps/docs/dist/lab
+          cp -R apps/storybook/storybook-static/. apps/docs/dist/lab/
+          test -f apps/docs/dist/index.html
+          test -f apps/docs/dist/lab/index.html
+          test -f apps/docs/dist/lab/iframe.html
+          test -f apps/docs/dist/accessibility/focus-ring/index.html
       - uses: actions/upload-pages-artifact@v4
+        if: github.ref == 'refs/heads/main'
         with:
-          path: storybook-static
+          path: apps/docs/dist
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     permissions:

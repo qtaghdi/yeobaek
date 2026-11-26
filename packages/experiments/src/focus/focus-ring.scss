@@ -1,4 +1,4 @@
-@use "../../shared/experiment";
+@use "../../../tokens/experiment.scss" as experiment;
 @use "sass:meta";
 
 .focus-ring {
@@ -20,7 +20,7 @@
 
   display: grid;
   place-items: center;
-  min-block-size: max(240px, 100dvh);
+  min-block-size: var(--experiment-height, max(240px, 100dvh));
   color: var(--ink);
   background: var(--surface);
 
@@ -34,15 +34,15 @@
     place-items: center;
 
     &--dark {
-      --surface: #232137;
-      --ink: #f8f5ff;
-      --key-surface: #36334d;
-      --key-edge: #716a87;
-      --key-hover: #464160;
-      --key-active: #2d2a43;
-      --key-disabled-ink: #b6afc8;
-      --key-shadow: #141322;
-      --ring-color: #c9b5ff;
+      --surface: #24231f;
+      --ink: #f1ede0;
+      --key-surface: #302e28;
+      --key-edge: #777368;
+      --key-hover: #454137;
+      --key-active: #302c25;
+      --key-disabled-ink: #bbb5a6;
+      --key-shadow: #151411;
+      --ring-color: #f4e89b;
 
       color: var(--ink);
       background: var(--surface);

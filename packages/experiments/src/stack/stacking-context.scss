@@ -1,4 +1,4 @@
-@use "../../shared/experiment";
+@use "../../../tokens/experiment.scss" as experiment;
 
 .stack-demo {
   @include experiment.stage;
@@ -54,7 +54,7 @@
     padding: 8px;
     border: 1px dashed experiment.$accent;
     border-radius: 10px;
-    background: #eee6ff;
+    background: #f4e89b;
 
     > span {
       font-size: 12px;
@@ -97,8 +97,8 @@
     inline-size: 50%;
     block-size: 110px;
     justify-items: end;
-    color: #153b37;
-    background: #aee5d9;
-    border: 1px solid #639e94;
+    color: #304b30;
+    background: #d6e3d3;
+    border: 1px solid #647f65;
   }
 }

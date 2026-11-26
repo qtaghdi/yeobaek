@@ -1,0 +1,32 @@
+{
+  "name": "@yeobaek/storybook",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "@yeobaek/experiments": "workspace:*",
+    "@yeobaek/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@storybook/addon-a11y": "10.6.6",
+    "@storybook/react-vite": "10.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^10.14.0",
+    "sass": "^1.108.1",
+    "storybook": "10.6.6",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^8.3.6",
+    "@yeobaek/config": "workspace:*"
+  },
+  "scripts": {
+    "dev": "storybook dev -p 6006 --no-open --disable-telemetry",
+    "build": "storybook build --disable-telemetry",
+    "check": "tsc --noEmit",
+    "lint": "eslint ."
+  }
+}

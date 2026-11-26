@@ -1,0 +1,172 @@
+@use "../../../../packages/tokens/notebook.css";
+
+:root, :root[data-theme="light"], :root[data-theme="dark"] {
+  --sl-font: var(--font);
+  --sl-font-mono: var(--mono);
+  --sl-content-width: 48rem;
+  --sl-sidebar-width: 17rem;
+  --sl-line-height: 1.8;
+  --sl-color-white: var(--ink);
+  --sl-color-gray-1: var(--ink);
+  --sl-color-gray-2: var(--ink);
+  --sl-color-gray-3: var(--pencil);
+  --sl-color-gray-4: var(--pencil);
+  --sl-color-gray-5: var(--edge);
+  --sl-color-gray-6: var(--surface);
+  --sl-color-black: var(--paper);
+  --sl-color-bg: var(--paper);
+  --sl-color-bg-nav: var(--paper);
+  --sl-color-bg-sidebar: var(--paper);
+  --sl-color-hairline: var(--edge);
+  --sl-color-hairline-light: var(--edge);
+  --sl-color-text: var(--ink);
+  --sl-color-text-accent: var(--ink);
+  --sl-color-accent-low: var(--marker);
+  --sl-color-accent: var(--focus);
+  --sl-color-accent-high: var(--ink);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+.site-title {
+  color: var(--ink);
+  font-weight: 800;
+  letter-spacing: -0.08em;
+}
+
+.sl-markdown-content {
+  overflow-wrap: anywhere;
+
+  h2 {
+    padding-block-end: .4rem;
+    border-block-end: 1px solid var(--edge);
+  }
+
+  mark {
+    padding-inline: .2em;
+    color: var(--ink);
+    background: var(--marker);
+  }
+}
+
+.sl-markdown-content a:not([class]) {
+  text-decoration-color: var(--pencil);
+  text-underline-offset: .2em;
+}
+
+.sidebar-content [aria-current="page"] {
+  background: var(--marker);
+  color: var(--ink);
+  border-radius: 0;
+  font-weight: 650;
+}
+
+:focus-visible:not(.notebook-lab *) {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+.notebook-lab {
+  --experiment-height: 19rem;
+  border: 1px solid var(--edge);
+  background: var(--surface);
+  padding: 1rem;
+  min-inline-size: 0;
+}
+.notebook-experiment {
+  min-inline-size: 0;
+}
+.notebook-experiment__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 1rem;
+  align-items: center;
+  padding: .75rem;
+  border-block-end: 1px solid var(--edge);
+}
+.notebook-experiment__controls label {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem;
+  font-size: .85rem;
+}
+.notebook-experiment__controls :is(select, input:not([type="checkbox"]), button) {
+  max-inline-size: 100%;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--pencil);
+  padding: .3rem .5rem;
+  font: inherit;
+}
+.notebook-experiment__controls input[type="number"] {
+  inline-size: 6rem;
+}
+.notebook-experiment > :is(.focus-ring, .design-demo, .stack-demo) {
+  background-image: linear-gradient(to right, #b6b0a326 1px, transparent 1px), linear-gradient(to bottom, #b6b0a326 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.notebook-lab__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-block-start: 1px solid var(--edge);
+  font-size: .8rem;
+  color: var(--pencil);
+  padding-block-start: .6rem;
+}
+.notebook-index {
+  display: grid;
+  gap: .6rem;
+  margin-block: 2rem;
+}
+.notebook-index a {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-block-end: 1px solid var(--edge);
+  color: var(--ink);
+  text-decoration: none;
+}
+.notebook-index a:hover {
+  text-decoration: underline;
+}
+.notebook-index span {
+  font-family: var(--mono);
+  color: var(--pencil);
+  font-size: .8rem;
+}
+
+.notebook-home {
+  padding-block: clamp(2rem, 7vw, 6rem) 2rem;
+  max-inline-size: 46rem;
+
+  .notebook-eyebrow {
+    font-family: var(--mono);
+    font-size: .75rem;
+    letter-spacing: .08em;
+    color: var(--pencil);
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 4.25rem);
+    line-height: 1.25;
+    letter-spacing: -.065em;
+  }
+
+  > p:last-child {
+    max-inline-size: 34rem;
+    font-size: 1.1rem;
+    color: var(--pencil);
+  }
+}
+
+.notebook-lab .notebook-experiment :is(.focus-ring--outline-removed) button:focus { outline: none; }
