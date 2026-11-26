@@ -1,7 +1,7 @@
 import { useState } from "react";
-import "./stacking-context.scss";
+import "./stackingContext.scss";
 
-export type StackArgs = {
+type StackArgs = {
   parentZ: number | "auto";
   childZ: number;
   transform: boolean;
@@ -9,7 +9,7 @@ export type StackArgs = {
   isolate: boolean;
 };
 
-export const defaults: StackArgs = {
+const defaults: StackArgs = {
   parentZ: "auto",
   childZ: 9999,
   transform: false,
@@ -17,7 +17,7 @@ export const defaults: StackArgs = {
   isolate: false,
 };
 
-export const Layers = ({
+const Layers = ({
   parentZ,
   childZ,
   transform,
@@ -55,41 +55,13 @@ export const Layers = ({
   );
 };
 
-export const Playground = (args: StackArgs) => (
+const Playground = (args: StackArgs) => (
   <div className="stack-demo">
     <Layers {...args} />
   </div>
 );
 
-export const Comparison = ({
-  before,
-  after,
-  change,
-}: {
-  before: string;
-  after: string;
-  change: Partial<StackArgs>;
-}) => (
-  <div className="stack-demo">
-    <div className="stack-demo__comparison">
-      <section aria-label={before}>
-        <p className="stack-demo__caption">
-          <code>{before}</code>
-        </p>
-        <Layers {...defaults} />
-      </section>
-      <section aria-label={after}>
-        <p className="stack-demo__caption">
-          <code>{after}</code>
-        </p>
-        <Layers {...defaults} {...change} />
-      </section>
-    </div>
-  </div>
-);
-
-
-export const StackLab = () => {
+export const StackingContextExample = () => {
   const [args, setArgs] = useState<StackArgs>(defaults);
   return <div className="notebook-experiment">
     <div className="notebook-experiment__controls">

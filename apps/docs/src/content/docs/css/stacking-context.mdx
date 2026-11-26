@@ -3,8 +3,8 @@ title: z-index가 9999여도 안 되는 이유
 description: 부모 쌓임 맥락과 자식의 z-index 관계를 실험합니다.
 ---
 
-import Lab from "../../../components/Lab.astro";
-import { StackLab } from "@yeobaek/experiments/stack";
+import ExampleFrame from "@/components/exampleFrame.astro";
+import { StackingContextExample } from "@/components/examples/css/stackingContext";
 
 ## 문제
 
@@ -14,9 +14,9 @@ import { StackLab } from "@yeobaek/experiments/stack";
 
 부모 A의 값을 1로 바꾸고 자식 A의 값을 9999로 유지해 보세요. 부모 B는 2입니다. 이어 부모 A를 3으로 바꾸면 어떻게 될까요?
 
-<Lab label="쌓임 맥락 비교">
-  <StackLab client:load />
-</Lab>
+<ExampleFrame label="쌓임 맥락 비교">
+  <StackingContextExample client:load />
+</ExampleFrame>
 
 ## 동작 원리
 

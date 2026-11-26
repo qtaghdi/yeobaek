@@ -1,9 +1,0 @@
-{
-  "extends": "@yeobaek/config/tsconfig.json",
-  "include": [
-    "src"
-  ],
-  "compilerOptions": {
-    "allowArbitraryExtensions": true
-  }
-}

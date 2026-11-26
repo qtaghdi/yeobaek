@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
-import "./design-refinement.scss";
+import "./visualHierarchy.scss";
 
-export const stages = [
+const stages = [
   "before",
   "typography",
   "spacing",
@@ -10,9 +10,9 @@ export const stages = [
   "after",
 ] as const;
 
-export type Stage = (typeof stages)[number];
+type Stage = (typeof stages)[number];
 
-export const Login = ({ stage }: { stage: Stage }) => {
+const Login = ({ stage }: { stage: Stage }) => {
   const [submitted, setSubmitted] = useState(false);
   const styles = stages
     .slice(1, stages.indexOf(stage) + 1)
@@ -55,7 +55,7 @@ export const Login = ({ stage }: { stage: Stage }) => {
   );
 };
 
-export const DesignStage = ({ stage }: { stage: Stage }) => (
+const DesignStage = ({ stage }: { stage: Stage }) => (
   <div className="design-demo">
     <Login stage={stage} />
   </div>
@@ -71,7 +71,7 @@ const stageLabels: Record<Stage, string> = {
   after: "개선 후",
 };
 
-export const DesignLab = () => {
+export const VisualHierarchyExample = () => {
   const [stage, setStage] = useState<Stage>("before");
   const group = useId();
 

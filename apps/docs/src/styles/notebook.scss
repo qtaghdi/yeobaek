@@ -1,4 +1,4 @@
-@use "../../../../packages/tokens/notebook.css";
+@use "./tokens";
 
 :root, :root[data-theme="light"], :root[data-theme="dark"] {
   --sl-font: var(--font);

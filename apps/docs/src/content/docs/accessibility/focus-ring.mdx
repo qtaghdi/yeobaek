@@ -3,8 +3,8 @@ title: 포커스 링은 왜 필요할까?
 description: focus, focus-visible, 키보드 조작과 포커스 표시를 비교합니다.
 ---
 
-import Lab from "../../../components/Lab.astro";
-import { FocusLab } from "@yeobaek/experiments/focus";
+import ExampleFrame from "@/components/exampleFrame.astro";
+import { FocusRingExample } from "@/components/examples/accessibility/focusRing";
 
 ## 문제
 
@@ -14,9 +14,9 @@ import { FocusLab } from "@yeobaek/experiments/focus";
 
 Tab과 Shift + Tab을 사용하세요. 표시 방식과 두 번째 버튼의 비활성화 상태를 바꿔 비교할 수 있습니다.
 
-<Lab label="포커스 링 비교">
-  <FocusLab client:load />
-</Lab>
+<ExampleFrame label="포커스 링 비교">
+  <FocusRingExample client:load />
+</ExampleFrame>
 
 ## 동작 원리
 

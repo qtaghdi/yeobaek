@@ -3,8 +3,8 @@ title: 왜 내 웹만 구릴까?
 description: 타이포그래피, 간격, 색상, 시각적 위계를 같은 폼으로 비교합니다.
 ---
 
-import Lab from "../../../components/Lab.astro";
-import { DesignLab } from "@yeobaek/experiments/design";
+import ExampleFrame from "@/components/exampleFrame.astro";
+import { VisualHierarchyExample } from "@/components/examples/design/visualHierarchy";
 
 ## 문제
 
@@ -14,9 +14,9 @@ import { DesignLab } from "@yeobaek/experiments/design";
 
 개선 단계를 하나씩 바꾸면서 읽기 순서가 어떻게 달라지는지 확인하세요. 동일한 이메일 폼이며 실제 인증을 진행하지 않습니다.
 
-<Lab label="로그인 폼 디자인 개선 비교">
-  <DesignLab client:load />
-</Lab>
+<ExampleFrame label="로그인 폼 디자인 개선 비교">
+  <VisualHierarchyExample client:load />
+</ExampleFrame>
 
 ## 관찰
 

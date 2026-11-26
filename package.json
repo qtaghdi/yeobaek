@@ -8,14 +8,13 @@
   },
   "scripts": {
     "dev": "pnpm --filter @yeobaek/docs dev",
-    "build": "turbo run build",
-    "check": "turbo run check",
-    "lint": "turbo run lint",
+    "build": "pnpm --filter @yeobaek/docs build",
+    "check": "pnpm --filter @yeobaek/docs check",
+    "lint": "pnpm --filter @yeobaek/docs lint",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "turbo": "^2.5.8",
     "prettier": "^3.9.10"
   }
 }

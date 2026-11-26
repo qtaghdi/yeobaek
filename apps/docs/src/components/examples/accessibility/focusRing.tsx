@@ -1,14 +1,14 @@
 import { useId, useState } from "react";
-import "./focus-ring.scss";
+import "./focusRing.scss";
 
-export type ButtonProps = {
+type ButtonProps = {
   count: 2 | 3 | 4;
   size: "compact" | "regular" | "large";
   labels: "numbers" | "letters";
   disableSecond: boolean;
 };
 
-export type FocusRingArgs = ButtonProps & {
+type FocusRingArgs = ButtonProps & {
   showLegend: boolean;
 };
 
@@ -17,7 +17,7 @@ const buttonLabels = {
   letters: ["A", "B", "C", "D"],
 };
 
-export const Buttons = ({ count, size, labels, disableSecond }: ButtonProps) => (
+const Buttons = ({ count, size, labels, disableSecond }: ButtonProps) => (
   <div className="focus-ring__buttons" data-size={size}>
     {buttonLabels[labels].slice(0, count).map((label, index) => (
       <button
@@ -33,7 +33,7 @@ export const Buttons = ({ count, size, labels, disableSecond }: ButtonProps) => 
 );
 
 
-export const FocusComparison = ({ showLegend, ...args }: FocusRingArgs) => (
+const FocusComparison = ({ showLegend, ...args }: FocusRingArgs) => (
   <div className="focus-ring focus-ring--comparison" aria-label="클릭과 Tab으로 포커스 비교">
     <Buttons {...args} />
     {showLegend && <div className="focus-ring__legend"><code>:focus</code><code>:focus-visible</code></div>}
@@ -46,7 +46,7 @@ const focusModes = [
   { value: "outline-removed", label: "포커스 제거" },
 ] as const;
 
-export const FocusLab = () => {
+export const FocusRingExample = () => {
   const [mode, setMode] = useState<(typeof focusModes)[number]["value"]>("comparison");
   const [disableSecond, setDisableSecond] = useState(false);
   const group = useId();

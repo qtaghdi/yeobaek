@@ -3,8 +3,8 @@ title: "상태를 바꿨는데 값이 그대로인 이유"
 description: "렌더 시점의 상태 값과 함수형 갱신."
 ---
 
-import Lab from "../../../components/Lab.astro";
-import { StateDemo } from "@yeobaek/experiments/inline";
+import ExampleFrame from "@/components/exampleFrame.astro";
+import { StateSnapshotExample } from "@/components/examples/react/stateSnapshot";
 
 상태 setter를 호출한 직후 기존 변수의 값을 읽으면 바뀌지 않은 값이 보일 수 있습니다. setter는 현재 렌더의 지역 변수를 직접 바꾸는 함수가 아닙니다.
 
@@ -16,9 +16,9 @@ React 컴포넌트는 렌더 시점의 상태와 props로 JSX를 계산합니다
 
 두 버튼은 각각 증가 연산을 세 번 요청합니다. 어떤 결과가 나오는지 비교해 보세요.
 
-<Lab label="상태 갱신 비교">
-  <StateDemo client:load />
-</Lab>
+<ExampleFrame label="상태 갱신 비교">
+  <StateSnapshotExample client:load />
+</ExampleFrame>
 
 ```tsx
 setCount(count + 1);
