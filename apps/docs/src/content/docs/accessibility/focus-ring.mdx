@@ -6,11 +6,9 @@ description: focus, focus-visible, 키보드 조작과 포커스 표시를 비�
 import ExampleFrame from "src/components/example-frame.astro";
 import { FocusRingExample } from "src/components/examples/accessibility/focus-ring";
 
-## 문제
+포커스 링이 예쁘지 않다고 CSS에 `outline: none`을 넣어본 적은 없으신가요? 마우스로 클릭할 때는 별 문제가 없어 보입니다. 그런데 마우스를 잠깐 내려놓고 Tab만 눌러보면 이야기가 달라집니다. 현재 위치는 어디일까요?
 
-마우스 없이 Tab을 눌러 이동할 때, 현재 어떤 버튼에 도달했는지 확인할 수 있어야 합니다. `outline: none`만 적용하면 포커스는 이동하지만 화면에서 위치가 사라질 수 있습니다.
-
-## 직접 확인하기
+## 마우스를 내려놓고 확인해봅시다
 
 Tab과 Shift + Tab을 사용하세요. 표시 방식과 두 번째 버튼의 비활성화 상태를 바꿔 비교할 수 있습니다.
 
@@ -18,13 +16,15 @@ Tab과 Shift + Tab을 사용하세요. 표시 방식과 두 번째 버튼의 비
   <FocusRingExample client:load />
 </ExampleFrame>
 
-## 동작 원리
+포커스는 실제 입력을 받을 대상이고, 링은 그 위치를 사용자에게 알려주는 표시입니다. 둘을 구분해서 생각하면 됩니다. `:focus-visible`이 키보드에만 반응하는 선택자라고 단정하면 안 됩니다. 텍스트 입력처럼 포인터로 선택해도 키보드 입력이 필요한 요소는 표시될 수 있습니다.
+
+## focus와 focus-visible, 뭐가 다를까요?
 
 - `:focus`는 포커스된 요소에 일치합니다.
 - `:focus-visible`은 브라우저가 포커스 표시가 필요하다고 판단하는 상황에 일치합니다. 키보드 입력뿐 아니라 요소 종류 등도 고려합니다.
 - `outline`은 일반적인 박스 크기를 변경하지 않으므로 포커스 표시를 추가해도 레이아웃이 흔들리지 않습니다.
 
-## 개선
+## 링을 없애는 대신 바꿔봅시다
 
 ```css
 button:focus-visible {
@@ -35,17 +35,13 @@ button:focus-visible {
 
 기본 표시를 제거하려면 대체 포커스 표시를 먼저 마련하세요. 밝거나 어두운 배경에서도 구분되는지, 실제 Tab 순서와 함께 확인합니다. 자동 검사만으로 WCAG 적합성을 단정하지 않습니다.
 
-## 참고
+## 공통 컴포넌트에서 링이 필요한 이유
+
+버튼의 배경이 달라져도 포커스를 찾을 수 있어야 합니다. 그래서 저는 기본 스타일을 지울 때 링을 같이 없애기보다는 공통 토큰으로 대체하는 방향이 낫다고 생각합니다. 마우스 클릭만으로 테스트하면 이 차이가 거의 보이지 않습니다. Tab으로 버튼과 링크를 이동해보면 훨씬 쉽게 이해됩니다.
+
+[관련 이슈 · oddmash-ui #42](https://github.com/Oddmash/oddmash-ui/issues/42)
+
+## 참고 자료
 
 - [MDN: :focus-visible](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible)
 - [W3C: Focus Visible](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html)
-
-## 프로젝트에서 이어진 고민
-
-공통 버튼과 네이티브 Select의 기본 스타일을 맞추는 과정에서 포커스 링도 같은 토큰으로 정리할 필요가 있었다. 화면 배경과 버튼의 색이 달라져도 키보드 포커스가 식별되어야 한다. 포인터 클릭에만 의존해 확인하면 놓치기 쉬운 문제다.
-
-### 검증 기준
-
-Tab으로 버튼, 링크, Select를 연속 이동하고 밝은 테마와 어두운 테마에서 현재 위치가 사라지지 않는지 확인한다. outline을 없애는 대신 컴포넌트 바깥에 일정한 offset을 둔다.
-
-[관련 이슈 · oddmash-ui #42](https://github.com/Oddmash/oddmash-ui/issues/42)

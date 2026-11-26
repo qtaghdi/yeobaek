@@ -3,6 +3,8 @@ title: "테스트는 어떤 문제를 막아야 할까?"
 description: "실제 계약을 중심으로 검증 수준을 선택하고, Boundra의 전체·증분 검사 비교에서 정확성과 성능을 분리합니다."
 ---
 
+## 테스트가 많으면 정말 버그가 줄어들까?
+
 테스트가 많다는 사실만으로 프로그램이 올바르게 동작한다고 판단할 수는 없습니다. 무엇을 보장할 것인지 명확하지 않으면 내부 함수 호출 횟수나 화면 구조만 확인하다가 실제 사용자가 겪는 문제가 남을 수 있습니다.
 
 Boundra의 경계 검사 도구에서 캐싱을 도입할지 판단했던 사례는 정확성과 성능 검증을 구분하는 좋은 출발점입니다.
@@ -76,8 +78,11 @@ cargo test --release -p boundra-cli --test incremental-experiment -- --nocapture
 
 검사 결과는 검증한 계약의 범위만 보장합니다. 예를 들어 실제 키보드 조작을 확인한 브라우저 테스트가 존재한다고 접근성 적합성을 전부 증명하는 것은 아닙니다. 브라우저별 차이와 자동 검사가 확인하지 못하는 사용 경험을 별도로 검증합니다.
 
-## 참고
+## 빠른 테스트와 올바른 테스트
 
+테스트를 빠르게 만들겠다고 검사 대상을 줄였다면 기존 검사와 같은 결과가 나오는지부터 확인해야 합니다. 전체 검사와 증분 검사를 비교하는 이유도 여기에 있습니다. 속도가 빨라졌다는 수치보다 기존에 발견하던 오류를 계속 발견하는지가 먼저입니다.
+
+## 참고 자료
 - [Boundra #142](https://github.com/Oddmash/boundra/issues/142) · [증분 정확성 실험 커밋](https://github.com/Oddmash/boundra/commit/b43951f8667c72409225b2f9901722b61f8bce92)
 - [성능 실험 결과와 제한](https://github.com/Oddmash/boundra/blob/2f4d67cebdb1897a074d9416e1e892720b81efae/docs/performance.ko.md)
 - [Testing Library: Guiding Principles](https://testing-library.com/docs/guiding-principles/) · [Playwright: Best Practices](https://playwright.dev/docs/best-practices)

@@ -59,6 +59,12 @@ jobs:
           test -f apps/docs/dist/architecture/monorepo/index.html
           test -f apps/docs/dist/architecture/testing/index.html
           test -f apps/docs/dist/architecture/delivery/index.html
+          test -f apps/docs/dist/css/rendering-strategies/index.html
+          test -f apps/docs/dist/react/server-state/index.html
+          test -f apps/docs/dist/react/error-handling/index.html
+          test -f apps/docs/dist/react/auth-lifecycle/index.html
+          test -f apps/docs/dist/design-system/why-design-system/index.html
+          test -f apps/docs/dist/design/team-balance/index.html
           test ! -d apps/docs/dist/lab
       - uses: actions/upload-pages-artifact@v4
         if: github.ref == 'refs/heads/main'
