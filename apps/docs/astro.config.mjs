@@ -11,6 +11,7 @@ export default defineConfig({
     react(),
     starlight({
       title: "여백",
+      logo: { light: "./src/assets/brand/lockup-light.svg", dark: "./src/assets/brand/lockup-dark.svg", replacesTitle: true },
       description: "아는 것과 이해하는 것 사이의 여백을 채웁니다.",
       defaultLocale: "root",
       locales: { root: { label: "한국어", lang: "ko" } },

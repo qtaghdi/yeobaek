@@ -37,3 +37,20 @@ ResizeObserver 콜백에서 줄바꿈을 다시 계산하면 요소의 높이가
 관찰한 변화 중 실제 계산 입력인 너비와 글꼴 변화를 구분한다. 입력이 같다면 중복 작업을 줄이되 사용자가 명시적으로 요청한 refresh는 무시하지 않는다. 관찰 대상 해제도 수명주기의 일부다.
 
 [관련 이슈 · juliya #6](https://github.com/Oddmash/juliya/issues/6)
+
+## 관찰의 입력과 결과 구분하기
+
+줄바꿈의 입력은 사용 가능한 너비와 글꼴 정보이고, 결과는 줄 수와 요소 높이다. 결과가 바뀌었다는 이유만으로 입력까지 바뀌었다고 판단하면 계산이 반복된다. [Juliya #121](https://github.com/Oddmash/juliya/issues/121)에서는 높이만 변경된 ResizeObserver 통지와 명시적인 갱신 요청을 구분하는 문제를 다뤘다.
+
+```ts
+let lastWidth: number | undefined;
+const observer = new ResizeObserver(([entry]) => {
+  const width = entry.contentRect.width;
+  if (lastWidth === width) return;
+  lastWidth = width;
+  updateLayout(width);
+});
+observer.observe(element);
+```
+
+이 예제는 너비만 입력인 경우다. 실제 텍스트 측정은 폰트 로딩도 입력이므로 너비가 같아도 폰트가 바뀌었다면 다시 계산해야 한다. 명시적인 refresh도 별도의 경로로 유지한다. unmount 시 observer.disconnect를 호출하며, 큐에 남은 작업이 이전 요소를 갱신하지 않는지 확인한다.

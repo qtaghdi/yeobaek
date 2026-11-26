@@ -31,3 +31,16 @@ GitHub Pages 프로젝트 사이트는 루트가 아닌 저장소 이름을 포�
 빌드 성공과 배포 성공을 구분한다. 설정의 base 경로와 실제 생성 HTML, 정적 자산의 경로를 확인하며 배포 URL에서 문서 링크를 직접 열어 본다. 잠금 파일 고정 설치로 CI와 개발 환경의 의존성을 일치시킨다.
 
 [관련 이슈 · oddmash-website #23](https://github.com/Oddmash/oddmash-website/issues/23)
+
+## 빌드 결과를 실제 URL에서 확인하기
+
+[Oddmash Website #23](https://github.com/Oddmash/oddmash-website/issues/23)과 [PR #24](https://github.com/Oddmash/oddmash-website/pull/24)에서 프로젝트 Pages의 배포 경로를 확인한 사례가 있다. 여백 역시 `/yeobaek/` 아래에 배포된다.
+
+```js
+export default defineConfig({
+  site: "https://qtaghdi.github.io",
+  base: "/yeobaek",
+});
+```
+
+빌드가 성공했다는 사실은 생성 대상이 존재한다는 것에 가깝다. 브라우저가 실제로 요청하는 링크와 자산 URL이 배포 위치에 맞아야 한다. 문서 목록, 상세 경로, 새로고침, 코드 스타일과 파비콘까지 배포된 URL로 점검한다. CI 성공, 실제 배포 성공, 배포 화면의 동작은 별개의 검증 결과로 구분한다.
