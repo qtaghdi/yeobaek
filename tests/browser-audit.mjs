@@ -153,6 +153,35 @@ try {
   await page.goBack();
   await page.waitForURL("**/browser/storage/**");
   assert.equal(await page.evaluate(() => window.__yeobaekNavigationProbe), true, "history navigation reloaded the document");
+  const searchPage = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
+  await searchPage.goto(origin + "/yeobaek/browser/storage/");
+  const originalUrl = searchPage.url();
+  await searchPage.getByRole("button", { name: "글 검색" }).click();
+  const searchInput = searchPage.getByRole("searchbox", { name: "검색어" });
+  const results = searchPage.locator(".search-results a");
+  await searchInput.fill("상태를 다뤘습니다.");
+  await searchPage.locator(".search-result-description mark").filter({ hasText: "상태를 다뤘습니다." }).first().waitFor();
+  assert.ok(await results.count() > 0);
+  for (const result of await results.all()) {
+    assert.ok((await result.innerText()).includes("상태를 다뤘습니다."));
+  }
+  await searchInput.fill("포");
+  await searchPage.locator(".search-status").filter({ hasText: "결과를 선택해 열어 주세요." }).waitFor();
+  await searchInput.press("Enter");
+  assert.equal(searchPage.url(), originalUrl);
+  assert.ok(await searchPage.locator(".search-dialog").isVisible());
+  await searchInput.fill("ㅍ");
+  await searchInput.press("Enter");
+  assert.equal(searchPage.url(), originalUrl);
+  assert.ok(await searchPage.locator(".search-dialog").isVisible());
+  await searchInput.fill("ㅍㅋㅅㄹ");
+  await searchPage.locator(".search-result-title mark").filter({ hasText: "포커스 링" }).first().waitFor();
+  await searchInput.press("ArrowDown");
+  await searchPage.keyboard.press("Enter");
+  await searchPage.waitForURL("**/accessibility/focus-ring/");
+  await searchPage.locator("h1").filter({ hasText: "포커스 링" }).waitFor();
+  await searchPage.close();
+
   const slowPage = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   let releaseResponse;
   const responseGate = new Promise(resolve => { releaseResponse = resolve; });

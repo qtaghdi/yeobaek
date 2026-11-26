@@ -1,4 +1,7 @@
-# 여백
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="src/assets/brand/lockup-dark.svg">
+  <img alt="여백" src="src/assets/brand/lockup-light.svg" height="64">
+</picture>
 
 > 아는 것과 이해하는 것 사이의 여백을 채웁니다.
 

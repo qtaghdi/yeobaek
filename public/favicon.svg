@@ -1,1 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><style>.ink{fill:#292823}.accent{fill:#a47700}@media(prefers-color-scheme:dark){.ink{fill:#f1ede0}.accent{fill:#f4e89b}}</style><path class="ink" d="M8 8h48v10H19v12H8zM56 56H8V46h37V34h11z"/><path class="accent" d="M25 27h14v10H25z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><style>path{fill:#18181b}@media(prefers-color-scheme:dark){path{fill:#f4f4f5}}</style><path d="M4 8H43V22H21V38H4Z M43 22H60V56H21V38H43Z"/></svg>
