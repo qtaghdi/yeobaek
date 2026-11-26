@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-const expectedTopics = ["프론트엔드", "Backend", "AI", "디자인", "접근성", "렌더링", "테스트", "Dev Tools"];
+const expectedTopics = ["프론트엔드", "접근성", "CSS", "렌더링", "React", "디자인", "Dev Tools", "테스트"];
 
 const checkGeometry = async (surface, topics) => {
   const geometry = await surface.locator("[data-topic]").evaluateAll(notes => notes.map(note => {

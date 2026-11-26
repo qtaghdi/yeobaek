@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
+import { documentSections } from "../src/features/navigation/document-sections.mjs";
 
 const dist = fileURLToPath(new URL("../dist/", import.meta.url));
 const docs = fileURLToPath(new URL("../src/content/docs/", import.meta.url));
@@ -68,6 +69,10 @@ for (const route of sourceRoutes) {
 const codePage = await read("react/effects/index.html");
 assert.ok(codePage.includes('title="코드 복사"'));
 assert.ok(codePage.includes('data-copied="복사했습니다"'));
+const catalog = documentSections.flatMap(section => section.chapters.flatMap(chapter => chapter.pages));
+assert.deepEqual([...catalog].sort(), sourceRoutes.filter(route => route && route !== "start").sort(), "every public article belongs to exactly one chapter");
+const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+assert.deepEqual([...readme.matchAll(/https:\/\/qtaghdi\.github\.io\/yeobaek\/([^\s)]+)\/\)/g)].map(match => match[1]), catalog);
 const home = await read("index.html");
 assert.deepEqual([...home.matchAll(/<title>(.*?)<\/title>/g)].map(match => match[1]), ["여백"]);
 assert.ok((await read("browser/events/index.html")).includes("<title>클릭 이벤트는 어디까지 전달될까? | 여백</title>"));

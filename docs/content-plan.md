@@ -12,6 +12,6 @@
 | 프론트엔드 | 브라우저 확장 패널을 닫았을 때 페이지의 관찰을 어떻게 정리할까? | [Interaction Inspector 이벤트 관찰](https://github.com/Oddmash/interaction-inspector/issues/29) |
 | 디자인 | 시작일과 종료일을 따로 고를 때 어떤 상태를 확정해야 할까? | [Oddmash UI 날짜 범위 제약](https://github.com/Oddmash/oddmash-ui/issues/142), [Oddmash Agents 기간 입력](https://github.com/Oddmash/oddmash-agents/issues/248) |
 | 개발과 운영 | 기존 위반을 허용하면서 새 위반만 어떻게 막을까? | [Boundra baseline](https://github.com/Oddmash/boundra/issues/157) |
-| 개발과 운영 | 전체 검사 결과에서 변경 파일의 진단만 보여주는 이유는 뭘까? | [Boundra 변경 파일 보고](https://github.com/Oddmash/boundra/issues/158), [기존 글의 증분 검사 비교](../src/content/docs/architecture/testing.md) |
+| 개발과 운영 | 전체 검사 결과에서 변경 파일의 진단만 보여주는 이유는 뭘까? | [Boundra 변경 파일 보고](https://github.com/Oddmash/boundra/issues/158), [기존 글의 증분 검사 비교](../src/content/docs/architecture/testing.mdx) |
 
 관련 이슈는 당시 질문을 확인하는 출발점입니다. 집필할 때 병합 PR이나 공개 소스에서 실제 동작을 확인하고, 확인한 결과와 설명용 예제를 구분합니다.

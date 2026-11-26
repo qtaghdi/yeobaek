@@ -454,6 +454,11 @@ mobile-starlight-toc .dropdown {
   cursor: pointer;
 }
 .sidebar-content summary:hover { background: var(--surface); }
+.sidebar-content .top-level > li > details > summary .large { font-weight: 680; }
+.sidebar-content .top-level > li > details > ul > li > details > summary .large {
+  font-size: var(--sl-text-sm);
+  font-weight: 550;
+}
 .sidebar-content summary .caret { transition: transform 240ms var(--ease-out); }
 
 .navigation-track {
