@@ -128,6 +128,49 @@ export const auditSearchRaces = async (browser, origin) => {
       await page.close();
     }
 
+    const searchAddress = await context.newPage();
+    try {
+      const from = origin + start;
+      const article = origin + "/yeobaek/react/server-state/";
+      await searchAddress.goto(from);
+      await searchAddress.getByRole("button", { name: "글 검색" }).click();
+      await searchAddress.getByRole("searchbox", { name: "검색어" }).fill("TanStack Query");
+      const result = searchAddress.locator(".search-results a[href^='/yeobaek/react/server-state/']");
+      await result.waitFor();
+      const shareableUrl = new URL(await result.getAttribute("href"), origin);
+      assert.equal(shareableUrl.searchParams.get("highlight"), "TanStack Query");
+      assert.equal(decodeURIComponent(shareableUrl.hash), "#우리가-가져온-데이터는-누구의-상태일까");
+      await result.press("Enter");
+      await searchAddress.waitForURL(article);
+      const match = searchAddress.locator(".search-document-match").first();
+      await match.waitFor();
+      assert.equal(await match.textContent(), "TanStack Query");
+      const section = searchAddress.locator("starlight-toc [aria-current=true]").filter({ hasText: "우리가 가져온 데이터는 누구의 상태일까?" });
+      await section.waitFor();
+      await searchAddress.goBack();
+      await searchAddress.waitForURL(from);
+      await searchAddress.locator("h1").filter({ hasText: "한국어 줄바꿈" }).waitFor();
+      assert.equal(await match.count(), 0);
+      await searchAddress.goForward();
+      await searchAddress.waitForURL(article);
+      await match.waitFor();
+
+      const tocLink = searchAddress.locator("starlight-toc nav").getByRole("link", { name: "1분이 지나면 데이터가 사라질까?" });
+      await tocLink.click();
+      await searchAddress.waitForURL(url => url.pathname === new URL(article).pathname && url.hash !== "");
+      await searchAddress.goBack();
+      await searchAddress.waitForURL(article);
+      await match.waitFor();
+
+      shareableUrl.searchParams.set("ref", "qa");
+      await searchAddress.goto(shareableUrl.href);
+      await searchAddress.waitForURL(article + "?ref=qa");
+      await match.waitFor();
+      await section.waitFor();
+    } finally {
+      await searchAddress.close();
+    }
+
     const navigation = await context.newPage();
     let releaseFirst;
     let notifyIntercept;

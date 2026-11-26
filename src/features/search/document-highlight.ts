@@ -1,4 +1,5 @@
 import { getMatchRanges } from "src/features/search/search-index";
+import { readSearchMatchLocation } from "src/features/search/search-location";
 
 const collectTextNodes = (element: HTMLElement) => {
   const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
@@ -15,12 +16,11 @@ const collectTextNodes = (element: HTMLElement) => {
 };
 
 export const highlightDocumentMatch = (scroll = true) => {
-  const query = new URLSearchParams(location.search).get("highlight")?.slice(0, 100);
-  if (!query) return;
+  const matchLocation = readSearchMatchLocation();
+  if (!matchLocation) return;
+  const { query, anchor } = matchLocation;
   const root = document.querySelector(".sl-markdown-content");
   if (!root) return;
-  let anchor: string | undefined;
-  try { anchor = decodeURIComponent(location.hash.slice(1)); } catch { anchor = undefined; }
   const candidates = [...root.querySelectorAll<HTMLElement>("p, li, td, th, h2, h3, h4")]
     .filter((element) => !element.closest(".example-frame, .not-content, pre, .expressive-code") && !element.querySelector("p, li, td, th"));
   const matching = candidates.map((element) => {
