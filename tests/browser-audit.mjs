@@ -52,6 +52,11 @@ try {
         for (let step = 1; step < count; step++) {
           await page.clock.fastForward(6500);
           await page.waitForFunction(expected => Number(document.querySelector(".visual-story")?.getAttribute("data-frame")) === expected, step);
+          if (route.includes("/css/stacking-context/")) {
+            const layers = await scene.locator(".story-art--stacking").evaluate(el => [...el.children].map(child => getComputedStyle(child).zIndex));
+            assert.deepEqual(layers, [[ "auto", "2"], ["1", "2"], ["3", "2"]][step]);
+            assert.equal(await scene.locator(".story-art__layer-child").evaluate(el => getComputedStyle(el).zIndex), "9999");
+          }
           const dimensions = await scene.evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
           assert.ok(dimensions.scroll <= dimensions.width + 3, width + " " + route + " frame " + step + ": overflow");
         }
@@ -108,6 +113,14 @@ try {
   await go("css/stacking-context");
   await frame().getByLabel("부모 A z-index").selectOption("3");
   assert.equal(await frame().locator(".stack-demo__parent").evaluate(el => el.style.zIndex), "3");
+  const childZ = frame().getByLabel("자식 A z-index");
+  await childZ.fill("");
+  assert.equal(await frame().locator(".stack-demo__child").evaluate(el => el.style.zIndex), "9999");
+  await childZ.fill("-1");
+  assert.equal(await frame().locator(".stack-demo__child").evaluate(el => el.style.zIndex), "-1");
+  await childZ.fill("1.5");
+  await childZ.blur();
+  assert.equal(await childZ.inputValue(), "-1");
 
   await go("react/state-snapshot");
   const requests = frame().getByRole("button", { name: "세 번 요청" });
@@ -128,6 +141,7 @@ try {
   assert.equal(await frame().locator(".inline-example__loaded").count(), 2);
 
   await go("browser/storage");
+  await page.locator("h1#_top[data-juliya-wrapped=true]").waitFor();
   const ref = page.locator(".sl-markdown-content a[data-reference-summary]").first();
   await ref.hover();
   await page.getByRole("tooltip").waitFor();
@@ -159,6 +173,20 @@ try {
   await searchPage.getByRole("button", { name: "글 검색" }).click();
   const searchInput = searchPage.getByRole("searchbox", { name: "검색어" });
   const results = searchPage.locator(".search-results a");
+  await searchInput.fill("유지합니다. 실제 레이아웃");
+  await searchPage.getByText("검색 결과가 없습니다. 다른 검색어를 입력해 보세요.", { exact: true }).waitFor();
+  await searchInput.fill("React");
+  await results.first().waitFor();
+  await searchPage.evaluate(() => {
+    const input = document.querySelector(".search-bar input");
+    const old = document.querySelector(".search-results a");
+    input.value = "존재하지않는검색어";
+    input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    old.click();
+  });
+  await searchPage.getByText("검색 결과가 없습니다. 다른 검색어를 입력해 보세요.", { exact: true }).waitFor();
+  assert.equal(searchPage.url(), originalUrl);
+  assert.ok(await searchPage.locator(".search-dialog").isVisible());
   await searchInput.fill("상태를 다뤘습니다.");
   await searchPage.locator(".search-result-description mark").filter({ hasText: "상태를 다뤘습니다." }).first().waitFor();
   assert.ok(await results.count() > 0);
@@ -189,6 +217,60 @@ try {
   await searchPage.waitForURL("**/accessibility/focus-ring/");
   await searchPage.locator("h1").filter({ hasText: "포커스 링" }).waitFor();
   await searchPage.close();
+
+  const recovery = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await recovery.route("**/search-index.json", route => route.fulfill({ json: {} }));
+  await recovery.goto(origin + "/yeobaek/");
+  await recovery.getByRole("button", { name: "글 검색" }).click();
+  await recovery.getByRole("button", { name: "다시 시도" }).waitFor();
+  await recovery.unroute("**/search-index.json");
+  await recovery.getByRole("button", { name: "다시 시도" }).click();
+  await recovery.getByRole("searchbox").fill("포커스 링");
+  await recovery.locator(".search-result-title mark").filter({ hasText: "포커스 링" }).first().waitFor();
+  await recovery.close();
+
+  const historyPage = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
+  await historyPage.goto(origin + "/yeobaek/design/loading-states/?highlight=" + encodeURIComponent("상태를 다뤘습니다.") + "#" + encodeURIComponent("접근성과-모션"));
+  await historyPage.locator(".search-document-match").waitFor();
+  await historyPage.locator("starlight-toc a[aria-current=true]").filter({hasText: "접근성과 모션"}).waitFor();
+  await historyPage.evaluate(() => window.scrollTo({top: 0, behavior: "instant"}));
+  await historyPage.waitForFunction(() => scrollY < 5);
+  await historyPage.locator(".sidebar-content a[href$='/design/feedback/']").click();
+  await historyPage.waitForURL("**/design/feedback/");
+  await historyPage.goBack();
+  await historyPage.waitForURL("**/design/loading-states/**");
+  await historyPage.locator(".search-document-match").waitFor();
+  assert.ok(await historyPage.evaluate(() => scrollY < 100), "history restoration must not jump to search highlight");
+  await historyPage.close();
+
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: "light" });
+  const first = await context.newPage(), second = await context.newPage();
+  await Promise.all([first.goto(origin + "/yeobaek/"), second.goto(origin + "/yeobaek/browser/storage/")]);
+  await first.locator(".theme-trigger").click();
+  await first.locator("[data-theme-value=dark]").click();
+  await second.waitForFunction(() => document.documentElement.dataset.theme === "dark");
+  await second.waitForFunction(() => [...document.querySelectorAll(".theme-trigger")].every(button => button.getAttribute("aria-label") === "테마 선택: 어두움"));
+  await first.locator(".theme-trigger").click();
+  await first.locator("[data-theme-value=light]").click();
+  await second.waitForFunction(() => document.documentElement.dataset.theme === "light");
+  await context.close();
+
+  const mobile = await browser.newPage({ viewport: { width: 320, height: 568 }, reducedMotion: "reduce" });
+  await mobile.goto(origin + "/yeobaek/");
+  await mobile.locator(".theme-trigger").waitFor();
+  await mobile.goto(origin + "/yeobaek/accessibility/dialog-focus/");
+  const menu = mobile.locator("starlight-menu-button button");
+  await menu.click();
+  await mobile.waitForFunction(() => document.querySelector("starlight-menu-button button").getAttribute("aria-expanded") === "true");
+  assert.equal(await mobile.locator(".main-frame").evaluate(el => el.inert), true);
+  await menu.press("Escape");
+  await mobile.waitForFunction(() => document.querySelector("starlight-menu-button button").getAttribute("aria-expanded") === "false");
+  assert.equal(await mobile.locator(".main-frame").evaluate(el => el.inert), false);
+  await mobile.locator(".example-frame").getByRole("button", { name: "모달 열기" }).click();
+  await mobile.locator(".example-frame").getByRole("dialog").waitFor();
+  await mobile.keyboard.press("Escape");
+  await mobile.locator(".example-frame").getByRole("dialog").waitFor({state: "hidden"});
+  await mobile.close();
 
   const featuredPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await featuredPage.goto(origin + "/yeobaek/");

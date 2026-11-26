@@ -1,6 +1,20 @@
 import { getMatchRanges } from "src/features/search/search-index";
 
-export const highlightDocumentMatch = () => {
+const collectTextNodes = (element: HTMLElement) => {
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+  const nodes: { node: Text; start: number; end: number }[] = [];
+  let offset = 0;
+  while (walker.nextNode()) {
+    const node = walker.currentNode as Text;
+    if (node.parentElement?.closest("[data-footnote-ref], [aria-hidden=true], .sl-anchor-link")) continue;
+    const end = offset + node.length;
+    nodes.push({ node, start: offset, end });
+    offset = end;
+  }
+  return nodes;
+};
+
+export const highlightDocumentMatch = (scroll = true) => {
   const query = new URLSearchParams(location.search).get("highlight")?.slice(0, 100);
   if (!query) return;
   const root = document.querySelector(".sl-markdown-content");
@@ -10,8 +24,8 @@ export const highlightDocumentMatch = () => {
   const candidates = [...root.querySelectorAll<HTMLElement>("p, li, td, th, h2, h3, h4")]
     .filter((element) => !element.closest(".example-frame, .not-content, pre, .expressive-code") && !element.querySelector("p, li, td, th"));
   const matching = candidates.map((element) => {
-    const text = element.textContent ?? "";
-    return { element, ranges: getMatchRanges(text, query) };
+    const nodes = collectTextNodes(element);
+    return { element, nodes, ranges: getMatchRanges(nodes.map(item => item.node.data).join(""), query) };
   }).filter((candidate) => candidate.ranges.length);
   const inSection = (element: HTMLElement) => {
     if (!anchor) return false;
@@ -25,17 +39,8 @@ export const highlightDocumentMatch = () => {
   const match = matching.find((candidate) => inSection(candidate.element)) ?? matching[0];
   if (!match) return;
 
-  const { element, ranges } = match;
+  const { element, nodes, ranges } = match;
   element.dataset.searchHighlight = "true";
-  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-  const nodes: { node: Text; start: number; end: number }[] = [];
-  let offset = 0;
-  while (walker.nextNode()) {
-    const node = walker.currentNode as Text;
-    const end = offset + node.length;
-    nodes.push({ node, start: offset, end });
-    offset = end;
-  }
   for (const item of nodes.reverse()) {
     const overlaps = ranges.filter((range) => range.end > item.start && range.start < item.end).reverse();
     for (const range of overlaps) {
@@ -52,5 +57,9 @@ export const highlightDocumentMatch = () => {
   }
   const target = element.querySelector(".search-document-match");
   if (!target) return;
-  requestAnimationFrame(() => requestAnimationFrame(() => target.scrollIntoView({ block: "center", behavior: "instant" })));
+  if (!scroll) return;
+  let frame = requestAnimationFrame(() => {
+    frame = requestAnimationFrame(() => target.scrollIntoView({ block: "center", behavior: "instant" }));
+  });
+  return () => cancelAnimationFrame(frame);
 };

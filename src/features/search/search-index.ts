@@ -5,8 +5,19 @@ export type SearchArticle = {
   category: string;
   url: string;
   keywords: string[];
-  sections: { title: string; text: string; anchor?: string }[];
+  sections: { title: string; text: string; blocks?: string[]; anchor?: string }[];
 };
+
+export const isSearchIndex = (value: unknown): value is SearchArticle[] =>
+  Array.isArray(value) && value.every(article =>
+    article && ["id", "title", "description", "category", "url"].every(key => typeof article[key] === "string") &&
+    Array.isArray(article.keywords) && article.keywords.every((keyword: unknown) => typeof keyword === "string") &&
+    Array.isArray(article.sections) && article.sections.every((section: SearchArticle["sections"][number]) =>
+      section && typeof section.title === "string" && typeof section.text === "string" &&
+      (section.anchor === undefined || typeof section.anchor === "string") &&
+      (section.blocks === undefined || (Array.isArray(section.blocks) && section.blocks.every(block => typeof block === "string")))
+    )
+  );
 
 export const recommendedQueries = ["React", "접근성", "줄바꿈", "TanStack Query", "디자인 시스템", "렌더링"];
 
@@ -140,17 +151,17 @@ export const searchArticles = (articles: SearchArticle[], value: string) => {
     const categoryMatches = !query.short && includes(article.category);
     const sections = query.short ? [] : article.sections.map(entry => ({
       entry,
-      textMatches: includes(entry.text),
+      matchedBlock: (entry.blocks ?? [entry.text]).find(includes),
       headingMatches: includes(entry.title),
     }));
-    const section = sections.filter(item => item.textMatches || item.headingMatches)
-      .sort((a, b) => (Number(b.textMatches) * 2 + Number(b.headingMatches)) - (Number(a.textMatches) * 2 + Number(a.headingMatches)))[0];
+    const section = sections.filter(item => item.matchedBlock || item.headingMatches)
+      .sort((a, b) => (Number(b.matchedBlock !== undefined) * 2 + Number(b.headingMatches)) - (Number(a.matchedBlock !== undefined) * 2 + Number(a.headingMatches)))[0];
     if (!titleMatches && !matchedKeywords.length && !descriptionMatches && !categoryMatches && !section) return [];
     const score = (titleMatches ? 90 : 0) + (matchedKeywords.length ? 28 : 0) +
       (matchedKeywords.some(keyword => projection(keyword, query.initial) === query.term) ? 35 : 0) +
       (descriptionMatches ? 16 : 0) + (categoryMatches ? 5 : 0) + (section ? 2 : 0);
-    const bodyMatches = Boolean(section?.textMatches || section?.headingMatches);
-    const snippet = section?.textMatches ? section.entry.text : section?.headingMatches ? section.entry.title : article.description;
+    const bodyMatches = Boolean(section?.matchedBlock !== undefined || section?.headingMatches);
+    const snippet = section?.matchedBlock ?? (section?.headingMatches ? section.entry.title : article.description);
     const target = !titleMatches && section ? section.entry.anchor : undefined;
     return [{ article, score, snippet, target, bodyMatches, titleMatches, matchedKeywords }];
   }).sort((a, b) => b.score - a.score || a.article.title.localeCompare(b.article.title, "ko"));

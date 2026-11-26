@@ -3,7 +3,7 @@ import { highlightDocumentMatch } from "src/features/search/document-highlight";
 import { mountNavigationMotion } from "src/features/navigation/navigation-motion";
 import { mountReferenceTooltips } from "src/features/references/reference-tooltip";
 
-const selectors = ".hero h1, .hero .tagline, h1[data-page-title], .sl-markdown-content :is(h2, h3, p)";
+const selectors = ".hero h1, .hero .tagline, h1#_top, .sl-markdown-content :is(h2, h3, p)";
 const mountWrapping = () => {
   let disposed = false;
   const cleanups: (() => void)[] = [];
@@ -29,6 +29,7 @@ const mountWrapping = () => {
 let disposePage: (() => void) | undefined;
 let pendingTimer: number | undefined;
 let navigationToken = 0;
+let restoreScroll = false;
 let loadingMain: HTMLElement | null = null;
 let loadingStatus: HTMLElement | null = null;
 
@@ -43,14 +44,15 @@ const clearLoading = () => {
 const mountPage = () => {
   disposePage?.();
   const navigate = mountNavigationMotion();
-  highlightDocumentMatch();
+  const cancelHighlight = highlightDocumentMatch(!restoreScroll);
+  restoreScroll = false;
   const tooltip = mountReferenceTooltips();
   const wrap = mountWrapping();
-  disposePage = () => { navigate(); tooltip(); wrap(); };
+  disposePage = () => { cancelHighlight?.(); navigate(); tooltip(); wrap(); };
 };
 
 document.addEventListener("astro:before-preparation", (event) => {
-  const transition = event as Event & { from: URL; to: URL; signal?: AbortSignal };
+  const transition = event as Event & { from: URL; to: URL; navigationType?: string; signal?: AbortSignal };
   if (transition.from.pathname === transition.to.pathname && transition.from.search === transition.to.search) return;
   clearLoading();
   const token = ++navigationToken;
@@ -68,7 +70,11 @@ document.addEventListener("astro:before-preparation", (event) => {
   transition.signal?.addEventListener("abort", () => { if (token === navigationToken) clearLoading(); }, { once: true });
 });
 
-document.addEventListener("astro:before-swap", () => {
+document.addEventListener("astro:before-swap", (event) => {
+  const transition = event as Event & { navigationType?: string; newDocument: Document };
+  restoreScroll = transition.navigationType === "traverse";
+  const theme = document.documentElement.dataset.theme;
+  if (theme) transition.newDocument.documentElement.dataset.theme = theme;
   clearLoading();
   disposePage?.();
   disposePage = undefined;

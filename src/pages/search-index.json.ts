@@ -19,8 +19,11 @@ const sectionsOf = (body: string, headings: { text: string; slug: string }[]) =>
   let title = "";
   let lines: string[] = [];
   const flush = () => {
-    const text = clean(lines.join("\n"));
-    if (text || title) sections.push({ title, text, anchor: headings.find((heading) => clean(heading.text) === title)?.slug });
+    const blocks = lines.join("\n").split(/\n\s*\n|\n(?=\s*(?:[-*+] |\d+\. |\|))/)
+      .flatMap(block => block.trim().startsWith("|") ? block.split("|") : [block])
+      .map(clean).filter(Boolean);
+    const text = blocks.join(" ");
+    if (text || title) sections.push({ title, text, blocks, anchor: headings.find((heading) => clean(heading.text) === title)?.slug });
     lines = [];
   };
   for (const line of source.split("\n")) {

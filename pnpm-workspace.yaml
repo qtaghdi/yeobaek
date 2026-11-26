@@ -2,3 +2,6 @@ allowBuilds:
   "@parcel/watcher": true
   esbuild: true
   sharp: true
+minimumReleaseAgeExclude:
+  - '@oddmash/juliya@0.4.2'
+  - '@oddmash/ui@0.11.0'

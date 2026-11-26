@@ -6,7 +6,7 @@ export const StoryIllustration = ({ variant, step }: { variant: NonNullable<Stor
       {[false, true].map((reserved) => (
         <div className="story-art__mock" key={String(reserved)}>
           <div className={`story-art__content ${step > 0 || reserved ? "story-art__content--reserved" : ""}`}>
-            {step === 0 ? reserved ? <><i /><i /><i /></> : <small>로딩 중…</small> : <><strong>문서 제목</strong><i /><i /></>}
+            {step === 0 ? reserved ? <><i /><i /><i /></> : <small>로딩 중…</small> : step === 2 && !reserved ? <small>로딩 중…</small> : <><strong>문서 제목</strong><i /><i />{step === 2 && reserved ? <small>갱신 중</small> : null}</>}
           </div>
           <span className="story-art__next">다음 콘텐츠</span>
         </div>
@@ -15,8 +15,8 @@ export const StoryIllustration = ({ variant, step }: { variant: NonNullable<Stor
   );
   if (variant === "stacking") return (
     <div className="story-art story-art--stacking" aria-hidden="true">
-      <div className="story-art__layer-a"><span>부모 A · {["auto", "1", "3"][step]}</span><div className="story-art__layer-child">자식 A · 9999</div></div>
-      <div className="story-art__layer-b" style={{ zIndex: step === 1 ? 2 : 0 }}>부모 B · 2</div>
+      <div className="story-art__layer-a" style={{ zIndex: ["auto", 1, 3][step] }}><span>부모 A · {["auto", "1", "3"][step]}</span><div className="story-art__layer-child" style={{ zIndex: 9999 }}>자식 A · 9999</div></div>
+      <div className="story-art__layer-b" style={{ zIndex: 2 }}>부모 B · 2</div>
     </div>
   );
   if (variant === "text-width") return (

@@ -99,7 +99,13 @@ const options = [
         if (event.target instanceof Node && !this.contains(event.target)) close();
       }, { signal });
       document.addEventListener("change", () => sync(), { signal });
-      window.addEventListener("storage", () => queueMicrotask(sync), { signal });
+      window.addEventListener("storage", (event) => {
+        if (event.key !== "starlight-theme") return;
+        const value = event.newValue;
+        select.value = value === "light" || value === "dark" ? value : "auto";
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        sync();
+      }, { signal });
       this.observer = new MutationObserver(sync);
       this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
       sync();
