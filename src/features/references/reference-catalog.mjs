@@ -135,6 +135,10 @@ export default {
     "title": "Juliya #155",
     "summary": "여백에서 처음 표시된 문장이 나중에 다시 줄바꿈되는 현상을 마운트 시점·폰트·크기 관찰 관점에서 조사하는 이슈입니다."
   },
+  "https://github.com/Oddmash/juliya/releases/tag/v0.4.3": {
+    "title": "Juliya 0.4.3",
+    "summary": "뷰포트가 바뀔 때 본문 폭이 그대로여도 개행이 삽입되기 전의 인라인 스타일을 다시 확인하는 수정이 포함된 릴리스입니다."
+  },
   "https://github.com/Oddmash/juliya/blob/86e2f6455ec84e6936d05eabd8b7fbd639f55c9e/src/dom/measure.ts": {
     "title": "실제 Canvas 측정 코드",
     "summary": "DOM의 실제 폰트, 글자 간격과 언어 설정을 Canvas 측정에 반영하는 구현입니다."
