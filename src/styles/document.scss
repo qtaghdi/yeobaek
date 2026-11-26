@@ -75,6 +75,17 @@ header.header { border-block-end: 1px solid var(--border); }
   }
   mark { color: var(--text); background: var(--selection); }
 }
+.pagination-links > a > span {
+  flex: 1;
+  min-inline-size: 0;
+}
+.pagination-links > a > span > br { display: none; }
+.pagination-links .link-title {
+  display: block;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
 [data-juliya-wrapped] { text-wrap: wrap !important; }
 :focus-visible:not(.example-frame *) {
   outline: var(--focus-width) solid var(--focus);
@@ -532,7 +543,6 @@ mobile-starlight-toc .dropdown {
     li:target { background: var(--selection); color: var(--text); }
     li p { margin: 0; }
     a { color: var(--text); }
-    a[data-footnote-backref] { margin-inline-start: .35rem; text-decoration: none; }
   }
 }
 
@@ -586,18 +596,6 @@ mobile-starlight-toc .dropdown {
   word-break: normal;
 }
 .om-tooltip[hidden] { display: none; }
-.sl-markdown-content section[data-footnotes] a[data-footnote-backref] {
-  display: inline-block;
-  padding: 0 .35em;
-  border-radius: var(--radius-small);
-  color: var(--text-muted);
-  font-size: .76em;
-  white-space: nowrap;
-}
-.sl-markdown-content section[data-footnotes] a[data-footnote-backref]:hover {
-  background: var(--selection);
-  color: var(--text);
-}
 .example-frame, .visual-story { inline-size: 100%; max-inline-size: 100%; box-sizing: border-box; }
 .example-frame :where(.inline-example, .example-workbench, .stack-demo, .design-demo) { min-inline-size: 0; max-inline-size: 100%; }
 .example-frame :where(input, select, button) { max-inline-size: 100%; }

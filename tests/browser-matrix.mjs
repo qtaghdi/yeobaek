@@ -72,8 +72,11 @@ const coreFlow = async (browser, engine) => {
     const citation = page.locator("[data-footnote-ref]").first();
     await citation.click();
     assert.match(page.url(), /#user-content-fn-/);
-    await page.locator("[data-footnote-backref]").first().click();
-    assert.match(page.url(), /#user-content-fnref-/);
+    const source = page.locator("section[data-footnotes] li:target");
+    await source.getByRole("link").waitFor();
+    assert.equal(await source.locator("[data-footnote-backref]").count(), 0);
+    await page.goBack();
+    await page.waitForURL("**/browser/storage/");
 
     const theme = page.locator("header.header .theme-trigger");
     await theme.click();
@@ -155,6 +158,54 @@ const coreFlow = async (browser, engine) => {
     assert.deepEqual(errors, [], `${engine}: runtime or resource errors`);
     console.log(`${engine}: core navigation, theme, tooltip, citation, search, modal and resource checks passed`);
   } finally { await context.close(); }
+};
+
+const checkPagination = async (browser, engine) => {
+  const title = "빌드와 배포를 분리해서 생각하기";
+  const renderedLines = element => {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    const rows = new Map();
+    const range = document.createRange();
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      for (let index = 0; index < node.length; index++) {
+        range.setStart(node, index);
+        range.setEnd(node, index + 1);
+        const { top, width } = range.getBoundingClientRect();
+        if (width) rows.set(top, (rows.get(top) ?? "") + node.data[index]);
+      }
+    }
+    return [...rows.values()].map(row => row.trim());
+  };
+
+  for (const javaScriptEnabled of [true, false]) {
+    const page = await browser.newPage({ viewport: { width: 320, height: 900 }, javaScriptEnabled, reducedMotion: "reduce" });
+    try {
+      await page.goto(origin + "architecture/testing/");
+      const next = page.locator('.pagination-links a[rel="next"]');
+      const label = next.locator(".link-title");
+      if (javaScriptEnabled) await next.locator(".link-title[data-juliya-wrapped]").waitFor();
+      assert.equal(await label.textContent(), title);
+      const narrow = await label.evaluate(renderedLines);
+      assert.ok(narrow.length >= 2);
+      assert.equal(narrow.join(" "), title, `${engine}: the pagination title split a word`);
+      await assertNoOverflow(page, `${engine}: pagination on narrow screen`);
+      if (javaScriptEnabled) {
+        const narrowWidth = await label.evaluate(element => element.clientWidth);
+        await page.setViewportSize({ width: 540, height: 900 });
+        await settle(page);
+        assert.ok(await label.evaluate(element => element.clientWidth) > narrowWidth);
+        assert.deepEqual(await label.evaluate(renderedLines), [title], `${engine}: the pagination title kept a break after resizing`);
+      }
+      await next.press("Enter");
+      await page.waitForURL("**/architecture/delivery/");
+      await page.getByRole("heading", { level: 1, name: title }).waitFor();
+      const previous = page.locator('.pagination-links a[rel="prev"]');
+      await previous.press("Enter");
+      await page.waitForURL("**/architecture/testing/");
+    } finally { await page.close(); }
+  }
+  console.log(`${engine}: pagination wrapping, fallback and keyboard navigation passed`);
 };
 
 const checkDialogBeforeHydration = async (browser, engine) => {
@@ -402,6 +453,7 @@ try {
     const browser = await playwright[engine].launch();
     try {
       await coreFlow(browser, engine);
+      await checkPagination(browser, engine);
       await checkDialogBeforeHydration(browser, engine);
       if (engine !== "firefox") await checkLoadingExample(browser, engine);
       if (engine === "chromium") await mobileFlow(browser);

@@ -282,9 +282,11 @@ try {
   const citation = page.locator("[data-footnote-ref]").first();
   await citation.click();
   assert.ok(page.url().includes("#user-content-fn-"));
-  const back = page.locator("[data-footnote-backref]").first();
-  assert.equal(await back.innerText(), "본문으로");
-  await back.click();
+  const source = page.locator("section[data-footnotes] li:target");
+  await source.getByRole("link").waitFor();
+  assert.equal(await source.locator("[data-footnote-backref]").count(), 0);
+  await page.goBack();
+  await page.waitForURL("**/browser/storage/");
 
   const storageLink = page.locator(".sidebar-content a[href$='/browser/storage/']").first();
   const activeHeight = await storageLink.evaluate(el => el.getBoundingClientRect().height);
