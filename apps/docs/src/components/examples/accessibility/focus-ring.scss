@@ -2,18 +2,17 @@
 @use "sass:meta";
 
 .focus-ring {
-  --surface: #{experiment.$paper};
-  --ink: #{experiment.$ink};
-  --key-surface: #{experiment.$surface};
-  --key-edge: #{experiment.$edge};
-  --key-hover: #f0f0f2;
-  --key-active: #e4e4e7;
-  --key-disabled-ink: #52525b;
-  --key-shadow: #d4d4d8;
+  --surface: var(--background);
+  --ink: var(--text);
+  --key-surface: var(--surface-raised);
+  --key-edge: var(--border-control);
+  --key-hover: var(--selection);
+  --key-active: var(--selection);
+  --key-disabled-ink: var(--text-muted);
   --key-size: 56px;
   --key-radius: 8px;
   --key-gap: 16px;
-  --ring-color: #{experiment.$accent};
+  --ring-color: var(--focus);
   --ring-width: 3px;
   --ring-offset: 4px;
   --mono: #{meta.inspect(experiment.$mono)};
@@ -41,7 +40,6 @@
       --key-hover: #303036;
       --key-active: #29292e;
       --key-disabled-ink: #a1a1aa;
-      --key-shadow: #09090b;
       --ring-color: #93c5fd;
 
       color: var(--ink);

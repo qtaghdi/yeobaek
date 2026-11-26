@@ -3,7 +3,7 @@
 .stack-demo {
   @include experiment.stage;
 
-  background: experiment.$paper;
+  background: var(--surface-raised);
   font:
     14px / 1.35 system-ui,
     sans-serif;
@@ -24,9 +24,9 @@
     box-sizing: border-box;
     inline-size: min(100%, 450px);
     block-size: 234px;
-    border: 1px solid experiment.$edge;
+    border: 1px solid var(--border-control);
     border-radius: 14px;
-    background: experiment.$surface;
+    background: var(--background);
   }
 
   &__context {
@@ -44,9 +44,9 @@
     inline-size: 64%;
     block-size: 162px;
     padding: 8px;
-    border: 1px dashed experiment.$accent;
+    border: 1px dashed var(--border-control);
     border-radius: 10px;
-    background: #e4e4e7;
+    background: var(--selection);
 
     > span {
       font-size: 12px;

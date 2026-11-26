@@ -3,7 +3,7 @@
 .design-demo {
   @include experiment.stage;
 
-  background: experiment.$paper;
+  background: var(--surface-raised);
   font:
     15px / 1.45 system-ui,
     sans-serif;

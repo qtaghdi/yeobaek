@@ -11,6 +11,6 @@ $mono: ui-monospace, "SF Mono", Consolas, monospace;
   place-items: center;
   min-block-size: var(--experiment-height, 19rem);
   padding: clamp(12px, 3vw, 32px);
-  color: $ink;
+  color: var(--text);
 }
 
