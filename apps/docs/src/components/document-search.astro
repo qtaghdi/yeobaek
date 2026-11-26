@@ -1,0 +1,248 @@
+---
+import "src/styles/document-search.scss";
+const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.json";
+---
+<yeobaek-search data-index-url={indexUrl}>
+  <button type="button" class="search-trigger" aria-label="글 검색" aria-haspopup="dialog" aria-controls="yeobaek-search-dialog">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5" stroke-linecap="round"/></svg>
+    <span>글 검색</span><kbd class="search-shortcut">Ctrl K</kbd>
+  </button>
+  <dialog id="yeobaek-search-dialog" class="search-dialog" aria-labelledby="search-dialog-title">
+    <h2 id="search-dialog-title" class="search-sr-only">여백 글 검색</h2>
+    <div class="search-bar">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5" stroke-linecap="round"/></svg>
+      <input type="search" aria-label="검색어" placeholder="제목, 기술 이름, 키워드 검색" autocomplete="off" spellcheck="false" maxlength="100" />
+      <button type="button" class="search-close" aria-label="검색 닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="search-content">
+      <div class="search-suggestions"></div>
+      <div class="search-history"></div>
+      <p class="search-status" role="status" aria-live="polite"></p>
+      <ul class="search-results" aria-label="검색 결과"></ul>
+    </div>
+    <footer class="search-footer"><span><kbd>↑</kbd><kbd>↓</kbd> 이동</span><span><kbd>Enter</kbd> 열기</span><span><kbd>Esc</kbd> 닫기</span></footer>
+  </dialog>
+</yeobaek-search>
+
+<script>
+  import { normalizeSearch, recommendedQueries, relatedQueries, searchArticles, type SearchArticle } from "src/lib/search/search-index";
+
+  type QueryRecord = { query: string; count: number; lastUsed: number };
+  const historyKey = "yeobaek-search-history-v1";
+
+  const readHistory = (): QueryRecord[] => {
+    try {
+      const parsed: unknown = JSON.parse(localStorage.getItem(historyKey) ?? "[]");
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter((item): item is QueryRecord =>
+        typeof item === "object" && item !== null &&
+        typeof item.query === "string" && typeof item.count === "number" && typeof item.lastUsed === "number"
+      ).slice(0, 30);
+    } catch {
+      return [];
+    }
+  };
+
+  const saveHistory = (query: string) => {
+    const term = query.trim().slice(0, 100);
+    if (!term) return;
+    const records = readHistory();
+    const index = records.findIndex((record) => normalizeSearch(record.query) === normalizeSearch(term));
+    if (index >= 0) records[index] = { query: term, count: records[index].count + 1, lastUsed: Date.now() };
+    else records.push({ query: term, count: 1, lastUsed: Date.now() });
+    try {
+      localStorage.setItem(historyKey, JSON.stringify(records.sort((a, b) => b.lastUsed - a.lastUsed).slice(0, 30)));
+    } catch { return; }
+  };
+
+  const el = <K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string) => {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+    return element;
+  };
+
+  class YeobaekSearch extends HTMLElement {
+    private articles: SearchArticle[] | undefined;
+    private loadPromise: Promise<SearchArticle[]> | undefined;
+    private dialog!: HTMLDialogElement;
+    private trigger!: HTMLButtonElement;
+    private input!: HTMLInputElement;
+    private results!: HTMLUListElement;
+    private status!: HTMLElement;
+    private suggestions!: HTMLElement;
+    private history!: HTMLElement;
+    private content!: HTMLElement;
+    private previousFocus: HTMLElement | null = null;
+    private controller?: AbortController;
+    private loadingError = false;
+
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      this.dialog = this.querySelector("dialog")!;
+      this.trigger = this.querySelector<HTMLButtonElement>(".search-trigger")!;
+      this.input = this.querySelector("input")!;
+      this.results = this.querySelector<HTMLUListElement>(".search-results")!;
+      this.status = this.querySelector<HTMLElement>(".search-status")!;
+      this.suggestions = this.querySelector<HTMLElement>(".search-suggestions")!;
+      this.history = this.querySelector<HTMLElement>(".search-history")!;
+      this.content = this.querySelector<HTMLElement>(".search-content")!;
+      const shortcut = this.querySelector(".search-shortcut");
+      if (shortcut) shortcut.textContent = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K";
+      this.trigger.addEventListener("click", () => this.open(), { signal });
+      this.querySelector(".search-close")?.addEventListener("click", () => this.dialog.close(), { signal });
+      this.input.addEventListener("input", () => this.render(), { signal });
+      this.input.addEventListener("compositionend", () => this.render(), { signal });
+      this.dialog.addEventListener("close", () => {
+        this.previousFocus?.focus();
+        this.previousFocus = null;
+      }, { signal });
+      this.dialog.addEventListener("click", (event) => {
+        if (event.target !== this.dialog) return;
+        const rect = this.dialog.getBoundingClientRect();
+        if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) this.dialog.close();
+      }, { signal });
+      this.dialog.addEventListener("keydown", (event) => this.onDialogKey(event), { signal });
+      document.addEventListener("keydown", (event) => {
+        if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === "k") {
+          event.preventDefault();
+          if (this.dialog.open) this.dialog.close();
+          else this.open();
+        }
+      }, { signal });
+    }
+
+    disconnectedCallback() { this.controller?.abort(); }
+
+    private open() {
+      if (this.dialog.open) return;
+      this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : this.trigger;
+      this.dialog.showModal();
+      this.input.focus();
+      this.input.select();
+      this.render();
+      void this.load();
+    }
+
+    private async load() {
+      if (this.articles) return;
+      this.loadingError = false;
+      this.render();
+      const url = this.dataset.indexUrl;
+      if (!url) return;
+      this.loadPromise ??= fetch(url).then(async (response) => {
+        if (!response.ok) throw new Error("검색 인덱스를 불러오지 못했습니다.");
+        return await response.json() as SearchArticle[];
+      });
+      try {
+        this.articles = await this.loadPromise;
+      } catch {
+        this.loadingError = true;
+        this.loadPromise = undefined;
+      }
+      this.render();
+    }
+
+    private chooseQuery(query: string) {
+      this.input.value = query;
+      this.input.focus();
+      this.render();
+    }
+
+    private renderChips(target: HTMLElement, label: string, values: string[], clearable = false) {
+      target.replaceChildren();
+      if (!values.length) return;
+      const heading = el("div", "search-group-heading");
+      heading.append(el("h3", undefined, label));
+      if (clearable) {
+        const clear = el("button", "search-clear-history", "기록 지우기");
+        clear.type = "button";
+        clear.addEventListener("click", () => {
+          try { localStorage.removeItem(historyKey); } catch { return; }
+          this.render();
+          this.input.focus();
+        });
+        heading.append(clear);
+      }
+      const chips = el("div", "search-chips");
+      for (const value of values) {
+        const chip = el("button", "search-chip", value);
+        chip.type = "button";
+        chip.addEventListener("click", () => this.chooseQuery(value));
+        chips.append(chip);
+      }
+      target.append(heading, chips);
+    }
+
+    private render() {
+      const query = this.input.value.trim();
+      this.results.replaceChildren();
+      this.content.scrollTop = 0;
+      if (!query) {
+        this.renderChips(this.suggestions, "추천 검색어", recommendedQueries);
+        const popular = readHistory().sort((a, b) => b.count - a.count || b.lastUsed - a.lastUsed).slice(0, 5).map((entry) => entry.query);
+        this.renderChips(this.history, "내가 자주 찾은 검색어", popular, true);
+      } else {
+        this.history.replaceChildren();
+        this.renderChips(this.suggestions, "연관 검색어", this.articles ? relatedQueries(this.articles, query) : []);
+      }
+      if (this.loadingError) {
+        this.status.textContent = "검색을 불러오지 못했습니다. ";
+        const retry = el("button", "search-retry", "다시 시도");
+        retry.type = "button";
+        retry.addEventListener("click", () => void this.load());
+        this.status.append(retry);
+        return;
+      }
+      if (!query) {
+        this.status.textContent = "관심 있는 기술이나 글의 제목을 검색해 보세요.";
+        return;
+      }
+      if (!this.articles) {
+        this.status.textContent = "검색 준비 중…";
+        return;
+      }
+      const matches = searchArticles(this.articles, query);
+      this.status.textContent = matches.length ? `${matches.length}개 글` : "검색 결과가 없습니다. 다른 검색어를 입력해 보세요.";
+      for (const { article, snippet } of matches) {
+        const item = el("li");
+        const link = el("a", "search-result");
+        link.href = article.url;
+        link.append(el("span", "search-result-category", article.category), el("strong", "search-result-title", article.title));
+        const summary = snippet || article.description;
+        const normalized = normalizeSearch(summary);
+        const term = normalizeSearch(query).split(" ").find((part) => normalized.includes(part));
+        const position = term ? normalized.indexOf(term) : 0;
+        const start = Math.max(0, position - 35);
+        const preview = (start ? "…" : "") + summary.slice(start, start + 160) + (summary.length > start + 160 ? "…" : "");
+        if (preview) link.append(el("span", "search-result-description", preview));
+        link.addEventListener("click", () => saveHistory(query));
+        item.append(link);
+        this.results.append(item);
+      }
+    }
+
+    private onDialogKey(event: KeyboardEvent) {
+      if (event.isComposing || event.keyCode === 229 || event.altKey || event.ctrlKey || event.metaKey) return;
+      const links = [...this.results.querySelectorAll<HTMLAnchorElement>("a")];
+      if (!links.length) return;
+      const active = document.activeElement;
+      const index = links.findIndex((link) => active === link);
+      if (event.key === "ArrowDown" && (active === this.input || index >= 0)) {
+        event.preventDefault();
+        links[Math.min(index + 1, links.length - 1)]?.focus();
+      } else if (event.key === "ArrowUp" && index >= 0) {
+        event.preventDefault();
+        if (index === 0) this.input.focus();
+        else links[index - 1]?.focus();
+      } else if (event.key === "Enter" && active === this.input) {
+        event.preventDefault();
+        links[0]?.click();
+      }
+    }
+  }
+
+  if (!customElements.get("yeobaek-search")) customElements.define("yeobaek-search", YeobaekSearch);
+</script>

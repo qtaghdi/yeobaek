@@ -25,9 +25,12 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm lint
+      - run: node --experimental-strip-types --test apps/docs/tests/search-index.test.mjs
       - run: pnpm build
       - run: |
           test -f apps/docs/dist/index.html
+          test -f apps/docs/dist/search-index.json
+          node -e 'const index = require("./apps/docs/dist/search-index.json"); if (index.length < 37 || !index.every(entry => entry.url.startsWith("/yeobaek/") && entry.sections.length)) process.exit(1)'
           test -f apps/docs/dist/accessibility/focus-ring/index.html
           test -f apps/docs/dist/accessibility/semantic-controls/index.html
           test -f apps/docs/dist/accessibility/tab-order/index.html
