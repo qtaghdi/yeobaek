@@ -37,6 +37,7 @@ yeobaek-search {
   padding: 0;
   inline-size: min(42rem, calc(100% - 2rem));
   max-inline-size: none;
+  block-size: min(76dvh, 38rem);
   max-block-size: min(82dvh, 45rem);
   background: var(--background);
   color: var(--text);
@@ -119,6 +120,8 @@ yeobaek-search {
   overflow-y: auto;
   overscroll-behavior: contain;
   min-block-size: 0;
+  flex: 1 1 auto;
+  scrollbar-gutter: stable;
   padding: .9rem 1rem 1rem;
 }
 
@@ -187,6 +190,7 @@ yeobaek-search {
   overflow-wrap: anywhere;
   word-break: keep-all;
   outline-offset: -2px;
+  transition: background var(--motion-control) var(--ease-out);
 
   &:hover, &:focus-visible { background: var(--selection); }
   &:focus-visible { outline-offset: -2px !important; }
@@ -233,6 +237,7 @@ yeobaek-search {
   .search-dialog {
     inset: max(.5rem, env(safe-area-inset-top)) 0 auto;
     inline-size: calc(100% - 1rem);
+    block-size: min(78dvh, 38rem);
     max-block-size: calc(100dvh - 1rem - env(safe-area-inset-top));
   }
   .search-bar { padding: .65rem .75rem; gap: .4rem; }
@@ -242,5 +247,21 @@ yeobaek-search {
 
 @media (prefers-reduced-motion: reduce) {
   .search-dialog[open] { animation: none; }
-  .search-trigger { transition: none; }
+  .search-trigger, .search-result { transition: none; }
+}
+
+.search-match {
+  background: var(--search-highlight);
+  color: var(--search-highlight-text);
+  border-radius: .16em;
+  padding: 0;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.search-result-keywords {
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+.search-result-description {
+  -webkit-line-clamp: 3;
 }

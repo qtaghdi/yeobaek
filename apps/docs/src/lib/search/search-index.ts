@@ -5,7 +5,7 @@ export type SearchArticle = {
   category: string;
   url: string;
   keywords: string[];
-  sections: { title: string; text: string }[];
+  sections: { title: string; text: string; anchor?: string }[];
 };
 
 export const recommendedQueries = ["React", "접근성", "줄바꿈", "TanStack Query", "디자인 시스템", "렌더링"];
@@ -72,6 +72,46 @@ const includes = (text: string, term: string) => {
   return normalized.includes(word) || (condensed.length > 0 && compact(text).includes(condensed));
 };
 
+export type MatchRange = { start: number; end: number };
+
+export const getMatchRanges = (text: string, query: string): MatchRange[] => {
+  const condensed = compact(query);
+  if (!condensed) return [];
+  const offsets: MatchRange[] = [];
+  let source = "";
+  let offset = 0;
+  for (const char of text) {
+    const value = compact(char);
+    for (let index = 0; index < value.length; index++) offsets.push({ start: offset, end: offset + char.length });
+    source += value;
+    offset += char.length;
+  }
+  const find = (term: string) => {
+    const ranges: MatchRange[] = [];
+    let start = source.indexOf(term);
+    while (start >= 0) {
+      ranges.push({ start: offsets[start].start, end: offsets[start + term.length - 1].end });
+      start = source.indexOf(term, start + term.length);
+    }
+    return ranges;
+  };
+  const exact = find(condensed);
+  const ranges = exact.length ? exact : normalizeSearch(query).split(" ").map(compact).filter(Boolean).flatMap(find);
+  return ranges.sort((a, b) => a.start - b.start).reduce<MatchRange[]>((merged, range) => {
+    const last = merged.at(-1);
+    if (last && last.end >= range.start) last.end = Math.max(last.end, range.end);
+    else merged.push({ ...range });
+    return merged;
+  }, []);
+};
+
+export const makeSearchPreview = (text: string, query: string, limit = 160) => {
+  const first = getMatchRanges(text, query)[0];
+  const start = Math.max(0, (first?.start ?? 0) - 30);
+  const end = Math.min(text.length, Math.max(start + limit, first?.end ?? 0));
+  return (start ? "…" : "") + text.slice(start, end) + (end < text.length ? "…" : "");
+};
+
 export const searchArticles = (articles: SearchArticle[], query: string) => {
   const normalized = normalizeSearch(query);
   const terms = normalized.split(" ").filter(Boolean);
@@ -91,10 +131,19 @@ export const searchArticles = (articles: SearchArticle[], query: string) => {
       (includes(article.title, normalized) ? 45 : 0) +
       (article.keywords.some((key) => normalizeSearch(key) === normalized) ? 35 : 0);
     const section = article.sections
-      .map((entry) => ({ entry, score: terms.reduce((sum, term) => sum + (includes(entry.title, term) ? 4 : 0) + (includes(entry.text, term) ? 1 : 0), 0) }))
+      .map((entry) => ({
+        entry,
+        score: terms.reduce((sum, term) => sum + (includes(entry.title, term) ? 3 : 0) + (includes(entry.text, term) ? 4 : 0), 0) +
+          (includes(entry.text, normalized) ? 8 : 0),
+      }))
       .sort((a, b) => b.score - a.score)[0];
-    const snippet = section?.score ? section.entry.text : article.description;
-    return [{ article, score, snippet }];
+    const matchSection = section?.score ? section.entry : undefined;
+    const titleMatches = includes(article.title, normalized) || terms.every((term) => includes(article.title, term));
+    const bodyMatches = matchSection && getMatchRanges(matchSection.text, query).length > 0;
+    const snippet = bodyMatches ? matchSection.text : matchSection && getMatchRanges(matchSection.title, query).length ? matchSection.title : article.description;
+    const target = !titleMatches && matchSection ? matchSection.anchor : undefined;
+    const matchedKeywords = article.keywords.filter((keyword) => getMatchRanges(keyword, query).length);
+    return [{ article, score, snippet, target, bodyMatches: Boolean(bodyMatches), titleMatches, matchedKeywords }];
   }).sort((a, b) => b.score - a.score || a.article.title.localeCompare(b.article.title, "ko"));
 };
 

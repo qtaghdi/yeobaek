@@ -1,0 +1,116 @@
+---
+import DefaultThemeSelect from "@astrojs/starlight/components/ThemeSelect.astro";
+import "src/styles/document-theme-select.scss";
+const options = [
+  { value: "light", label: "밝은 테마", icon: "sun" },
+  { value: "dark", label: "어두운 테마", icon: "moon" },
+  { value: "auto", label: "시스템 설정", icon: "monitor" },
+];
+---
+<yeobaek-theme-select>
+  <span class="theme-native"><DefaultThemeSelect /></span>
+  <button type="button" class="theme-trigger" aria-label="테마 선택" aria-expanded="false" hidden>
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4" stroke-linecap="round"/></svg>
+    <span class="theme-label">자동</span>
+    <svg class="theme-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="theme-options" role="group" aria-label="테마 선택" hidden>
+    {options.map((option) => (
+      <button type="button" class="theme-option" data-theme-value={option.value} aria-pressed="false">
+        {option.icon === "sun" ? (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42m0-14.14-1.42 1.42M6.35 17.65l-1.42 1.42" stroke-linecap="round"/></svg>
+        ) : option.icon === "moon" ? (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.5 14.3A9 9 0 0 1 9.7 3.5a9 9 0 1 0 10.8 10.8Z" stroke-linejoin="round"/></svg>
+        ) : (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4" stroke-linecap="round"/></svg>
+        )}
+        <span>{option.label}</span>
+        <svg class="theme-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    ))}
+  </div>
+</yeobaek-theme-select>
+<script>
+  class YeobaekThemeSelect extends HTMLElement {
+    private controller?: AbortController;
+    private observer?: MutationObserver;
+
+    connectedCallback() {
+      this.controller?.abort();
+      this.observer?.disconnect();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      const select = this.querySelector<HTMLSelectElement>(".theme-native select");
+      const trigger = this.querySelector<HTMLButtonElement>(".theme-trigger");
+      const menu = this.querySelector<HTMLElement>(".theme-options");
+      const label = this.querySelector<HTMLElement>(".theme-label");
+      const options = [...this.querySelectorAll<HTMLButtonElement>(".theme-option")];
+      if (!select || !trigger || !menu || !label) return;
+      let currentValue = "";
+      const sync = () => {
+        const value = select.value;
+        if (currentValue !== value) {
+          const icon = options.find((option) => option.dataset.themeValue === value)?.querySelector("svg");
+          if (icon) trigger.querySelector("svg")?.replaceWith(icon.cloneNode(true));
+          currentValue = value;
+        }
+        label.textContent = value === "dark" ? "어두움" : value === "light" ? "밝음" : "자동";
+        trigger.setAttribute("aria-label", "테마 선택: " + label.textContent);
+        for (const option of options) option.setAttribute("aria-pressed", String(option.dataset.themeValue === value));
+      };
+      const close = (restoreFocus = false) => {
+        menu.hidden = true;
+        trigger.setAttribute("aria-expanded", "false");
+        if (restoreFocus) trigger.focus();
+      };
+      const open = () => {
+        sync();
+        menu.hidden = false;
+        trigger.setAttribute("aria-expanded", "true");
+        (options.find((option) => option.getAttribute("aria-pressed") === "true") ?? options[0])?.focus();
+      };
+      trigger.addEventListener("click", () => menu.hidden ? open() : close(true), { signal });
+      for (const option of options) {
+        option.addEventListener("click", () => {
+          const value = option.dataset.themeValue;
+          if (!value) return;
+          select.value = value;
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          sync();
+          close(true);
+        }, { signal });
+      }
+      this.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !menu.hidden) {
+          event.preventDefault();
+          event.stopPropagation();
+          close(true);
+        } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          if (menu.hidden) { open(); return; }
+          const index = options.indexOf(document.activeElement as HTMLButtonElement);
+          options[(index + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length]?.focus();
+        }
+      }, { signal });
+      this.addEventListener("focusout", (event) => {
+        if (!menu.hidden && event.relatedTarget instanceof Node && !this.contains(event.relatedTarget)) close();
+      }, { signal });
+      document.addEventListener("click", (event) => {
+        if (event.target instanceof Node && !this.contains(event.target)) close();
+      }, { signal });
+      document.addEventListener("change", () => sync(), { signal });
+      window.addEventListener("storage", () => queueMicrotask(sync), { signal });
+      this.observer = new MutationObserver(sync);
+      this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+      sync();
+      this.classList.add("theme-enhanced");
+      trigger.hidden = false;
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+      this.observer?.disconnect();
+    }
+  }
+  if (!customElements.get("yeobaek-theme-select")) customElements.define("yeobaek-theme-select", YeobaekThemeSelect);
+</script>
