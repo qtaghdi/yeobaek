@@ -56,6 +56,10 @@ for (const route of new Set([...requiredRoutes, ...sourceRoutes])) {
 for (const route of visualRoutes) {
   assert.ok((await read(join(route, "index.html"))).includes("visual-story__stage"), route);
 }
+const home = await read("index.html");
+assert.deepEqual([...home.matchAll(/<title>(.*?)<\/title>/g)].map(match => match[1]), ["여백"]);
+assert.ok((await read("browser/events/index.html")).includes("<title>클릭 이벤트는 어디까지 전달될까? | 여백</title>"));
+assert.ok(home.includes("/yeobaek/favicon.svg"));
 const index = JSON.parse(await read("search-index.json"));
 assert.ok(index.length >= 37);
 assert.ok(index.every(entry => entry.url.startsWith("/yeobaek/") && entry.sections.length));
