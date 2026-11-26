@@ -7,7 +7,7 @@ yeobaek-search {
   align-items: center;
   gap: .65rem;
   min-block-size: 2.5rem;
-  inline-size: min(100%, 17rem);
+  inline-size: min(100%, 25rem);
   padding: .55rem .7rem;
   background: var(--surface);
   color: var(--text-muted);
@@ -35,7 +35,7 @@ yeobaek-search {
   inset: max(8vh, 1rem) 0 auto;
   margin: 0 auto;
   padding: 0;
-  inline-size: min(42rem, calc(100% - 2rem));
+  inline-size: min(46rem, calc(100% - 2rem));
   max-inline-size: none;
   block-size: min(76dvh, 38rem);
   max-block-size: min(82dvh, 45rem);
@@ -57,7 +57,7 @@ yeobaek-search {
   &, * { box-sizing: border-box; }
   :is(button, input) { font: inherit; }
   button { cursor: pointer; }
-  button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
 }
 
 @keyframes search-appear {
@@ -95,7 +95,7 @@ yeobaek-search {
     color: var(--text);
     background: transparent;
     border: 0;
-    border-radius: .25rem;
+    border-radius: var(--radius-control);
     font-size: 1rem;
 
     &::placeholder { color: var(--text-muted); }
