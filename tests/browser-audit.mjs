@@ -76,13 +76,8 @@ try {
         assert.ok(example.width > 0 && example.scroll <= example.width + 3, `${width} ${route}: ${example.label} leaked overflow ${example.scroll} > ${example.width}`);
       }
       for (const scene of await page.locator(".visual-story").all()) {
-        await scene.evaluate(async element => {
-          const island = element.closest("astro-island");
-          if (island?.hasAttribute("ssr")) {
-            await new Promise(resolve => island.addEventListener("astro:hydrate", resolve, { once: true }));
-          }
-          element.querySelector(".visual-story__stage").scrollIntoView({ block: "center", behavior: "instant" });
-        });
+        await scene.locator(".visual-story__stage").evaluate(stage => stage.scrollIntoView({ block: "center", behavior: "instant" }));
+        await scene.locator("xpath=ancestor::astro-island[@ssr]").waitFor({ state: "detached" });
         await scene.getByRole("button", { name: "자동 재생 시작" }).click();
         await scene.and(page.locator('[data-playing="true"]')).waitFor();
         const count = Number(await scene.getAttribute("data-frame-count"));
