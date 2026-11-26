@@ -6,7 +6,6 @@ const href = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/lab/?path=/story/${
 <section class="notebook-lab not-content" aria-label={label}>
   <slot />
   <div class="notebook-lab__footer">
-    <span>실험 노트 · 직접 조작해 보세요.</span>
-    <a href={href}>Storybook에서 더 자세히 실험하기 ↗</a>
+    <a href={href}>예제 별도로 보기 <span aria-hidden="true">↗</span></a>
   </div>
 </section>

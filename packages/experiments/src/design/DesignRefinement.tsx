@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import "./design-refinement.scss";
 
 export const stages = [
@@ -62,12 +62,35 @@ export const DesignStage = ({ stage }: { stage: Stage }) => (
 );
 
 
+const stageLabels: Record<Stage, string> = {
+  before: "개선 전",
+  typography: "문자",
+  spacing: "간격",
+  color: "색상",
+  hierarchy: "위계",
+  after: "개선 후",
+};
+
 export const DesignLab = () => {
   const [stage, setStage] = useState<Stage>("before");
-  return <div className="notebook-experiment">
-    <div className="notebook-experiment__controls"><label>개선 단계 <select value={stage} onChange={(event) => setStage(event.target.value as Stage)}>
-      {stages.map((step) => <option key={step} value={step}>{step}</option>)}
-    </select></label></div>
-    <DesignStage stage={stage} />
-  </div>;
+  const group = useId();
+
+  return (
+    <div className="notebook-experiment">
+      <div className="notebook-experiment__controls">
+        <fieldset className="notebook-choices">
+          <legend>개선 단계</legend>
+          <div className="notebook-choices__options">
+            {stages.map((step) => (
+              <label key={step}>
+                <input type="radio" name={group} value={step} checked={stage === step} onChange={() => setStage(step)} />
+                {stageLabels[step]}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+      <DesignStage stage={stage} />
+    </div>
+  );
 };

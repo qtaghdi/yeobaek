@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import "./focus-ring.scss";
 
 export type ButtonProps = {
@@ -40,20 +40,44 @@ export const FocusComparison = ({ showLegend, ...args }: FocusRingArgs) => (
   </div>
 );
 
+const focusModes = [
+  { value: "comparison", label: "포커스 비교" },
+  { value: "default", label: "브라우저 기본" },
+  { value: "outline-removed", label: "포커스 제거" },
+] as const;
+
 export const FocusLab = () => {
-  const [mode, setMode] = useState("comparison");
+  const [mode, setMode] = useState<(typeof focusModes)[number]["value"]>("comparison");
   const [disableSecond, setDisableSecond] = useState(false);
+  const group = useId();
+
   return (
     <div className="notebook-experiment">
       <div className="notebook-experiment__controls">
-        <label>표시 방식 <select value={mode} onChange={(event) => setMode(event.target.value)}>
-          <option value="comparison">focus / focus-visible</option>
-          <option value="default">브라우저 기본</option>
-          <option value="outline-removed">outline 제거 (의도된 실패)</option>
-        </select></label>
-        <label><input type="checkbox" checked={disableSecond} onChange={(event) => setDisableSecond(event.target.checked)} /> 두 번째 버튼 비활성화</label>
+        <fieldset className="notebook-choices">
+          <legend>표시 방식</legend>
+          <div className="notebook-choices__options">
+            {focusModes.map(({ value, label }) => (
+              <label key={value}>
+                <input type="radio" name={group} value={value} checked={mode === value} onChange={() => setMode(value)} />
+                {label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <label>
+          <input type="checkbox" checked={disableSecond} onChange={(event) => setDisableSecond(event.target.checked)} />
+          두 번째 버튼 비활성화
+        </label>
+        {mode === "outline-removed" && <span role="status">의도된 접근성 실패 예제</span>}
       </div>
-      {mode === "comparison" ? <FocusComparison count={3} size="regular" labels="numbers" disableSecond={disableSecond} showLegend /> : <div className={`focus-ring focus-ring--${mode}`}><Buttons count={3} size="regular" labels="numbers" disableSecond={disableSecond} /></div>}
+      {mode === "comparison" ? (
+        <FocusComparison count={3} size="regular" labels="numbers" disableSecond={disableSecond} showLegend />
+      ) : (
+        <div className={`focus-ring focus-ring--${mode}`}>
+          <Buttons count={3} size="regular" labels="numbers" disableSecond={disableSecond} />
+        </div>
+      )}
     </div>
   );
 };
