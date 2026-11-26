@@ -7,7 +7,9 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/example-frame.astro";
 import { SemanticControlsExample } from "src/components/examples/accessibility/semantic-controls";
 
-div에 onClick을 넣으면 화면에서는 버튼처럼 동작합니다. 그럼 굳이 HTML button을 써야 할까요? 마우스만 사용할 때는 잘 드러나지 않지만 키보드로 조작하는 순간 차이가 생깁니다.
+`div`에 `onClick`을 넣으면 마우스로 눌렀을 때 버튼처럼 동작합니다. 그렇다면 굳이 HTML의 `button` 요소를 사용할 이유가 있을까요?
+
+마우스만 사용하면 둘의 차이를 느끼기 어렵습니다. 하지만 키보드로 화면을 탐색하기 시작하면 이야기가 달라집니다.
 
 ## 브라우저가 이미 해주는 일
 
@@ -17,7 +19,7 @@ div에 onClick을 넣으면 화면에서는 버튼처럼 동작합니다. 그럼
 
 ## 키보드로 눌러봅시다
 
-두 컨트롤은 마우스로 클릭하면 숫자가 증가합니다. Tab으로 이동한 뒤 Enter나 Space도 눌러 보세요. 왼쪽은 의도적으로 잘못 구현한 예제입니다.
+이 차이를 직접 확인해봅시다. 두 컨트롤 모두 마우스로 클릭하면 숫자가 증가하지만, Tab으로 이동한 뒤 Enter나 Space를 눌러보면 네이티브 버튼과 클릭 이벤트만 붙인 요소의 차이가 드러납니다. 왼쪽은 의도적으로 기본 키보드 동작을 구현하지 않은 예제입니다.
 
 <VisualStory story="semantic-controls" />
 
@@ -32,7 +34,7 @@ div에 onClick을 넣으면 화면에서는 버튼처럼 동작합니다. 그럼
 <a href="/settings">설정으로 이동</a>
 ```
 
-폼 안에서 제출하지 않는 버튼에는 `type="button"`을 명시합니다. 버튼처럼 보이는 링크가 필요한 경우에도 이동이라는 역할은 유지합니다. 기존 요소를 재구성해야 할 이유가 없다면 ARIA와 키보드 이벤트를 직접 구현할 필요가 없습니다.
+위 두 요소는 같은 스타일로 꾸며도 역할이 다릅니다. 폼을 제출하지 않는 버튼이라면 `type="button"`을 지정하고, 다른 페이지로 이동하는 요소라면 주소가 있는 링크를 사용하면 됩니다. 브라우저가 이미 제공하는 접근성 동작을 굳이 다시 구현하지 않아도 되죠.
 
 [MDN: button](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button) · [MDN: a](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a)
 

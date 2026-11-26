@@ -18,9 +18,9 @@ import { TabOrderExample } from "src/components/examples/accessibility/tab-order
 | -1 | 순차 탐색은 제외하지만 코드로 포커스 가능 |
 | 양수 | 양수 그룹 안에서 값 순서로 우선 탐색 |
 
-양수 값을 여러 곳에 주면 나중에 UI가 삽입될 때 전체 탐색 순서를 관리해야 합니다. 가능한 한 자연스러운 DOM 순서와 기본 HTML 요소를 사용합니다.
+그렇다면 양수 값을 주면 원하는 순서를 직접 정할 수 있겠네요. 문제는 화면 전체에 그런 숫자가 퍼지기 시작하면 새로운 입력 필드를 추가할 때마다 순서를 다시 맞춰야 한다는 것입니다.
 
-예를 들어 카드 A, B, C가 DOM에 순서대로 있는 상태에서 CSS로 C를 가장 앞에 배치하더라도 Tab 순서는 자동으로 C부터 시작하지 않습니다. 양수 tabindex로 순서를 억지로 맞추면 다른 필드가 추가될 때마다 숫자까지 관리해야 합니다. 처음부터 읽는 순서에 맞게 DOM을 구성하는 편이 훨씬 단순합니다.
+예를 들어 A, B, C가 DOM에 순서대로 있고 CSS로 C를 가장 앞에 배치한 경우를 생각해봅시다. Tab 순서는 자동으로 C부터 시작하지 않습니다. 이런 경우에는 양수 `tabindex`로 순서를 억지로 맞추기보다 처음부터 읽는 순서대로 DOM을 구성하는 편이 단순합니다.
 
 ## Tab으로 순서를 비교해봅시다
 
@@ -34,7 +34,7 @@ import { TabOrderExample } from "src/components/examples/accessibility/tab-order
 
 ## CSS로 위치를 옮겼다고 순서까지 바뀌는 건 아니다
 
-포커스 이동 순서를 바꾸는 것과 화면을 읽는 순서를 바꾸는 것은 다른 문제입니다. CSS `order`로 시각적 배치만 바꾼다고 DOM 순서가 바뀌는 것은 아닙니다. 커스텀 위젯에서 한 항목만 Tab 순서에 남기고 방향키로 이동시키는 패턴은 별도 키보드 처리가 필요합니다.
+앞의 예제처럼 어떤 요소를 Tab 순서에서 빼는 것과 화면의 배치 순서를 바꾸는 것은 별개의 문제입니다. CSS `order`는 DOM을 재배열하지 않습니다. 한편 메뉴와 같은 커스텀 위젯 내부에서 방향키로 항목을 이동하게 만드는 경우에는 별도의 키보드 처리도 필요합니다.
 
 [MDN: tabindex](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/tabindex)
 
