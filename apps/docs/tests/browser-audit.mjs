@@ -70,7 +70,7 @@ try {
   await go("accessibility/focus-ring");
   await frame().getByRole("checkbox").check();
   assert.ok(await frame().getByRole("button", { name: "버튼 02" }).isDisabled());
-  await frame().getByRole("radio", { name: "포커스 제거" }).check();
+  await frame().getByText("포커스 제거", { exact: true }).click();
   assert.equal(await frame().locator(".focus-ring--outline-removed").count(), 1);
 
   await go("accessibility/tab-order");
@@ -106,7 +106,7 @@ try {
   await page.waitForFunction(() => [...document.querySelectorAll(".example-frame output")].map(e => e.textContent).join(",") === "A 결과,B 결과");
 
   await go("design/visual-hierarchy");
-  await frame().getByRole("radio", { name: "개선 후" }).check();
+  await frame().getByText("개선 후", { exact: true }).click();
   assert.equal(await frame().locator(".design-demo__card--after").count(), 1);
 
   await go("design/loading-states");
