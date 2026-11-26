@@ -165,7 +165,7 @@ const syncToc = () => {
     for (const root of roots) {
       let currentLabel = "";
       for (const link of root.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')) {
-        let id = "";
+        let id: string;
         try { id = decodeURIComponent(link.hash.slice(1)); } catch { continue; }
         if (id === active) {
           if (link.getAttribute("aria-current") !== "true") link.setAttribute("aria-current", "true");
