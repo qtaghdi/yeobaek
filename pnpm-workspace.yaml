@@ -5,3 +5,5 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - '@oddmash/juliya@0.4.2'
   - '@oddmash/ui@0.11.0'
+patchedDependencies:
+  '@astrojs/react@4.4.2': patches/@astrojs__react@4.4.2.patch

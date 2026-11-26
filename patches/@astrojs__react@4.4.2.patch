@@ -1,0 +1,34 @@
+diff --git a/dist/client.js b/dist/client.js
+index e66de81be10457394c2593ad5035cd2085491237..7875e1452b4055da694c68338c57c9bded3494e8 100644
+--- a/dist/client.js
++++ b/dist/client.js
+@@ -1,4 +1,5 @@
+ import { createElement, startTransition } from "react";
++import { flushSync } from "react-dom";
+ import { createRoot, hydrateRoot } from "react-dom/client";
+ import StaticHtml from "./static-html.js";
+ function isAlreadyHydrated(element) {
+@@ -86,13 +87,16 @@ var client_default = (element) => (Component, props, { default: children, ...slo
+       root.render(componentEl);
+     });
+   }
+-  startTransition(() => {
+-    const root = getOrCreateRoot(element, () => {
+-      const r = hydrateRoot(element, componentEl, renderOptions);
+-      element.addEventListener("astro:unmount", () => r.unmount(), { once: true });
+-      return r;
+-    });
+-    root.render(componentEl);
++  const existingRoot = rootMap.get(element);
++  if (existingRoot) {
++    startTransition(() => existingRoot.render(componentEl));
++    return;
++  }
++  // Commit the first hydration before an Astro navigation can unmount this island.
++  flushSync(() => {
++    const root = hydrateRoot(element, componentEl, renderOptions);
++    rootMap.set(element, root);
++    element.addEventListener("astro:unmount", () => root.unmount(), { once: true });
+   });
+ };
+ export {

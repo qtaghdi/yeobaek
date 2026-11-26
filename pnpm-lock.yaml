@@ -162,13 +162,16 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@astrojs/react@4.4.2': 9c59496b80fc828dfe439d7c313aedb4ab9c196cb08beedfd53dbe645263fbfa
+
 importers:
 
   .:
     dependencies:
       '@astrojs/react':
         specifier: ^4.4.0
-        version: 4.4.2(@types/node@26.6.7)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lightningcss@1.33.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.108.1)(yaml@2.9.1)
+        version: 4.4.2(patch_hash=9c59496b80fc828dfe439d7c313aedb4ab9c196cb08beedfd53dbe645263fbfa)(@types/node@26.6.7)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lightningcss@1.33.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.108.1)(yaml@2.9.1)
       '@astrojs/starlight':
         specifier: ^0.37.0
         version: 0.37.7(astro@5.18.2(@types/node@26.6.7)(lightningcss@1.33.0)(rollup@4.68.8)(sass@1.108.1)(typescript@5.9.3)(yaml@2.9.1))
@@ -3647,7 +3650,7 @@ snapshots:
     dependencies:
       prismjs: 1.30.0
 
-  '@astrojs/react@4.4.2(@types/node@26.6.7)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lightningcss@1.33.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.108.1)(yaml@2.9.1)':
+  '@astrojs/react@4.4.2(patch_hash=9c59496b80fc828dfe439d7c313aedb4ab9c196cb08beedfd53dbe645263fbfa)(@types/node@26.6.7)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(lightningcss@1.33.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.108.1)(yaml@2.9.1)':
     dependencies:
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0(@types/react@19.3.0)

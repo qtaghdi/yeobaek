@@ -56,8 +56,10 @@ for (const route of new Set([...requiredRoutes, ...sourceRoutes])) {
 for (const route of visualRoutes) {
   assert.ok((await read(join(route, "index.html"))).includes("visual-story__stage"), route);
 }
+const unavailableReference = /https:\/\/github\.com\/oddmash\/vertactics\/(?:issues\/(?:67|82)|pull\/83|commit\/90a6784ae34eb3735382ae70b65603dfacef2298)\b/i;
 for (const route of sourceRoutes) {
   const page = await read(join(route, "index.html"));
+  assert.doesNotMatch(page, unavailableReference, `${route}: 공개 글에서 접근할 수 없는 참고 자료`);
   assert.ok(!page.includes('title="Copy to clipboard"'), `${route}: 코드 복사 버튼의 한국어 라벨`);
   if (page.includes("expressive-code")) {
     assert.ok(!page.includes('data-copied="Copied!"'), `${route}: 복사 결과의 한국어 메시지`);
