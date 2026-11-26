@@ -42,8 +42,9 @@
 
 .sl-markdown-content {
   overflow-wrap: anywhere;
+  word-break: keep-all;
 
-  h2 {
+  h2:not(.notebook-lab *) {
     padding-block-end: .4rem;
     border-block-end: 1px solid var(--edge);
   }
@@ -145,27 +146,35 @@
   font-size: .8rem;
 }
 
-.notebook-home {
-  padding-block: clamp(2rem, 7vw, 6rem) 2rem;
-  max-inline-size: 46rem;
+.hero {
+  grid-template-columns: minmax(0, 1fr);
+  padding-block: clamp(2rem, 6vw, 4rem) 1rem;
+  max-inline-size: 48rem;
 
-  .notebook-eyebrow {
-    font-family: var(--mono);
-    font-size: .75rem;
-    letter-spacing: .08em;
-    color: var(--pencil);
+  .copy {
+    align-items: flex-start;
+    text-align: start;
   }
 
   h1 {
-    font-size: clamp(2rem, 5vw, 4.25rem);
+    font-size: clamp(2rem, 4.8vw, 4rem);
     line-height: 1.25;
-    letter-spacing: -.065em;
+    letter-spacing: -.055em;
+    max-inline-size: 100%;
+    word-break: keep-all;
   }
 
-  > p:last-child {
+  mark {
+    padding-inline: .15em;
+    color: var(--ink);
+    background: var(--marker);
+  }
+
+  .tagline {
     max-inline-size: 34rem;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: var(--pencil);
+    word-break: keep-all;
   }
 }
 

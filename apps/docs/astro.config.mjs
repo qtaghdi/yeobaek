@@ -19,7 +19,7 @@ export default defineConfig({
         { label: "01 · 웹과 접근성", items: ["accessibility/focus-ring"] },
         { label: "02 · CSS", items: ["css/stacking-context"] },
         { label: "03 · UI와 UX", items: ["design/visual-hierarchy"] },
-        { label: "실험실 ↗", link: "/yeobaek/lab/" },
+        { label: "실험실 ↗", link: "/lab/" },
       ],
       expressiveCode: { styleOverrides: { borderRadius: "0.25rem" } },
     }),
