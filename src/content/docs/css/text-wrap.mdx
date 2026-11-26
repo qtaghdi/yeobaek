@@ -106,6 +106,8 @@ Juliya의 인라인 구현은 텍스트 노드를 순회해 원래 문자열에�
 
 여백에서도 제목과 짧은 평문에만 Juliya를 적용했습니다. 링크나 코드가 섞인 내용은 브라우저 기본 줄바꿈을 유지합니다. 특히 화면에 표시된 뒤에 개행 위치가 바뀌면 오히려 읽는 흐름을 방해할 수 있습니다. 실제로 여백에서 이 현상이 발견되어 [Juliya #155](https://github.com/Oddmash/juliya/issues/155)에 최초 렌더링과 재계산 시점을 구분해 기록했습니다. 자체 라이브러리를 만들었다고 모든 글에 적용할 이유는 없으니까요.
 
+화면 크기가 달라져도 본문 폭은 그대로일 수 있습니다. 그때 미디어 쿼리가 강조 글자의 크기만 바꾸면 이전에 계산한 줄바꿈이 맞지 않을 수 있습니다. 개행을 위해 넣은 `<br>`이 `:first-child` 같은 선택자의 결과까지 바꾸면, 개행이 들어간 DOM의 스타일만 보고는 변경을 놓칩니다. [Juliya 0.4.3](https://github.com/Oddmash/juliya/releases/tag/v0.4.3)에서는 뷰포트가 바뀌면 기존 폭이 같아도 생성한 개행을 걷어낸 상태에서 스타일을 다시 확인합니다.
+
 ## 참고 자료
 
 - [Juliya #1: 반올림된 폭](https://github.com/Oddmash/juliya/issues/1), [#3: 언어와 폰트 측정](https://github.com/Oddmash/juliya/issues/3), [#123: 기술 명사구](https://github.com/Oddmash/juliya/issues/123)

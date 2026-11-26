@@ -149,6 +149,58 @@ const checkDelayedFont = async (browser, origin) => {
   }
 };
 
+const checkFixedWidthWrapping = async (browser, origin) => {
+  const height = 900;
+  const page = await browser.newPage({ viewport: { width: 1300, height } });
+  const paragraph = page.locator("#qa-fixed-width-wrap[data-juliya-wrapped=true]");
+  const text = { prefix: "Lead ", emphasis: "Wide link with words", suffix: " and other text 예제입니다." };
+  try {
+    await page.addInitScript(({ prefix, emphasis, suffix }) => {
+      document.addEventListener("DOMContentLoaded", () => {
+        const style = document.createElement("style");
+        style.textContent = `
+          #qa-fixed-width-wrap { width: 135px; font: 16px monospace; }
+          #qa-fixed-width-wrap > strong:first-child { font-size: 26px; }
+          @media (min-width: 1200px) {
+            #qa-fixed-width-wrap > strong:first-child { font-size: 42px; }
+          }
+        `;
+        document.head.append(style);
+        const fixture = document.createElement("p");
+        fixture.id = "qa-fixed-width-wrap";
+        const strong = document.createElement("strong");
+        strong.textContent = emphasis;
+        fixture.append(prefix, strong, suffix);
+        document.querySelector(".sl-markdown-content").prepend(fixture);
+      }, { once: true });
+    }, text);
+    const url = base(origin) + "react/state-snapshot/";
+    await page.goto(url);
+    const emphasis = await paragraph.locator("strong").elementHandle();
+    const before = await paragraph.evaluate(element => ({
+      width: element.clientWidth,
+      height: element.clientHeight,
+      font: getComputedStyle(element.querySelector("strong")).fontSize,
+      leadingBreak: element.querySelector("strong").previousElementSibling?.tagName,
+    }));
+    assert.equal(before.leadingBreak, "BR");
+    assert.equal(before.font, "16px");
+
+    await page.setViewportSize({ width: 1100, height });
+    await page.waitForFunction(() => {
+      const emphasis = document.querySelector("#qa-fixed-width-wrap > strong");
+      return emphasis && getComputedStyle(emphasis).fontSize === "26px";
+    }, null, { timeout: 3000 });
+    assert.ok(await paragraph.locator("strong").evaluate((element, original) => element === original, emphasis));
+    assert.equal(await paragraph.textContent(), text.prefix + text.emphasis + text.suffix);
+    const after = await paragraph.boundingBox();
+    assert.equal(after.width, before.width);
+    assert.notEqual(after.height, before.height);
+  } finally {
+    await page.close();
+  }
+};
+
 const checkDocumentLoading = async (browser, origin) => {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   let release;
@@ -181,6 +233,7 @@ const checkDocumentLoading = async (browser, origin) => {
 export const runMotionNetworkAudit = async (browser, origin) => {
   await checkMotion(browser, origin);
   await checkDelayedFont(browser, origin);
+  await checkFixedWidthWrapping(browser, origin);
   await checkDocumentLoading(browser, origin);
-  console.log("motion, delayed font fallback and document loading audit passed");
+  console.log("motion, font fallback, fixed-width wrapping and document loading audit passed");
 };
