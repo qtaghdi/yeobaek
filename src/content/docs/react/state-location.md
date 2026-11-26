@@ -1,6 +1,6 @@
 ---
 title: "상태는 어디에 두는 것이 좋을까?"
-description: "상태의 소유권과 데이터 경계, Vertactics의 드래그 미리보기와 실제 변경 이력을 사례로 살펴봅니다."
+description: "상태의 소유권과 데이터 경계, 지도 편집 예시로 드래그 미리보기와 변경 이력을 살펴봅니다."
 ---
 
 ## 전역 상태부터 만들 필요가 있을까요?
@@ -35,9 +35,9 @@ params.set("sort", "oldest");
 
 ## 드래그의 미리보기와 확정 상태
 
-Vertactics의 지도 편집은 사용자가 배치된 영웅을 이동시키는 동안 좌표가 계속 변경됩니다. 이때 모든 포인터 이동을 문서의 변경 이력에 기록하면 한 번의 이동을 취소하기 위해 수십 번 undo를 해야 할 수 있습니다.
+지도에 배치한 말을 드래그하는 상황을 생각해 봅시다. 사용자가 말을 움직이는 동안 좌표는 계속 바뀝니다. 이때 모든 포인터 이동을 문서의 변경 이력에 기록하면 한 번의 이동을 취소하기 위해 수십 번 undo를 해야 할 수 있습니다.
 
-[드래그를 하나의 history entry로 확정한 실제 변경](https://github.com/Oddmash/vertactics/commit/90a6784ae34eb3735382ae70b65603dfacef2298)에서는 화면에 표시할 dragPreview와 최신 위치를 읽기 위한 ref, 실제 편집 history를 구분합니다.
+드래그 한 번을 하나의 변경으로 기록하려면 화면에 표시할 미리보기, 최신 위치를 읽기 위한 ref, 확정된 편집 이력을 구분할 수 있습니다.
 
 | 단계 | 화면에서 사용하는 값 | 문서 데이터 |
 | --- | --- | --- |
@@ -70,7 +70,7 @@ const finish = () => {
 
 이는 상태 소유권을 설명하는 코드입니다. 실제 지도에서는 포인터 좌표를 지도 좌표로 변환하는 과정, 현재 편집 도구, locked 상태, pointer capture, 취소와 삭제 같은 다른 경계도 다뤄야 합니다. 이 글에서는 3D 엔진 내부가 아니라 한 번의 사용자 의도를 하나의 변경으로 확정하는 설계에 집중합니다.
 
-[Vertactics #82](https://github.com/Oddmash/vertactics/issues/82)에서는 배치된 영웅의 이동과 삭제를 직접 조작할 수 있도록 설계했고, [PR #83](https://github.com/Oddmash/vertactics/pull/83)은 지도 위 드래그와 휴지통으로 이동해 삭제하는 작업을 통합했습니다. 삭제 여부는 포인터가 휴지통에 들어갔다는 순간이 아니라 최종 조작이 확정되는 시점에 판단해야 합니다.
+휴지통으로 끌어 놓아 삭제하는 기능을 더한다면, 드래그 중에는 휴지통의 강조 상태만 바꿀 수 있습니다. 사용자가 휴지통 위에서 놓았을 때 삭제를 확정하면, 잠깐 휴지통을 지나가거나 드래그를 취소해도 기존 배치를 유지할 수 있습니다.
 
 <span id="프로젝트에서-이어진-고민"></span>
 
@@ -90,7 +90,6 @@ const finish = () => {
 
 ## 참고 자료
 
-- [Vertactics #82](https://github.com/Oddmash/vertactics/issues/82) · [PR #83](https://github.com/Oddmash/vertactics/pull/83) · [드래그 history 변경](https://github.com/Oddmash/vertactics/commit/90a6784ae34eb3735382ae70b65603dfacef2298)
 - [Oddmash UI #94](https://github.com/Oddmash/oddmash-ui/issues/94)
 - [MDN: URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) · [React: Sharing State](https://react.dev/learn/sharing-state-between-components)
 - [입력 상태는 누가 관리해야 할까?](../controlled-input/)

@@ -21,13 +21,13 @@ type AppError = {
   status: number | null;
 };
 
-const errorMessages: Record<string, string> = {
-  VALIDATION_FAILED: "입력한 내용을 다시 확인해주세요.",
-  NOT_AVAILABLE: "지금은 사용할 수 없는 기능입니다.",
-};
+const errorMessages = new Map<string, string>([
+  ["VALIDATION_FAILED", "입력한 내용을 다시 확인해주세요."],
+  ["NOT_AVAILABLE", "지금은 사용할 수 없는 기능입니다."],
+]);
 
 const getErrorMessage = (error: AppError) =>
-  errorMessages[error.code] ?? "요청을 처리하지 못했습니다. 다시 시도해주세요.";
+  errorMessages.get(error.code) ?? "요청을 처리하지 못했습니다. 다시 시도해주세요.";
 ```
 
 여기서 중요한 건 모든 오류를 문구 하나로 덮자는 뜻이 아닙니다. 서버 응답을 사용자에게 전달하기 전에 의미를 정리하자는 것입니다. 디버깅에 필요한 정보와 실제 화면에 노출할 문구는 서로 다른 목적을 갖습니다.

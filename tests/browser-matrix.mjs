@@ -104,7 +104,11 @@ const coreFlow = async (browser, engine) => {
     await page.goBack();
     await page.waitForURL("**/browser/storage/**");
 
-    await go(page, "accessibility/dialog-focus/");
+    await page.locator(".sidebar-content a[aria-current=page][href$='/browser/storage/']").waitFor();
+    await page.locator(".sidebar-content a[href$='/accessibility/dialog-focus/']").click();
+    await page.waitForURL("**/accessibility/dialog-focus/");
+    await page.locator(".sidebar-content a[aria-current=page][href$='/accessibility/dialog-focus/']").waitFor();
+    await page.waitForFunction(() => !document.querySelector(".example-frame astro-island[ssr]"));
     const trigger = page.getByRole("button", { name: "모달 열기" });
     await trigger.click();
     const dialog = page.getByRole("dialog", { name: "확인 대화상자" });

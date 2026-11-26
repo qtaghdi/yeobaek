@@ -11,7 +11,7 @@ description: "쿼리 키가 캐시를 식별하는 방식과 갱신 범위."
 
 ```tsx
 const query = useQuery({
-  queryKey: ["items", { keyword, page }],
+  queryKey: ["items", "list", { keyword, page }],
   queryFn: () => fetchItems({ keyword, page }),
 });
 ```

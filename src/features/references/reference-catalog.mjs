@@ -239,18 +239,6 @@ export default {
     "title": "TanStack Query 공식 문서",
     "summary": "TanStack Query의 신선도, 캐시 보관, 다시 조회 및 실패 재시도 기본 동작을 설명합니다."
   },
-  "https://github.com/Oddmash/vertactics/commit/90a6784ae34eb3735382ae70b65603dfacef2298": {
-    "title": "드래그를 하나의 history entry로 확정한 실제 변경",
-    "summary": "지도 드래그의 미리보기와 최종 문서 변경을 분리하여 한 번의 이동을 하나의 변경 이력으로 확정한 코드입니다."
-  },
-  "https://github.com/Oddmash/vertactics/issues/82": {
-    "title": "Vertactics #82",
-    "summary": "이미 배치된 영웅을 지도에서 직접 이동하고 휴지통에 놓았을 때만 삭제하는 상호작용 제안입니다."
-  },
-  "https://github.com/Oddmash/vertactics/pull/83": {
-    "title": "Oddmash/vertactics #83",
-    "summary": "지도 좌표 미리보기, 포인터 캡처, 취소와 삭제 확정을 통합한 구현 변경입니다."
-  },
   "https://github.com/Oddmash/oddmash-ui/issues/94": {
     "title": "Oddmash UI #94",
     "summary": "서로 다른 사이트에서 문서 탐색 UI를 공유하되 실제 경로와 로케일 정책을 소비자가 유지하는 요구입니다."
@@ -350,10 +338,6 @@ export default {
   "https://github.com/Oddmash/oddmash-website/issues/36": {
     "title": "Oddmash Website #36",
     "summary": "프로젝트 목록의 반복을 줄이고 각 영역에 명확한 역할을 부여하는 홈페이지 정보 구조 개선입니다."
-  },
-  "https://github.com/Oddmash/vertactics/issues/67": {
-    "title": "Vertactics #67",
-    "summary": "지도와 영웅 초상화 등 비동기 이미지에 배치 공간을 예약하고 실패 상태를 제공하는 요구입니다."
   },
   "https://github.com/Oddmash/oddmash-ui/issues/39": {
     "title": "Oddmash UI #39",

@@ -26,13 +26,19 @@ import { DialogFocusExample } from "src/components/examples/accessibility/dialog
 
 ```tsx
 const dialog = useRef<HTMLDialogElement>(null);
+const closeButton = useRef<HTMLButtonElement>(null);
 
-<button onClick={() => dialog.current?.showModal()}>열기</button>
+const openDialog = () => {
+  dialog.current?.showModal();
+  closeButton.current?.focus();
+};
+
+<button onClick={openDialog}>열기</button>
 <dialog ref={dialog} aria-labelledby="dialog-title">
   <h2 id="dialog-title">확인</h2>
   <p>내용을 확인하세요.</p>
   <form method="dialog">
-    <button autoFocus>닫기</button>
+    <button ref={closeButton}>닫기</button>
   </form>
 </dialog>
 ```
