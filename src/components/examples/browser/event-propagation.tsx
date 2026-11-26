@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "src/components/examples/example.scss";
+import "./event-propagation.scss";
 
 export const EventPropagationExample = () => {
   const [stop, setStop] = useState(false);
@@ -13,7 +14,7 @@ export const EventPropagationExample = () => {
         stopPropagation 적용
       </label>
       <div className="inline-example__event" onClickCapture={() => append("부모 캡처")} onClick={() => append("부모 버블")}>
-        <button type="button" className="inline-example__button" onClick={(event) => {
+        <button type="button" className="inline-example__button event-propagation__target" onClick={(event) => {
           if (stop) event.stopPropagation();
           append("대상 버튼");
         }}>안쪽 버튼</button>
