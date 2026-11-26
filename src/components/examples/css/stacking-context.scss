@@ -1,0 +1,96 @@
+@use "src/components/examples/example-tokens.scss" as example;
+
+.stack-demo {
+  @include example.stage;
+
+  background: var(--surface-raised);
+  font:
+    14px / 1.35 system-ui,
+    sans-serif;
+
+  &__caption {
+    margin: 0 0 8px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  code {
+    font-family: example.$mono;
+  }
+
+  &__diagram {
+    position: relative;
+    isolation: isolate;
+    box-sizing: border-box;
+    inline-size: min(100%, 450px);
+    block-size: 234px;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-surface);
+    background: var(--background);
+  }
+
+  &__context {
+    position: absolute;
+    inset: auto 10px 9px;
+    margin: 0;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  &__parent {
+    position: absolute;
+    inset: 14px auto auto 6%;
+    box-sizing: border-box;
+    inline-size: 64%;
+    block-size: 162px;
+    padding: 8px;
+    border: 1px dashed var(--border-control);
+    border-radius: var(--radius-control);
+    background: var(--selection);
+
+    > span {
+      font-size: 12px;
+      font-weight: 700;
+    }
+  }
+
+  &__child,
+  &__first,
+  &__sibling {
+    position: absolute;
+    box-sizing: border-box;
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    padding: 9px;
+    border-radius: var(--radius-control);
+  }
+
+  &__child,
+  &__first {
+    color: var(--background);
+    background: var(--text);
+  }
+
+  &__child {
+    inset: 44px 5% auto 8px;
+    block-size: 94px;
+  }
+
+  &__first {
+    inset: 48px auto auto 9%;
+    inline-size: 58%;
+    block-size: 102px;
+  }
+
+  &__sibling {
+    z-index: 2;
+    inset: 84px 6% auto auto;
+    inline-size: 50%;
+    block-size: 110px;
+    justify-items: end;
+    color: var(--text);
+    background: var(--surface-raised);
+    border: 2px solid var(--border-control);
+  }
+}
