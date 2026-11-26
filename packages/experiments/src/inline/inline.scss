@@ -1,0 +1,168 @@
+.inline-example {
+  display: grid;
+  gap: 1rem;
+  min-inline-size: 0;
+  color: var(--ink);
+  font: inherit;
+
+  &--comparison {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+
+    > div {
+      min-inline-size: 0;
+    }
+
+    @media (max-width: 35rem) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  &__button {
+    box-sizing: border-box;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: .4rem;
+    min-block-size: 2.75rem;
+    max-inline-size: 100%;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--edge);
+    border-radius: .375rem;
+    padding: .5rem .8rem;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  &__button:hover {
+    background: var(--marker);
+  }
+
+  &__button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  &__caption {
+    margin: 0 0 .75rem;
+    color: var(--pencil);
+    font-size: .875rem;
+    font-weight: 600;
+  }
+
+  &__row, &__check {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+  }
+
+  input {
+    accent-color: var(--focus);
+    max-inline-size: 100%;
+  }
+
+  &__dialog {
+    box-sizing: border-box;
+    inline-size: min(90%, 24rem);
+    padding: 1.5rem;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--edge);
+    border-radius: .5rem;
+  }
+
+  &__dialog::backdrop {
+    background: rgb(0 0 0 / 50%);
+  }
+
+  &__scroll {
+    padding: .5rem;
+    overflow-x: auto;
+  }
+
+  &__flex {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    max-inline-size: 100%;
+    border: 2px dashed var(--correction);
+    padding: .5rem;
+  }
+
+  &__filename {
+    flex: 1;
+    min-width: auto;
+  }
+
+  &__filename span {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__flex button {
+    flex: none;
+  }
+
+  &__event {
+    padding: 1.25rem;
+    border: 1px dashed var(--pencil);
+    background: var(--paper);
+  }
+
+  &__log {
+    margin: 0;
+    padding-inline-start: 1.5rem;
+    font-family: var(--mono);
+    font-size: .85rem;
+  }
+
+  &__count {
+    display: block;
+    margin-block: .5rem;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  &__loaded {
+    box-sizing: border-box;
+    min-block-size: 8rem;
+    padding: .75rem;
+    border: 1px solid var(--edge);
+    border-radius: .375rem;
+  }
+
+  &__loaded p {
+    margin: .5rem 0;
+  }
+
+  &__skeleton {
+    display: grid;
+    align-content: center;
+    gap: .8rem;
+  }
+
+  &__skeleton span {
+    display: block;
+    block-size: .9rem;
+    background: var(--edge);
+    border-radius: .2rem;
+  }
+
+  &__skeleton span:last-child {
+    inline-size: 50%;
+  }
+
+  &__next {
+    border-block-start: 1px solid var(--edge);
+    margin-block: .75rem 0;
+    padding-block-start: .5rem;
+    color: var(--pencil);
+  }
+}

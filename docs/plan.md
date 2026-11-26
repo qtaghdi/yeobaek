@@ -50,21 +50,20 @@
 ## 목표 구조
 
 - `apps/docs`: Astro + Starlight, MDX
-- `apps/storybook`: React + Vite + Storybook
 - `packages/experiments`: 공유 실험 컴포넌트와 독립 재현 예제
 - `packages/tokens`: SCSS와 의미 기반 디자인 토큰
 - `packages/config`: 공통 개발 설정
 - pnpm Workspace + Turborepo
 
-GitHub Pages에는 문서를 루트에 배포한다. Storybook은 개발 및 상세 예제 검증에 쓰는 보조 도구로 하위 경로에 유지하며 문서 탐색의 주요 항목으로 노출하지 않는다. 기존 세 실험과 ID를 유지하고 새 위치에서 접근 가능한지 확인한다.
+GitHub Pages에는 문서만 배포한다. 인터랙티브 예제는 MDX에서 공유 React 컴포넌트를 직접 렌더링하고 해당 페이지에서 조작할 수 있게 한다. 별도 Storybook 사이트는 운영하지 않는다.
 
 ## 진행 순서
 
 1. 브랜드와 기획 확정
-2. 모노레포 전환 및 기존 Storybook 검증
+2. 모노레포 전환 및 개발 환경 검증
 3. 문서 UI와 공통 실험 레이아웃 구현
-4. 기존 세 실험과 문서 연결
+4. 기존 예제를 문서 안에 통합
 5. 작성자 검토를 거친 초기 콘텐츠 추가
 6. 빌드, 검색, 키보드, 반응형 및 Pages 경로 검증
 
-모노레포 전환과 초기 세 문서의 배포를 완료했다. 새 콘텐츠는 작성자 검토 후 공개한다.
+문서 중심의 모노레포를 운영하며 작성자가 이해하는 범위에서 콘텐츠를 확장한다.

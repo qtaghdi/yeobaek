@@ -1,4 +1,4 @@
-name: Verify and deploy Yeobaek
+name: 여백 검증 및 배포
 
 on:
   pull_request:
@@ -22,17 +22,18 @@ jobs:
         with:
           node-version: 24
       - uses: pnpm/action-setup@v4
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm check
       - run: pnpm lint
       - run: pnpm build
       - run: |
-          mkdir -p apps/docs/dist/lab
-          cp -R apps/storybook/storybook-static/. apps/docs/dist/lab/
           test -f apps/docs/dist/index.html
-          test -f apps/docs/dist/lab/index.html
-          test -f apps/docs/dist/lab/iframe.html
           test -f apps/docs/dist/accessibility/focus-ring/index.html
+          test ! -d apps/docs/dist/lab
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pnpm-lockfile
+          path: pnpm-lock.yaml
       - uses: actions/upload-pages-artifact@v4
         if: github.ref == 'refs/heads/main'
         with:
