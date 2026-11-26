@@ -130,6 +130,60 @@ const coreFlow = async (browser, engine) => {
   } finally { await context.close(); }
 };
 
+const checkBackDuringHydration = async (browser) => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.addInitScript(() => {
+    const NativeMessageChannel = window.MessageChannel;
+    const pendingTasks = [];
+    const state = { phase: "search", released: 0 };
+    window.qaBackDuringHydration = state;
+
+    window.MessageChannel = class extends NativeMessageChannel {
+      constructor() {
+        super();
+        // Hold React Scheduler callbacks while the Astro router and input remain active.
+        if (!new Error().stack?.includes("/_astro/client.")) return;
+        const post = this.port2.postMessage.bind(this.port2);
+        this.port2.postMessage = (...args) => {
+          if (state.phase === "restored") post(...args);
+          else pendingTasks.push(() => post(...args));
+        };
+      }
+    };
+
+    document.addEventListener("astro:hydrate", event => {
+      if (state.phase !== "search" || event.target.getAttribute("component-export") !== "FocusRingExample") return;
+      state.phase = "back";
+      history.back();
+    }, true);
+
+    document.addEventListener("astro:page-load", () => {
+      if (state.phase !== "back" || !location.pathname.endsWith("/browser/storage/")) return;
+      state.phase = "restored";
+      state.released = pendingTasks.length;
+      pendingTasks.splice(0).forEach(post => post());
+    });
+  });
+
+  try {
+    await go(page, "browser/storage/");
+    await searchTrigger(page).click();
+    await searchInput(page).fill("ㅍㅋㅅㄹ");
+    await page.locator(".search-results a[href$='/accessibility/focus-ring/']").click();
+    await page.waitForFunction(() => window.qaBackDuringHydration.phase === "restored");
+    await page.locator(".sidebar-content a[aria-current=page][href$='/browser/storage/']").waitFor();
+    await settle(page);
+    assert.ok(page.url().endsWith("/browser/storage/"));
+    assert.ok(await page.evaluate(() => window.qaBackDuringHydration.released > 0), "React scheduler should have queued work");
+    assert.deepEqual(errors, [], "WebKit: runtime errors when leaving during hydration");
+    console.log("webkit: rapid back while React scheduler work is queued passed");
+  } finally {
+    await page.close();
+  }
+};
+
 const swipe = async (session, from, to) => {
   await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ ...from, id: 1 }] });
   for (let step = 1; step <= 8; step++) {
@@ -249,6 +303,7 @@ try {
     try {
       await coreFlow(browser, engine);
       if (engine === "chromium") await mobileFlow(browser);
+      if (engine === "webkit") await checkBackDuringHydration(browser);
     } finally { await browser.close(); }
   }
 } finally { await new Promise(done => server.close(done)); }
