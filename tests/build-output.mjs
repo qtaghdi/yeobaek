@@ -56,6 +56,16 @@ for (const route of new Set([...requiredRoutes, ...sourceRoutes])) {
 for (const route of visualRoutes) {
   assert.ok((await read(join(route, "index.html"))).includes("visual-story__stage"), route);
 }
+for (const route of sourceRoutes) {
+  const page = await read(join(route, "index.html"));
+  assert.ok(!page.includes('title="Copy to clipboard"'), `${route}: 코드 복사 버튼의 한국어 라벨`);
+  if (page.includes("expressive-code")) {
+    assert.ok(!page.includes('data-copied="Copied!"'), `${route}: 복사 결과의 한국어 메시지`);
+  }
+}
+const codePage = await read("react/effects/index.html");
+assert.ok(codePage.includes('title="코드 복사"'));
+assert.ok(codePage.includes('data-copied="복사했습니다"'));
 const home = await read("index.html");
 assert.deepEqual([...home.matchAll(/<title>(.*?)<\/title>/g)].map(match => match[1]), ["여백"]);
 assert.ok((await read("browser/events/index.html")).includes("<title>클릭 이벤트는 어디까지 전달될까? | 여백</title>"));

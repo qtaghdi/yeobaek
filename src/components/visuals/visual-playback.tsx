@@ -22,25 +22,37 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
     if (!target) return;
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
     const syncMotion = () => setMotionAllowed(!preference.matches);
-    const syncPage = () => setPageVisible(!document.hidden);
+    const onMotionChange = () => {
+      syncMotion();
+      if (preference.matches) {
+        setManualPlayback((current) => current === true ? null : current);
+      }
+    };
+    const syncPage = () => {
+      setPageVisible(!document.hidden);
+    };
     syncMotion();
     syncPage();
-    preference.addEventListener("change", syncMotion);
+    preference.addEventListener("change", onMotionChange);
     document.addEventListener("visibilitychange", syncPage);
     const observer = new IntersectionObserver(([entry]) => {
-      setVisible(entry.isIntersecting && entry.intersectionRatio >= 0.25);
+      const inView = entry.isIntersecting && entry.intersectionRatio >= 0.25;
+      setVisible(inView);
     }, { threshold: [0, 0.25] });
     observer.observe(target);
     return () => {
       observer.disconnect();
-      preference.removeEventListener("change", syncMotion);
+      preference.removeEventListener("change", onMotionChange);
       document.removeEventListener("visibilitychange", syncPage);
     };
   }, []);
 
   useEffect(() => {
     if (!playing) return;
-    const timer = window.setTimeout(() => setIndex((current) => nextFrame(current, story.frames.length)), duration);
+    const timer = window.setTimeout(() => {
+      if (document.hidden || !stageRef.current?.isConnected) return;
+      setIndex((current) => nextFrame(current, story.frames.length));
+    }, duration);
     return () => window.clearTimeout(timer);
   }, [playing, index, duration, story.frames.length]);
 

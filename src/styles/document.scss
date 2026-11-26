@@ -613,15 +613,30 @@ mobile-starlight-toc .dropdown {
 @media (min-width: 72rem) {
   :root[data-has-sidebar][data-has-toc] {
     --document-toc-width: clamp(12rem, 18vw, var(--sl-sidebar-width));
+    --document-content-width: 52rem;
+    --document-layout-width: calc(var(--sl-sidebar-width) + var(--document-content-width) + 2 * var(--sl-content-pad-x) + var(--document-toc-width));
+    --document-outer-gutter: max(0px, (100% - var(--document-layout-width)) / 2);
   }
 
   :root[data-has-sidebar][data-has-toc] header.header > .header {
     grid-template-columns: calc(var(--sl-sidebar-width) - var(--sl-nav-pad-x)) minmax(0, 1fr) auto;
+    max-inline-size: calc(var(--document-layout-width) - 2 * var(--sl-nav-pad-x));
+    margin-inline: auto;
+  }
+
+  :root[data-has-sidebar][data-has-toc] .main-frame {
+    inline-size: 100%;
+    max-inline-size: var(--document-layout-width);
+    margin-inline: auto;
+  }
+
+  :root[data-has-sidebar][data-has-toc] .sidebar-pane {
+    inset-inline-start: var(--document-outer-gutter);
   }
 
   :root[data-has-sidebar][data-has-toc] .main-pane {
     --sl-content-margin-inline: 0 auto;
-    --sl-content-width: 52rem;
+    --sl-content-width: var(--document-content-width);
     flex: 0 1 auto;
     width: min(calc(100% - var(--document-toc-width)), calc(var(--sl-content-width) + 2 * var(--sl-content-pad-x)));
     min-width: 0;
@@ -634,5 +649,9 @@ mobile-starlight-toc .dropdown {
 
   :root[data-has-sidebar][data-has-toc] .right-sidebar {
     width: var(--document-toc-width);
+  }
+
+  :root[data-has-sidebar][data-has-toc] .document-loading {
+    inset-inline-end: calc(var(--document-outer-gutter) + var(--document-toc-width) + 1rem);
   }
 }

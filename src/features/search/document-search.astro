@@ -48,11 +48,11 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
     const term = query.trim().slice(0, 100);
     if (!term) return;
     const records = readHistory();
-    const index = records.findIndex((record) => normalizeSearch(record.query) === normalizeSearch(term));
-    if (index >= 0) records[index] = { query: term, lastUsed: Date.now() };
-    else records.push({ query: term, lastUsed: Date.now() });
+    const remaining = records.filter((record) => normalizeSearch(record.query) !== normalizeSearch(term));
+    const lastUsed = Math.max(Date.now(), ...records.map(record => record.lastUsed + 1));
+    remaining.unshift({ query: term, lastUsed });
     try {
-      localStorage.setItem(historyKey, JSON.stringify(records.sort((a, b) => b.lastUsed - a.lastUsed).slice(0, 30)));
+      localStorage.setItem(historyKey, JSON.stringify(remaining.sort((a, b) => b.lastUsed - a.lastUsed).slice(0, 30)));
     } catch { return; }
   };
 
@@ -88,6 +88,8 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
     private loadingError = false;
     private renderTimer: number | undefined;
     private renderedQuery = "";
+    private queryVersion = 0;
+    private renderedVersion = -1;
     private composing = false;
 
     connectedCallback() {
@@ -104,18 +106,24 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       this.content = this.querySelector<HTMLElement>(".search-content")!;
       const shortcut = this.querySelector(".search-shortcut");
       if (shortcut) shortcut.textContent = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K";
-      this.trigger.addEventListener("click", () => this.open(), { signal });
+      this.trigger.addEventListener("click", () => this.open(this.trigger), { signal });
       this.querySelector(".search-close")?.addEventListener("click", () => this.dialog.close(), { signal });
       this.input.addEventListener("input", (event) => {
+        this.queryVersion++;
         if (!this.composing && (!(event instanceof InputEvent) || !event.isComposing)) this.scheduleRender();
       }, { signal });
       this.input.addEventListener("compositionstart", () => {
         this.composing = true;
+        this.queryVersion++;
         window.clearTimeout(this.renderTimer);
       }, { signal });
       this.input.addEventListener("compositionend", () => {
         this.composing = false;
+        this.queryVersion++;
         this.scheduleRender();
+      }, { signal });
+      this.dialog.addEventListener("cancel", (event) => {
+        if (this.composing) event.preventDefault();
       }, { signal });
       this.dialog.addEventListener("close", () => {
         if (this.dialog.open) return;
@@ -124,6 +132,9 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         this.previousFocus?.focus({ preventScroll: true });
         this.previousFocus = null;
       }, { signal });
+      window.addEventListener("storage", (event) => {
+        if ((event.key === historyKey || event.key === null) && this.dialog.open && !this.input.value.trim()) this.render();
+      }, { signal });
       this.dialog.addEventListener("click", (event) => {
         if (event.target !== this.dialog) return;
         const rect = this.dialog.getBoundingClientRect();
@@ -131,6 +142,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       }, { signal });
       this.dialog.addEventListener("keydown", (event) => this.onDialogKey(event), { signal });
       document.addEventListener("keydown", (event) => {
+        if (this.composing || event.isComposing || event.keyCode === 229) return;
         if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === "k") {
           event.preventDefault();
           if (this.dialog.open) this.dialog.close();
@@ -146,12 +158,16 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
 
     private scheduleRender() {
       window.clearTimeout(this.renderTimer);
+      if (!this.dialog.open) return;
       this.renderTimer = window.setTimeout(() => this.render(), 90);
     }
 
-    private open() {
+    private open(focusTarget?: HTMLElement) {
       if (this.dialog.open) return;
-      this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : this.trigger;
+      this.composing = false;
+      this.queryVersion++;
+      const active = document.activeElement;
+      this.previousFocus = focusTarget ?? (active instanceof HTMLElement && active !== document.body ? active : this.trigger);
       this.dialog.showModal();
       this.input.focus({ preventScroll: true });
       this.input.select();
@@ -160,11 +176,16 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
     }
 
     private async load() {
-      if (this.articles) return;
+      if (this.articles || this.loadPromise) return;
       this.loadingError = false;
+      if (this.status.contains(document.activeElement)) this.input.focus({ preventScroll: true });
       this.render();
       const url = this.dataset.indexUrl;
-      if (!url) return;
+      if (!url) {
+        this.loadingError = true;
+        this.render();
+        return;
+      }
       if (!indexCache.has(url)) {
         indexCache.set(url, fetch(url).then(async (response) => {
           if (!response.ok) throw new Error("검색 인덱스를 불러오지 못했습니다.");
@@ -178,12 +199,18 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         this.articles = await this.loadPromise;
       } catch {
         this.loadingError = true;
+      } finally {
         this.loadPromise = undefined;
       }
-      this.render();
+      if (this.isConnected && this.dialog.open) this.render();
+    }
+
+    private isCurrentRender(query: string, version: number) {
+      return this.isConnected && this.dialog.open && !this.composing && version === this.queryVersion && query === this.input.value.trim();
     }
 
     private chooseQuery(query: string) {
+      this.queryVersion++;
       this.input.value = query;
       saveHistory(query);
       this.input.focus({ preventScroll: true });
@@ -191,11 +218,16 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
     }
 
     private renderQueries(target: HTMLElement, label: string, values: string[], clearable = false) {
-      const signature = JSON.stringify([label, values]);
+      const query = this.renderedQuery;
+      const version = this.renderedVersion;
+      const signature = JSON.stringify([label, values, version]);
       if (target.dataset.signature === signature) return;
       target.dataset.signature = signature;
+      const active = document.activeElement;
+      const focused = target.contains(active) && active instanceof HTMLButtonElement ? active.textContent : null;
       if (!values.length) {
         target.replaceChildren();
+        if (focused && this.dialog.open) this.input.focus({ preventScroll: true });
         return;
       }
       const heading = el("div", "search-group-heading");
@@ -204,6 +236,7 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
         const clear = el("button", "search-clear-history", "기록 지우기");
         clear.type = "button";
         clear.addEventListener("click", () => {
+          if (!clear.isConnected || !this.isCurrentRender(query, version)) return;
           try { localStorage.removeItem(historyKey); } catch { return; }
           this.render();
           this.input.focus();
@@ -214,12 +247,18 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       for (const value of values) {
         const chip = el("button", "search-query", value);
         chip.type = "button";
-        chip.addEventListener("click", () => this.chooseQuery(value));
+        chip.addEventListener("click", () => {
+          if (chip.isConnected && this.isCurrentRender(query, version)) this.chooseQuery(value);
+        });
         const item = el("li");
         item.append(chip);
         chips.append(item);
       }
       target.replaceChildren(heading, chips);
+      if (focused && this.dialog.open) {
+        const button = [...target.querySelectorAll("button")].find(item => item.textContent === focused);
+        (button ?? this.input).focus({ preventScroll: true });
+      }
     }
 
     private render() {
@@ -228,7 +267,10 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
       const query = this.input.value.trim();
       const matches = query && this.articles ? searchArticles(this.articles, query) : [];
       const changed = this.renderedQuery !== query;
+      if (this.renderedVersion !== this.queryVersion && this.results.contains(document.activeElement)) this.input.focus({ preventScroll: true });
       this.renderedQuery = query;
+      this.renderedVersion = this.queryVersion;
+      const version = this.renderedVersion;
       if (changed) this.content.scrollTop = 0;
       if (!query) {
         this.renderQueries(this.suggestions, "추천 검색어", recommendedQueries);
@@ -281,14 +323,23 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
           link.append(keywords);
         }
         link.onclick = (event) => {
-          if (this.composing || this.input.value.trim() !== query) {
+          if (!this.isCurrentRender(query, version)) {
             event.preventDefault();
             event.stopPropagation();
-            if (!this.composing) this.render();
+            if (this.isConnected && this.dialog.open && !this.composing) this.render();
             return;
           }
           saveHistory(query);
           this.dialog.close();
+        };
+        link.onauxclick = (event) => {
+          if (!this.isCurrentRender(query, version)) {
+            event.preventDefault();
+            event.stopPropagation();
+          } else if (event.button === 1) saveHistory(query);
+        };
+        link.oncontextmenu = (event) => {
+          if (!this.isCurrentRender(query, version)) event.preventDefault();
         };
         if (!item.contains(link)) item.append(link);
         items.append(item);
@@ -311,7 +362,19 @@ const indexUrl = import.meta.env.BASE_URL.replace(/\/$/, "") + "/search-index.js
 
     private onDialogKey(event: KeyboardEvent) {
       if (this.composing || event.isComposing || event.keyCode === 229 || event.altKey || event.ctrlKey || event.metaKey) return;
-      if (this.renderedQuery !== this.input.value.trim()) this.render();
+      if (event.key === "Escape") {
+        event.preventDefault();
+        this.dialog.close();
+        return;
+      }
+      const stale = !this.isCurrentRender(this.renderedQuery, this.renderedVersion);
+      if (stale && event.key === "Enter" && document.activeElement !== this.input) {
+        event.preventDefault();
+        this.input.focus({ preventScroll: true });
+        this.render();
+        return;
+      }
+      if (stale) this.render();
       const active = document.activeElement;
       if (event.key === "Enter" && active === this.input) {
         event.preventDefault();

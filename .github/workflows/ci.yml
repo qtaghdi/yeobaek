@@ -15,6 +15,11 @@ on:
       - '.github/workflows/ci.yml'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
+    inputs:
+      full_browser_matrix:
+        description: Firefox와 WebKit까지 핵심 사용자 흐름 검증
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -45,3 +50,10 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/yeobaek-browser" --no-save playwright@1.65.0
           node "$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/cli.js" install chromium
           PLAYWRIGHT_MODULE="$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/index.mjs" pnpm test:browser
+      - name: 모바일 터치 및 핵심 브라우저 사용자 흐름
+        run: PLAYWRIGHT_MODULE="$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/index.mjs" node tests/browser-matrix.mjs
+      - name: Firefox 및 WebKit 회귀 검증
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.full_browser_matrix }}
+        run: |
+          node "$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/cli.js" install --with-deps firefox webkit
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/yeobaek-browser/node_modules/playwright/index.mjs" BROWSER_ENGINES=firefox,webkit node tests/browser-matrix.mjs

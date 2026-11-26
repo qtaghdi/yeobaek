@@ -53,9 +53,9 @@ const mountPage = () => {
 
 document.addEventListener("astro:before-preparation", (event) => {
   const transition = event as Event & { from: URL; to: URL; navigationType?: string; signal?: AbortSignal };
-  if (transition.from.pathname === transition.to.pathname && transition.from.search === transition.to.search) return;
   clearLoading();
   const token = ++navigationToken;
+  if (transition.from.pathname === transition.to.pathname && transition.from.search === transition.to.search) return;
   pendingTimer = window.setTimeout(() => {
     if (token !== navigationToken) return;
     loadingMain = document.querySelector<HTMLElement>(".main-pane");
@@ -83,6 +83,5 @@ document.addEventListener("astro:after-swap", () => {
   mountPage();
 });
 document.addEventListener("astro:page-load", () => {
-  clearLoading();
   if (!disposePage) mountPage();
 });

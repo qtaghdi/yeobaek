@@ -28,10 +28,11 @@ import { DialogFocusExample } from "src/components/examples/accessibility/dialog
 const dialog = useRef<HTMLDialogElement>(null);
 
 <button onClick={() => dialog.current?.showModal()}>열기</button>
-<dialog ref={dialog}>
+<dialog ref={dialog} aria-labelledby="dialog-title">
+  <h2 id="dialog-title">확인</h2>
   <p>내용을 확인하세요.</p>
   <form method="dialog">
-    <button>닫기</button>
+    <button autoFocus>닫기</button>
   </form>
 </dialog>
 ```
