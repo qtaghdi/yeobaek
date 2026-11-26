@@ -27,6 +27,7 @@ try {
   let exampleCount = 0;
   for (const [width, theme] of [[1280, "light"], [320, "dark"]]) {
     const page = await browser.newPage({ viewport: { width, height: 900 }, colorScheme: theme, reducedMotion: "reduce" });
+    await page.clock.install();
     for (const route of pages) {
       await page.goto(origin + route);
       await page.locator(".main-pane").first().waitFor();
@@ -41,6 +42,19 @@ try {
       assert.ok(geometry.scroll <= geometry.viewport + 2, `${width} ${route}: page overflow ${geometry.scroll} > ${geometry.viewport}`);
       for (const example of geometry.examples) {
         assert.ok(example.width > 0 && example.scroll <= example.width + 3, `${width} ${route}: ${example.label} leaked overflow ${example.scroll} > ${example.width}`);
+      }
+      for (const scene of await page.locator(".visual-story").all()) {
+        await scene.scrollIntoViewIfNeeded();
+        await scene.getByRole("button", { name: "자동 재생 시작" }).click();
+        await page.waitForFunction(() => document.querySelector(".visual-story")?.getAttribute("data-playing") === "true");
+        const count = Number(await scene.getAttribute("data-frame-count"));
+        assert.ok(count > 1);
+        for (let step = 1; step < count; step++) {
+          await page.clock.fastForward(6500);
+          await page.waitForFunction(expected => Number(document.querySelector(".visual-story")?.getAttribute("data-frame")) === expected, step);
+          const dimensions = await scene.evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
+          assert.ok(dimensions.scroll <= dimensions.width + 3, width + " " + route + " frame " + step + ": overflow");
+        }
       }
       if (width === 1280) { storyCount += geometry.visuals; exampleCount += geometry.interactive; }
       console.log(`${width} ${theme} ${route} : ${geometry.visuals} visuals, ${geometry.interactive} interactive examples`);
@@ -127,12 +141,15 @@ try {
   assert.equal(await back.innerText(), "본문으로");
   await back.click();
 
+  const storageLink = page.locator(".sidebar-content a[href$='/browser/storage/']").first();
+  const activeHeight = await storageLink.evaluate(el => el.getBoundingClientRect().height);
   await page.evaluate(() => { window.__yeobaekNavigationProbe = true; });
   const inactive = page.locator(".sidebar-content a[href$='/browser/events/']").first();
   await inactive.click();
   await page.waitForURL("**/browser/events/");
   await page.locator(".sidebar-content a[aria-current='page'][href$='/browser/events/']").waitFor();
   assert.equal(await page.evaluate(() => window.__yeobaekNavigationProbe), true, "sidebar navigation reloaded the document");
+  assert.equal(await storageLink.evaluate(el => el.getBoundingClientRect().height), activeHeight, "active sidebar label changed its height");
   await page.goBack();
   await page.waitForURL("**/browser/storage/**");
   assert.equal(await page.evaluate(() => window.__yeobaekNavigationProbe), true, "history navigation reloaded the document");
