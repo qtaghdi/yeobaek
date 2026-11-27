@@ -464,7 +464,7 @@ const checkQualityExamples = async (browser, engine) => {
     await page.waitForFunction(() => document.querySelector("#example-reference-hint + a")?.getAttribute("aria-describedby") === "example-reference-hint");
     await assertNoOverflow(page, engine + ": tooltip example");
 
-    await go(page, "design-system/component-api/");
+    await page.goto(origin + "design-system/component-api/");
     const selectFrame = page.getByRole("region", { name: "Select의 활성 항목과 폼 전송값 확인" });
     await selectFrame.scrollIntoViewIfNeeded();
     const select = selectFrame.getByRole("combobox", { name: "작업 상태" });
