@@ -94,6 +94,14 @@ assert.ok(codePage.includes('title="코드 복사"'));
 assert.ok(codePage.includes('data-copied="복사했습니다"'));
 const catalog = documentSections.flatMap(section => section.chapters.flatMap(chapter => chapter.pages));
 assert.deepEqual([...catalog].sort(), sourceRoutes.filter(route => route && route !== "start").sort(), "every public article belongs to exactly one chapter");
+for (const route of catalog) {
+  const page = await read(join(route, "index.html"));
+  assert.match(page, /aria-label="관련 글"/, route);
+  if (process.env.CI) {
+    assert.match(page, /작성일\s*<time datetime="\d{4}-\d{2}-\d{2}"/, route);
+    assert.match(page, /최종 수정일\s*<time datetime="\d{4}-\d{2}-\d{2}"/, route);
+  }
+}
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
 assert.deepEqual([...readme.matchAll(/https:\/\/qtaghdi\.github\.io\/yeobaek\/([^\s)]+)\/\)/g)].map(match => match[1]), catalog);
 const home = await read("index.html");
