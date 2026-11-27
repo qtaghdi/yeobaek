@@ -34,6 +34,45 @@ export const auditArticleVisuals = async (browser, origin, screenshotDir) => {
     await storage.getByRole("button", { name: "전체 초기화" }).click();
     assert.equal(await storage.locator('output[aria-label="표시 밀도"]').textContent(), "기본 간격");
 
+    const tooltips = await go("accessibility/reference-tooltip", "툴팁 연결과 포커스 비교");
+    const ref = tooltips.getByRole("link", { name: "가이드 참고 링크" });
+    await ref.focus();
+    await page.waitForFunction(() => document.querySelector("[data-tooltip-open]")?.textContent === "열림");
+    assert.match(await ref.getAttribute("aria-describedby"), /example-reference-hint.*example-reference-tip/);
+    await ref.press("Escape");
+    await page.waitForFunction(() => document.querySelector("[data-tooltip-open]")?.textContent === "닫힘");
+    assert.equal(await ref.evaluate(el => el.ownerDocument.activeElement === el), true);
+    await ref.press("Enter");
+    assert.equal(await tooltips.locator("#example-reference-result").textContent(), "1회");
+    await tooltips.getByRole("button", { name: "툴팁 연결 해제" }).click();
+    await page.waitForFunction(() => document.querySelector("#example-reference-hint + a")?.getAttribute("aria-describedby") === "example-reference-hint");
+    if (screenshotDir) await tooltips.screenshot({ path: screenshotDir + "/tooltip-contract.png" });
+
+    const identity = await go("design-system/input-leading-icon", "입력 요소 정체성 비교");
+    const query = identity.getByRole("textbox", { name: "검색어" });
+    await query.fill("여백");
+    await query.press("Alt+i");
+    assert.equal(await identity.locator("[data-input-same]").textContent(), "동일");
+    assert.equal(await identity.locator("[data-input-focus]").textContent(), "입력란");
+    assert.equal(await identity.locator("[data-input-value]").textContent(), "여백");
+    await identity.getByRole("button", { name: "폼 값 확인" }).click();
+    assert.equal(await identity.locator("[data-input-submitted]").textContent(), "여백");
+    await identity.getByRole("checkbox", { name: "아이콘 변경 시 요소 교체" }).check();
+    await query.fill("다시 입력");
+    await query.press("Alt+i");
+    assert.equal(await identity.locator("[data-input-same]").textContent(), "교체됨");
+    assert.equal(await query.inputValue(), "");
+    if (screenshotDir) await identity.screenshot({ path: screenshotDir + "/input-identity.png" });
+
+    const viewport = await go("css/viewport", "모바일 뷰포트 단위 비교");
+    assert.equal(await viewport.locator('[data-viewport-overflow="vh / lvh"]').textContent(), "가려짐 100px");
+    assert.equal(await viewport.locator('[data-viewport-overflow="dvh"]').textContent(), "가용 높이와 일치");
+    await viewport.getByRole("button", { name: "주소창 접기" }).click();
+    assert.equal(await viewport.locator('[data-viewport-overflow="svh"]').textContent(), "남는 공간 100px");
+    await viewport.getByRole("button", { name: "주소창 펼치기" }).click();
+    assert.equal(await viewport.locator('[data-viewport-overflow="vh / lvh"]').textContent(), "가려짐 100px");
+    if (screenshotDir) await viewport.screenshot({ path: screenshotDir + "/viewport-units.png" });
+
     const editor = await go("react/state-location", "미리보기와 변경 이력 비교");
     const marker = editor.getByRole("button", { name: "지도에서 말 옮기기" });
     await marker.press("ArrowRight");
