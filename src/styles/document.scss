@@ -128,13 +128,25 @@ header.header { border-block-end: 1px solid var(--border); }
   .actions a:hover { opacity: .82; }
 }
 
-.archive-featured {
+.archive-highlights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
   margin-block: 1.5rem 0;
+  align-items: start;
+}
+@media (max-width: 46rem) {
+  .archive-highlights { grid-template-columns: minmax(0, 1fr); }
+}
+:is(.archive-featured, .archive-latest) {
+  min-inline-size: 0;
+  align-content: start;
+  margin: 0;
   display: grid;
   gap: 0;
 }
-.archive-featured > h2 { margin: 0 0 .4rem; padding: 0; }
-.archive-featured > a {
+:is(.archive-featured, .archive-latest) > h2 { margin: 0 0 .4rem; padding: 0; }
+:is(.archive-featured, .archive-latest) > a {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: .18rem 1rem;
@@ -150,19 +162,19 @@ header.header { border-block-end: 1px solid var(--border); }
   color: var(--text);
   text-decoration: none;
 }
-.archive-featured > a > strong { font-size: .95rem; line-height: 1.5; font-weight: 650; }
-.archive-featured > a > span { display: block; color: var(--text-muted); font-size: .85rem; grid-column: 1; }
-.archive-featured > a > svg { grid-row: 1 / 3; grid-column: 2; color: var(--text-muted); }
-.archive-featured > a > svg { transition: transform 280ms var(--ease-out); }
-.archive-featured > a:focus-visible { background-size: 100% 100%; }
-.archive-featured > a:focus-visible > svg { transform: translateX(2px); }
+:is(.archive-featured, .archive-latest) > a > strong { font-size: .95rem; line-height: 1.5; font-weight: 650; }
+:is(.archive-featured, .archive-latest) > a > span { display: block; color: var(--text-muted); font-size: .85rem; grid-column: 1; }
+:is(.archive-featured, .archive-latest) > a > svg { grid-row: 1 / 3; grid-column: 2; color: var(--text-muted); }
+:is(.archive-featured, .archive-latest) > a > svg { transition: transform 280ms var(--ease-out); }
+:is(.archive-featured, .archive-latest) > a:focus-visible { background-size: 100% 100%; }
+:is(.archive-featured, .archive-latest) > a:focus-visible > svg { transform: translateX(2px); }
 @media (hover: hover) and (pointer: fine) {
-  .archive-featured > a:hover { background-size: 100% 100%; }
-  .archive-featured > a:hover > svg { transform: translateX(2px); }
+  :is(.archive-featured, .archive-latest) > a:hover { background-size: 100% 100%; }
+  :is(.archive-featured, .archive-latest) > a:hover > svg { transform: translateX(2px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .archive-featured > a, .archive-featured > a > svg { transition: none; }
-  .archive-featured > a:is(:hover, :focus-visible) > svg { transform: none; }
+  :is(.archive-featured, .archive-latest) > a, :is(.archive-featured, .archive-latest) > a > svg { transition: none; }
+  :is(.archive-featured, .archive-latest) > a:is(:hover, :focus-visible) > svg { transform: none; }
 }
 
 .chapter li { margin: 0; }
