@@ -6,8 +6,12 @@ export const StoryIllustration = ({ variant, step }: { variant: NonNullable<Stor
     <div className="story-art story-art--loading" aria-hidden="true">
       {[false, true].map((reserved) => (
         <div className="story-art__mock" key={String(reserved)}>
-          <div className={`story-art__content ${step > 0 || reserved ? "story-art__content--reserved" : ""}`}>
-            {step === 0 ? reserved ? <><i /><i /><i /></> : <small>로딩 중…</small> : step === 2 && !reserved ? <small>로딩 중…</small> : <><strong>문서 제목</strong><i /><i />{step === 2 && reserved ? <small>갱신 중</small> : null}</>}
+          <div className={`story-art__content ${step === 1 || reserved ? "story-art__content--reserved" : ""}`}>
+            <div className="story-art__loading-layer" data-visible={!reserved && step !== 1}><small>로딩 중…</small></div>
+            <div className="story-art__loading-layer" data-visible={reserved && step === 0}><i /><i /><i /></div>
+            <div className="story-art__loading-layer" data-visible={step === 1 || (reserved && step === 2)}>
+              <strong>문서 제목</strong><i /><i /><small data-visible={step === 2}>갱신 중</small>
+            </div>
           </div>
           <span className="story-art__next">다음 콘텐츠</span>
         </div>

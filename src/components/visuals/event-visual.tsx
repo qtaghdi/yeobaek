@@ -6,7 +6,7 @@ export const EventVisual = ({ stop }: { stop: boolean }) => (
     <div className="event-visual__parent">
       <p>부모 요소</p>
       <div className="event-visual__target-row">
-        <div className="event-visual__target">
+        <div className="event-visual__target" key={String(stop)}>
           안쪽 버튼
           <span className="event-visual__pointer"><ScenePointer /></span>
         </div>
@@ -14,7 +14,7 @@ export const EventVisual = ({ stop }: { stop: boolean }) => (
     </div>
     <div className="event-visual__trace">
       <code data-enabled={stop}>{stop ? "stopPropagation()" : "click"}</code>
-      <ol>
+      <ol key={String(stop)}>
         <li>부모 캡처</li>
         <li>대상 버튼</li>
         <li data-blocked={stop}>부모 버블{stop && <small> 호출 안 됨</small>}</li>

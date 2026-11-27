@@ -113,21 +113,24 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .event-visual {
+  astro-island:not([ssr]) .event-visual {
     &__target {
       animation: event-button-click var(--click-at) linear both;
     }
 
     &__pointer {
-      animation: event-pointer-approach var(--hover-at) cubic-bezier(.18, .8, .25, 1) both;
+      animation: event-pointer-approach var(--hover-at) cubic-bezier(.18, .8, .25, 1) both,
+        event-pointer-retreat 360ms var(--ease-out) 1220ms forwards;
     }
 
     &__pointer .scene-pointer__arrow {
-      animation: event-pointer-arrow var(--hover-at) step-end both;
+      animation: event-pointer-arrow var(--hover-at) step-end both,
+        event-pointer-hand 200ms step-end 1240ms forwards;
     }
 
     &__pointer .scene-pointer__hand {
-      animation: event-pointer-hand var(--hover-at) step-end both;
+      animation: event-pointer-hand var(--hover-at) step-end both,
+        event-pointer-arrow 200ms step-end 1240ms forwards;
     }
 
     &__trace li {
@@ -136,15 +139,20 @@
       &:nth-child(3) { animation-delay: calc(var(--click-at) + 110ms); }
     }
 
-    .visual-story[data-playing="false"] & {
-      &__target, &__pointer, &__pointer svg, &__trace li { animation-play-state: paused; }
-    }
+  }
+  .visual-story[data-playing="false"] .event-visual {
+    &__target, &__pointer, &__pointer svg, &__trace li { animation-play-state: paused; }
   }
 }
 
 @keyframes event-pointer-approach {
   from { transform: translate(2.5rem, 1.85rem); }
   to { transform: translate(0, 0); }
+}
+
+@keyframes event-pointer-retreat {
+  from { transform: translate(0, 0); }
+  to { transform: translate(2.5rem, 1.85rem); }
 }
 
 @keyframes event-pointer-arrow {

@@ -67,6 +67,35 @@ export const auditInteractionScenes = async (browser, origin, screenshotDir) => 
     await page.mouse.up();
     assert.deepEqual(await frame.locator("ol li").allTextContents(), ["부모 캡처", "대상 버튼", "부모 버블"]);
 
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await open("accessibility/tab-order");
+    await story.and(page.locator('[data-playing="true"]')).waitFor();
+    const ring = story.locator(".interaction-targets__ring");
+    const initialRing = await ring.elementHandle();
+    await page.clock.fastForward(2400);
+    assert.equal(await story.getAttribute("data-frame"), "0");
+    await story.getByRole("button", { name: "자동 재생 일시 정지" }).press("Space");
+    await story.and(page.locator('[data-playing="false"]')).waitFor();
+    await page.clock.fastForward(6500);
+    assert.equal(await story.getAttribute("data-frame"), "0");
+    await story.getByRole("button", { name: "자동 재생 시작" }).press("Space");
+    await story.and(page.locator('[data-playing="true"]')).waitFor();
+    await page.clock.fastForward(1900);
+    await story.and(page.locator('[data-frame="1"]')).waitFor();
+    assert.ok(await ring.evaluate((element, before) => element === before, initialRing));
+    const path = await ring.evaluate((element) => {
+      const animation = element.getAnimations().find(item => item.transitionProperty === "transform");
+      if (!animation) return null;
+      animation.pause();
+      const left = time => {
+        animation.currentTime = time;
+        return element.getBoundingClientRect().left;
+      };
+      return [left(0), left(175), left(400)];
+    });
+    assert.ok(path && path[0] + 2 < path[1] && path[1] + 2 < path[2], JSON.stringify(path));
+    await page.emulateMedia({ reducedMotion: "reduce" });
+
     const startAtRest = async (route) => {
       await open(route);
       await story.getByRole("button", { name: "자동 재생 시작" }).click();
