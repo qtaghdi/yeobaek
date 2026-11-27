@@ -46,6 +46,13 @@ try {
       assert.ok(response?.ok(), `${route}: document response failed`);
       await page.locator(".main-pane").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
+      if (route === "/yeobaek/start/") {
+        assert.equal(await page.locator(".intro-lead__statement").count(), 1);
+        assert.equal(await page.locator(".intro-method > li").count(), 3);
+        assert.equal(await page.locator(".intro-reading > a").count(), 3);
+        const intro = await page.locator(".intro-method").evaluate(element => [...element.children].map(child => child.getBoundingClientRect().top));
+        assert.equal(new Set(intro).size, width === 320 ? 3 : 1);
+      }
       const proseOverflow = await page.evaluate(() => {
         const prose = document.querySelectorAll(".sl-markdown-content p, .sl-markdown-content li");
         return [...prose].filter(el => !el.closest(".not-content, .example-frame, .chapter-index, table, pre, [data-footnotes]")).filter(el => {
