@@ -123,6 +123,13 @@ CSS만으로 충분하지 않은 경우 실제 목록의 scrollTop, clientHeight
 
 공용 Select를 가져다 썼는데 포커스와 스크롤을 앱마다 다시 붙여야 한다면, 결국 중요한 코드는 또 반복하게 됩니다. 저는 이럴 때 소비자가 받아야 할 이벤트와 컴포넌트 안에서 관리할 상태를 먼저 정하는 편이 낫다고 생각합니다.
 
+
+## 화면에서 보이는 항목만으로 선택을 판단하지 않습니다
+
+목록을 키보드로 탐색 중이라고 해서 확정된 선택 값이 바로 바뀌어야 하는 것은 아닙니다. 활성 항목이 변경된 상태와 Enter 등으로 선택을 확정한 상태를 분리합니다.
+
+예제에서 목록을 열고 방향키로 다음 항목에 이동한 뒤 Escape로 닫아 보세요. 탐색 표시와 원래 선택된 값, 닫힌 후 포커스의 위치를 비교하면 API가 담당하는 계약이 단순한 문자열 상태보다 많다는 것을 알 수 있습니다.
+
 ## 참고 자료
 - [Oddmash UI #65](https://github.com/Oddmash/oddmash-ui/issues/65) · [PR #66](https://github.com/Oddmash/oddmash-ui/pull/66) · [PR #122](https://github.com/Oddmash/oddmash-ui/pull/122)
 - [실제 Select 구현](https://github.com/Oddmash/oddmash-ui/blob/25ecce212b4c3a2a2100d6190a191722087135cb/src/select-dropdown.tsx) · [공개 export](https://github.com/Oddmash/oddmash-ui/blob/25ecce212b4c3a2a2100d6190a191722087135cb/src/select.tsx)
