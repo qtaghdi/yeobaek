@@ -20,13 +20,16 @@ const server = createServer(async (request, response) => {
     if (!target.startsWith(root.endsWith(sep) ? root : root + sep)) { response.writeHead(404).end(); return; }
     const content = await readFile(target);
     response.writeHead(200, { "Content-Type": types[extname(target)] ?? "application/octet-stream" }).end(content);
-  } catch { response.writeHead(404).end(); }
+  } catch {
+    const fallback = await readFile(join(root, "404.html")).catch(() => "Not Found");
+    response.writeHead(404, { "Content-Type": "text/html; charset=utf-8" }).end(fallback);
+  }
 });
 await new Promise((done) => server.listen(0, "127.0.0.1", done));
 const origin = "http://127.0.0.1:" + server.address().port;
 const browser = await chromium.launch();
 try {
-  const pages = (await readdir(root, { recursive: true })).filter((file) => file.endsWith("index.html") && !file.startsWith("_astro/") && file !== "start/index.html").map((file) => "/yeobaek/" + file.slice(0, -"index.html".length));
+  const pages = (await readdir(root, { recursive: true })).filter((file) => file.endsWith("index.html") && !file.startsWith("_astro/")).map((file) => "/yeobaek/" + file.slice(0, -"index.html".length));
   let storyCount = 0;
   let exampleCount = 0;
   const documentPaths = new Set(pages);
@@ -81,9 +84,13 @@ try {
           const link = heading.nextElementSibling;
           const a = heading.getBoundingClientRect();
           const b = link?.getBoundingClientRect();
-          return b && { gap: b.left - a.right, midlineDelta: Math.abs((a.top + a.bottom - b.top - b.bottom) / 2), cursor: getComputedStyle(link).cursor, before: getComputedStyle(link, "::before").content, after: getComputedStyle(link, "::after").content };
+          const svg = link?.querySelector("svg");
+          const icon = svg?.getBoundingClientRect();
+          return b && icon && { iconDelta: Math.abs((a.top + a.bottom - icon.top - icon.bottom) / 2), iconTransform: getComputedStyle(svg).transform, gap: b.left - a.right, midlineDelta: Math.abs((a.top + a.bottom - b.top - b.bottom) / 2), cursor: getComputedStyle(link).cursor, before: getComputedStyle(link, "::before").content, after: getComputedStyle(link, "::after").content };
         });
         assert.ok(geometry && geometry.gap >= 0 && geometry.midlineDelta < 3, `${route}: reference permalink overlaps heading`);
+        assert.ok(geometry.iconDelta <= 2, `${route}: 실제 SVG의 세로 위치 ${geometry.iconDelta}`);
+        assert.equal(geometry.iconTransform, "none");
         assert.equal(geometry.cursor, "pointer");
         assert.equal(geometry.before, "none");
         assert.equal(geometry.after, "none");
@@ -522,6 +529,37 @@ try {
     }
     await layoutPage.close();
   }
+
+  const sharedHeader = await browser.newPage({ reducedMotion: "reduce" });
+  const measureHeader = () => sharedHeader.evaluate(() => {
+    const selectors = [".site-title", ".search-trigger", ".social-icons a", ".theme-trigger"];
+    return selectors.map(selector => {
+      const element = document.querySelector("header.header " + selector);
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+    });
+  });
+  for (const width of [1024, 1152, 1280, 1920, 2560]) {
+    await sharedHeader.setViewportSize({ width, height: 900 });
+    await sharedHeader.goto(origin + "/yeobaek/");
+    await sharedHeader.locator("header.header .theme-trigger").waitFor();
+    const landing = await measureHeader();
+    await sharedHeader.goto(origin + "/yeobaek/css/text-wrap/");
+    await sharedHeader.locator("header.header .theme-trigger").waitFor();
+    const article = await measureHeader();
+    for (let i = 0; i < landing.length; i++) {
+      assert.ok(Math.abs(landing[i].left - article[i].left) < 2 && Math.abs(landing[i].right - article[i].right) < 2, `${width}: 헤더 컨트롤 ${i}가 이동함`);
+    }
+  }
+  for (const route of ["start/", "does-not-exist/"]) {
+    const response = await sharedHeader.goto(origin + "/yeobaek/" + route);
+    assert.equal(response.status(), 404);
+    assert.equal(sharedHeader.url(), origin + "/yeobaek/" + route);
+    await sharedHeader.getByRole("heading", { name: "404" }).waitFor();
+    await sharedHeader.getByRole("link", { name: "홈으로 돌아가기" }).click();
+    await sharedHeader.waitForURL(origin + "/yeobaek/");
+  }
+  await sharedHeader.close();
 
   const recovery = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await recovery.route("**/search-index.json", route => route.fulfill({ json: {} }));

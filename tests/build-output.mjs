@@ -53,7 +53,7 @@ const sourceRoutes = (await readdir(docs, { recursive: true }))
   .filter(path => /\.mdx?$/.test(path))
   .map(path => path.replace(/\.mdx?$/, "").replace(/(^|\/)index$/, "$1").replace(/\/$/, ""));
 for (const route of new Set([...requiredRoutes, ...sourceRoutes])) {
-  await read(join(route, "index.html"));
+  await read(route === "404" ? "404.html" : join(route, "index.html"));
 }
 for (const route of visualRoutes) {
   assert.ok((await read(join(route, "index.html"))).includes("visual-story__stage"), route);
@@ -68,7 +68,7 @@ assert.ok(screenshot, "Apple Music screenshot with alternative text");
 await read(screenshot[1]);
 const unavailableReference = /https:\/\/github\.com\/oddmash\/vertactics\/(?:issues\/(?:67|82)|pull\/83|commit\/90a6784ae34eb3735382ae70b65603dfacef2298)\b/i;
 for (const route of sourceRoutes) {
-  const page = await read(join(route, "index.html"));
+  const page = await read(route === "404" ? "404.html" : join(route, "index.html"));
   assert.doesNotMatch(page, unavailableReference, `${route}: 공개 글에서 접근할 수 없는 참고 자료`);
   assert.ok(!page.includes('title="Copy to clipboard"'), `${route}: 코드 복사 버튼의 한국어 라벨`);
   if (page.includes("expressive-code")) {
@@ -94,7 +94,7 @@ const codePage = await read("react/effects/index.html");
 assert.ok(codePage.includes('title="코드 복사"'));
 assert.ok(codePage.includes('data-copied="복사했습니다"'));
 const catalog = documentSections.flatMap(section => section.chapters.flatMap(chapter => chapter.pages));
-assert.deepEqual([...catalog].sort(), sourceRoutes.filter(route => route).sort(), "every public article belongs to exactly one chapter");
+assert.deepEqual([...catalog].sort(), sourceRoutes.filter(route => route && route !== "404").sort(), "every public article belongs to exactly one chapter");
 for (const route of catalog) {
   const page = await read(join(route, "index.html"));
   assert.match(page, /aria-label="관련 글"/, route);
@@ -106,7 +106,11 @@ for (const route of catalog) {
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
 assert.deepEqual([...readme.matchAll(/https:\/\/qtaghdi\.github\.io\/yeobaek\/([^\s)]+)\/\)/g)].map(match => match[1]), catalog);
 const home = await read("index.html");
-assert.match(await read("start/index.html"), /http-equiv="refresh" content="0; url=\.\.\//);
+assert.ok(!(await readdir(dist)).includes("start"));
+const notFound = await read("404.html");
+assert.ok(notFound.includes("찾으시는 페이지가 없어요"));
+assert.match(notFound, /href="\/yeobaek\/"/);
+assert.doesNotMatch(notFound, /http-equiv="refresh"/i);
 assert.ok(!home.includes("여백 소개"));
 assert.deepEqual([...home.matchAll(/<title>(.*?)<\/title>/g)].map(match => match[1]), ["여백"]);
 assert.ok((await read("browser/events/index.html")).includes("<title>클릭 이벤트는 어디까지 전달될까? | 여백</title>"));

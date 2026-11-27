@@ -86,10 +86,7 @@ export const auditPublishedNavigation = async (browser, origin, screenshotDir) =
     await sidebar.getByRole("link", { name: "폴더 구조보다 중요한 모듈 경계" }).click();
     await page.waitForURL("**/architecture/module-boundaries/");
     await sidebar.locator('a[aria-current="page"][href$="/architecture/module-boundaries/"]').waitFor();
-    await page.goto(base + "start/");
-    await page.waitForURL(base);
-    assert.equal(await page.locator(".chapter-index").count(), 1);
-    console.log("Published navigation, chapter links, legacy redirect, mobile menu and nested sidebar persistence passed");
+    console.log("Published navigation, chapter links, mobile menu and nested sidebar persistence passed");
   } finally {
     await page.close();
   }
