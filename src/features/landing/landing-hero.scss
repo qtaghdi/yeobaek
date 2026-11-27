@@ -73,6 +73,13 @@
   .landing-note:not(:hover):not(:focus-within) .landing-note__toggle:not([data-paused]) { opacity: 0; }
 }
 
+@media (min-width: 64rem) {
+  .landing-note {
+    width: min(150%, 36rem, calc(50vw - 5rem));
+    justify-self: start;
+  }
+}
+
 @media (max-width: 46rem) {
   .landing-hero {
     grid-template-columns: minmax(0, 1fr);
