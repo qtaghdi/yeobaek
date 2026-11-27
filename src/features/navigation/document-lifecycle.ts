@@ -15,7 +15,7 @@ const mountWrapping = () => {
       const text = element.textContent?.trim() ?? "";
       const isChapterTitle = element.matches(chapterTitle);
       if (!/[가-힣]/.test(text) || (!isChapterTitle && text.length < 12) || text.length > 180 || !element.clientWidth) continue;
-      if ((!isChapterTitle && element.closest(".chapter-index")) || element.closest(".not-content, .example-frame, [data-search-highlight], [data-footnotes]") || element.querySelector("a, code, pre, button, input, select, textarea, svg, astro-island")) continue;
+      if ((!isChapterTitle && element.closest(".chapter-index")) || element.closest(".not-content, .example-frame, .visual-story, .article-diagram, [data-search-highlight], [data-footnotes]") || element.querySelector("a, code, pre, button, input, select, textarea, svg, astro-island")) continue;
       if ([...element.children].some(child => !["MARK", "STRONG", "EM", "SPAN", "BR"].includes(child.tagName))) continue;
       try {
         const controller = mountKowrap(element, { inline: true, locale: "ko" });

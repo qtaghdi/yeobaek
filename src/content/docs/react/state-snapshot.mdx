@@ -11,7 +11,7 @@ import { StateSnapshotExample } from "src/components/examples/react/state-snapsh
 
 ## 렌더마다 다른 count가 있다
 
-React 컴포넌트가 렌더될 때는 그 시점의 상태와 props를 가지고 JSX를 계산합니다. 클릭 핸들러 역시 같은 렌더에서 받은 `count`를 사용합니다. `setCount`를 호출하면 다음 렌더를 요청하지만, 지금 실행하고 있는 함수 안에서 이미 읽은 `count`가 바뀌는 것은 아닙니다.
+React 컴포넌트가 렌더될 때는 그 시점의 상태와 props를 가지고 JSX를 계산합니다. 클릭 핸들러 역시 같은 렌더에서 받은 `count`를 사용합니다. `setCount`를 호출하면 다음 렌더를 요청하지만, **지금 실행하고 있는 함수 안에서 이미 읽은 `count`가 바뀌는 것은 아닙니다.**
 
 첫 번째 예제에서 count가 0이라면 세 표현식 모두 0 + 1을 계산합니다. 두 번째 예제는 React가 업데이트 큐를 처리할 때 앞선 계산의 결과를 다음 updater에게 전달합니다. 그래서 0에서 시작해 1, 2, 3이 됩니다. 상태 변경 요청과 현재 렌더에서 읽는 값을 분리해서 생각해보세요.
 
