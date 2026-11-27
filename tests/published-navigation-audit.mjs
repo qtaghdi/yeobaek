@@ -11,7 +11,7 @@ export const auditPublishedNavigation = async (browser, origin, screenshotDir) =
     const expected = documentSections.flatMap(section => section.chapters.flatMap(chapter => chapter.pages.map(route => "/yeobaek/" + route + "/")));
     assert.deepEqual(articles, expected);
     assert.deepEqual(await index.locator(".chapter-section > h3").allTextContents(), ["프론트엔드", "디자인", "개발과 운영", "백엔드", "AI"]);
-    assert.match(await page.locator(".chapter-heading").textContent(), /42개 글/);
+    assert.match(await page.locator(".chapter-heading").textContent(), new RegExp(`${expected.length}개 글`));
     for (const [width, columns] of [[320, 1], [736, 1], [737, 2], [1007, 2], [1008, 3], [1280, 3]]) {
       await page.setViewportSize({ width, height: 900 });
       const geometry = await page.evaluate((columns) => {
