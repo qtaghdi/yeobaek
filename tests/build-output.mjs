@@ -108,6 +108,15 @@ const home = await read("index.html");
 assert.deepEqual([...home.matchAll(/<title>(.*?)<\/title>/g)].map(match => match[1]), ["여백"]);
 assert.ok((await read("browser/events/index.html")).includes("<title>클릭 이벤트는 어디까지 전달될까? | 여백</title>"));
 assert.ok(home.includes("/yeobaek/favicon.svg"));
+assert.match(home, /class="archive-highlights"/);
+assert.match(home, /id="latest-heading"[^>]*>최신 글/);
+if (process.env.CI) {
+  const latest = home.match(/<section class="archive-latest"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(latest);
+  const dates = [...latest.matchAll(/<time datetime="(\d{4}-\d{2}-\d{2})"/g)].map(match => match[1]);
+  assert.equal(dates.length, 3);
+  assert.deepEqual(dates, [...dates].sort().reverse());
+}
 const index = JSON.parse(await read("search-index.json"));
 assert.ok(index.length >= 37);
 assert.ok(index.every(entry => entry.url.startsWith("/yeobaek/") && entry.sections.length));
