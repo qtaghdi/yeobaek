@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { EventVisual } from "src/components/visuals/event-visual";
 import { CounterScene, FilterScene, RequestScene } from "src/components/visuals/product-sequences";
 import { KeyPress } from "src/components/visuals/key-press";
@@ -11,19 +12,25 @@ const KeyTarget = ({ label, active = false, dim = false, note }: { label: string
   </div>
 );
 
-const FocusScene = ({ story, step, tabOrder }: { story: Story; step: number; tabOrder: boolean }) => (
-  <div className="interaction-scene interaction-scene--keys" aria-hidden="true">
-    <KeyPress input={story.frames[step].key} step={step} />
-    <div className="interaction-targets">
-      {story.nodes.map((node, index) => (
-        <KeyTarget key={node} label={node}
-          active={story.frames[step].states[index]?.tone === "active"}
-          dim={story.frames[step].states[index]?.tone === "muted"}
-          note={tabOrder && story.frames[step].states[index]?.value === "tabindex=-1" ? "tabindex=-1" : !tabOrder && step === 2 && index === 2 ? "표시 제거" : undefined} />
-      ))}
+const FocusScene = ({ story, step, tabOrder }: { story: Story; step: number; tabOrder: boolean }) => {
+  const frame = story.frames[step];
+  const focused = frame.states.findIndex((state) => state.tone === "active");
+  const position = focused < 0 ? story.nodes.length - 1 : focused;
+  return (
+    <div className="interaction-scene interaction-scene--keys" aria-hidden="true">
+      <KeyPress input={frame.key} step={step} />
+      <div className="interaction-targets interaction-targets--tracked" style={{ "--focus-index": position } as CSSProperties}>
+        <span className="interaction-targets__ring" data-visible={focused >= 0} />
+        {story.nodes.map((node, index) => (
+          <KeyTarget key={node} label={node}
+            active={index === focused}
+            dim={frame.states[index]?.tone === "muted"}
+            note={tabOrder && frame.states[index]?.value === "tabindex=-1" ? "tabindex=-1" : !tabOrder && step === 2 && index === 2 ? "표시 제거" : undefined} />
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ControlsScene = ({ story, step, disabled }: { story: Story; step: number; disabled: boolean }) => {
   const input = story.frames[step].key;
@@ -87,7 +94,7 @@ const DialogScene = ({ story, step }: { story: Story; step: number }) => {
 
 export const InteractionScene = ({ story, step }: { story: Story; step: number }) => {
   switch (story.interaction) {
-    case "event": return <EventVisual key={step} stop={step === 1} />;
+    case "event": return <EventVisual stop={step === 1} />;
     case "focus": return <FocusScene story={story} step={step} tabOrder={false} />;
     case "tab": return <FocusScene story={story} step={step} tabOrder />;
     case "controls": return <ControlsScene story={story} step={step} disabled={false} />;

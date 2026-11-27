@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { frameDuration, nextFrame, shouldPlay } from "src/components/visuals/playback-policy";
 import { ArticleScene } from "src/components/visuals/article-scene";
 import { InteractionScene } from "src/components/visuals/interaction-scene";
@@ -12,6 +12,7 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
   const [visible, setVisible] = useState(false);
   const [pageVisible, setPageVisible] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
+  const remainingTime = useRef({ index, milliseconds: 0 });
   const frame = story.frames[index];
   const last = index === story.frames.length - 1;
   const wantsPlayback = manualPlayback ?? motionAllowed;
@@ -50,12 +51,26 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
 
   useEffect(() => {
     if (!playing) return;
+    const segment = remainingTime.current;
+    const remaining = segment.index === index ? segment.milliseconds || duration : duration;
+    const startedAt = performance.now();
     const timer = window.setTimeout(() => {
       if (document.hidden || !stageRef.current?.isConnected) return;
       setIndex((current) => nextFrame(current, story.frames.length));
-    }, duration);
-    return () => window.clearTimeout(timer);
+    }, remaining);
+    return () => {
+      window.clearTimeout(timer);
+      remainingTime.current = { index, milliseconds: Math.max(1, remaining - (performance.now() - startedAt)) };
+    };
   }, [playing, index, duration, story.frames.length]);
+
+  useLayoutEffect(() => {
+    for (const animation of stageRef.current?.getAnimations({ subtree: true }) ?? []) {
+      if (!("transitionProperty" in animation)) continue;
+      if (playing && animation.playState === "paused") animation.play();
+      if (!playing && animation.playState === "running") animation.pause();
+    }
+  }, [playing]);
 
   const togglePlay = () => setManualPlayback(!wantsPlayback);
   const hasKeys = story.frames.some((step) => step.key);
@@ -76,8 +91,9 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
                 <div className="visual-story__node" data-tone={state?.tone ?? "idle"}>
                   <span>{node}</span>
                   <div className="visual-story__value">
-                    {story.frames.map((step, stepIndex) => <strong className="visual-story__measure" key={stepIndex} aria-hidden="true">{step.states[position]?.value ?? "대기"}</strong>)}
-                    <strong key={state?.value}>{state?.value ?? "대기"}</strong>
+                    {[...new Set(story.frames.map((step) => step.states[position]?.value ?? "대기"))].map((value) => (
+                      <strong key={value} data-current={value === (state?.value ?? "대기")} aria-hidden="true">{value}</strong>
+                    ))}
                   </div>
                 </div>
                 {story.layout === "flow" && position < story.nodes.length - 1 ? <span className="visual-story__arrow" data-active={frame.states[position + 1]?.tone === "active"} aria-hidden="true">→</span> : null}

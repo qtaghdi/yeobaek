@@ -54,13 +54,13 @@
     color: var(--text-muted);
     transition: block-size 240ms var(--ease-out);
 
-    span { white-space: nowrap; }
+    span { white-space: nowrap; transition: opacity 160ms var(--ease-out); }
   }
 
   &__phone[data-collapsed="true"] &__address {
     block-size: .25rem;
 
-    span { visibility: hidden; }
+    span { opacity: 0; }
   }
 
   &__screen {
