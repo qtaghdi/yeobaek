@@ -109,6 +109,13 @@ Boundra로 구조를 검사할 때도 같은 생각을 적용했습니다. 단�
 
 이 글은 벨로그의 [당신이 FSD 구조를 써야 하는 이유](https://velog.io/@qtaghdi/당신이-FSD-구조를-써야-하는-이유)를 바탕으로 기능 중심 구조와 모듈 경계까지 다시 정리했습니다.
 
+
+## 공개 진입점을 사용하는 이유
+
+예를 들어 주문 모듈의 다른 기능에서 내부 구현 파일을 직접 가져오는 경우와 공개 진입점에서 제공하는 함수를 가져오는 경우를 생각해봅시다. 전자는 내부 폴더를 옮기는 일도 소비자 변경으로 이어질 수 있습니다.
+
+경계를 검사한다는 것은 폴더 깊이를 줄이는 일이 아니라 허용된 의존 경로인지 확인하는 일입니다. 기존 모듈의 리팩터링 범위와 소비자가 변경해야 할 범위를 나누면 어떤 규칙을 먼저 적용할지 결정하기 쉽습니다.
+
 ## 참고 자료
 
 - [Boundra #43](https://github.com/Oddmash/boundra/issues/43) · [#157](https://github.com/Oddmash/boundra/issues/157) · [#158](https://github.com/Oddmash/boundra/issues/158) · [#165](https://github.com/Oddmash/boundra/issues/165)
