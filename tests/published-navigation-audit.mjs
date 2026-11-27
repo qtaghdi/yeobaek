@@ -37,6 +37,18 @@ export const auditPublishedNavigation = async (browser, origin, screenshotDir) =
     await page.waitForURL(url => decodeURIComponent(url.hash) === "#목차");
     if (screenshotDir) await index.screenshot({ path: screenshotDir + "/index-desktop.png" });
 
+    const labels = index.locator(".chapter-label > h4");
+    await labels.first().and(page.locator("[data-juliya-wrapped]")).waitFor();
+    assert.equal(await labels.and(page.locator("[data-juliya-wrapped]")).count(), await labels.count());
+    assert.equal(await index.locator("a[data-juliya-wrapped]").count(), 0);
+    const longLabel = labels.filter({ hasText: "컴포넌트와 디자인 시스템" });
+    const originalTitle = await longLabel.textContent();
+    await longLabel.evaluate(el => { el.style.inlineSize = "7rem"; });
+    await longLabel.locator("br[data-kowrap-break]").first().waitFor({ state: "attached" });
+    assert.equal(await longLabel.textContent(), originalTitle);
+    await longLabel.evaluate(el => { el.style.removeProperty("inline-size"); });
+    await longLabel.locator("br[data-kowrap-break]").first().waitFor({ state: "detached" });
+
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(base);
     await page.getByRole("link", { name: "글 둘러보기" }).click();

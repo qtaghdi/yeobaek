@@ -18,6 +18,21 @@ export const auditInteractionScenes = async (browser, origin, screenshotDir) => 
     await open("browser/events");
     await story.and(page.locator('[data-playing="true"]')).waitFor();
     const event = story.locator(".event-visual");
+    const awaitingInput = () => story.and(page.locator('[data-input-pending="true"]'));
+    const inputStarted = () => story.and(page.locator('[data-input-pending="false"]'));
+    await awaitingInput().waitFor();
+    assert.equal(await event.locator(".scene-pointer__arrow").evaluate(el => getComputedStyle(el).opacity), "1");
+    const trace = () => event.locator("li").evaluateAll(rows => rows.map(row => getComputedStyle(row).opacity));
+    assert.deepEqual(await trace(), ["0", "0", "0"]);
+    await page.clock.fastForward(800);
+    assert.equal(await awaitingInput().count(), 1);
+    await story.getByRole("button", { name: "자동 재생 일시 정지" }).press("Space");
+    await story.and(page.locator('[data-playing="false"]')).waitFor();
+    await page.clock.fastForward(1500);
+    assert.deepEqual(await trace(), ["0", "0", "0"]);
+    await story.getByRole("button", { name: "자동 재생 시작" }).press("Space");
+    await page.clock.fastForward(550);
+    await inputStarted().waitFor();
     const seek = (time) => event.evaluate((el, ms) => {
       for (const animation of el.getAnimations({ subtree: true })) {
         animation.pause();
@@ -82,6 +97,15 @@ export const auditInteractionScenes = async (browser, origin, screenshotDir) => 
     await story.and(page.locator('[data-playing="true"]')).waitFor();
     await page.clock.fastForward(1900);
     await story.and(page.locator('[data-frame="1"]')).waitFor();
+    await awaitingInput().waitFor();
+    const tab = story.locator(".interaction-keypress kbd");
+    assert.equal(await tab.textContent(), "Tab");
+    assert.equal(await tab.evaluate(el => getComputedStyle(el).animationPlayState), "paused");
+    assert.equal(await ring.evaluate(el => getComputedStyle(el).transform), "matrix(1, 0, 0, 1, 0, 0)");
+    await page.clock.fastForward(650);
+    assert.equal(await awaitingInput().count(), 1);
+    await page.clock.fastForward(650);
+    await inputStarted().waitFor();
     assert.ok(await ring.evaluate((element, before) => element === before, initialRing));
     const path = await ring.evaluate((element) => {
       const animation = element.getAnimations().find(item => item.transitionProperty === "transform");
@@ -94,6 +118,22 @@ export const auditInteractionScenes = async (browser, origin, screenshotDir) => 
       return [left(0), left(175), left(400)];
     });
     assert.ok(path && path[0] + 2 < path[1] && path[1] + 2 < path[2], JSON.stringify(path));
+    await open("integrations/docx-dropdown-choice");
+    await story.and(page.locator('[data-playing="true"]')).waitFor();
+    await advance(1);
+    const menu = story.locator(".article-scene__choices");
+    await awaitingInput().waitFor();
+    assert.equal(await menu.getAttribute("data-open"), "false");
+    await page.clock.fastForward(1250);
+    await inputStarted().waitFor();
+    assert.equal(await menu.getAttribute("data-open"), "true");
+    await advance(2);
+    await awaitingInput().waitFor();
+    const values = story.locator(".article-scene__field strong");
+    assert.deepEqual(await values.allTextContents(), ["검토 중", "reviewing"]);
+    await page.clock.fastForward(1250);
+    await inputStarted().waitFor();
+    assert.deepEqual(await values.allTextContents(), ["완료", "done"]);
     await page.emulateMedia({ reducedMotion: "reduce" });
 
     const startAtRest = async (route) => {

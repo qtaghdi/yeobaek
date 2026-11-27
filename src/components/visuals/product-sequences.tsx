@@ -1,7 +1,7 @@
 import { ScenePointer } from "src/components/visuals/scene-pointer";
 import "src/components/visuals/product-sequences.scss";
 
-export const CounterScene = ({ step }: { step: number }) => (
+export const CounterScene = ({ step, cueStep }: { step: number; cueStep: number }) => (
   <div className="interaction-targets interaction-counters" aria-hidden="true">
     {[false, true].map((functional) => (
       <div className="interaction-control" key={String(functional)}>
@@ -9,9 +9,9 @@ export const CounterScene = ({ step }: { step: number }) => (
         <div className="interaction-count" key={step === 2 ? "result" : "initial"} data-committed={step === 2}>
           {step === 2 ? functional ? 3 : 1 : 0}
         </div>
-        <div className="interaction-target interaction-target--control sequence-press" data-action={step === 1}>
+        <div className="interaction-target interaction-target--control sequence-press" data-action={step === 1} data-preview={cueStep === 1 && step !== cueStep}>
           +3 요청
-          {step === 1 && <ScenePointer />}
+          {cueStep === 1 && <ScenePointer />}
         </div>
         <div className="interaction-queue" data-action={step === 1}>
           {[0, 1, 2].map((item) => (
@@ -24,7 +24,7 @@ export const CounterScene = ({ step }: { step: number }) => (
   </div>
 );
 
-export const FilterScene = ({ step }: { step: number }) => {
+export const FilterScene = ({ step, cueStep }: { step: number; cueStep: number }) => {
   const invalid = step === 1;
   const applied = step === 3;
 
@@ -38,9 +38,9 @@ export const FilterScene = ({ step }: { step: number }) => {
           <div className="interaction-field" data-active={step === 2}>
             <small>종료일</small><b key={step >= 2 ? "20" : "10"}>11월 {step >= 2 ? "20" : "10"}일</b>
           </div>
-          <div className="interaction-target interaction-target--control sequence-press" data-dim={invalid} data-action={applied}>
+          <div className="interaction-target interaction-target--control sequence-press" data-dim={invalid} data-action={applied} data-preview={cueStep === 3 && !applied}>
             적용
-            {applied && <ScenePointer />}
+            {cueStep === 3 && <ScenePointer />}
           </div>
         </div>
         <div className="interaction-filter__result date-sequence__result" data-applied={applied}>

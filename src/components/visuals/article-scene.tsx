@@ -3,9 +3,9 @@ import { ScenePointer } from "src/components/visuals/scene-pointer";
 import type { Frame, Story } from "src/components/visuals/stories";
 import "src/components/visuals/article-scene.scss";
 
-type Props = { variant: NonNullable<Story["scene"]>; frame: Frame; step: number };
+type Props = { variant: NonNullable<Story["scene"]>; frame: Frame; step: number; cueStep: number };
 
-export const ArticleScene = ({ variant, frame, step }: Props) => {
+export const ArticleScene = ({ variant, frame, step, cueStep }: Props) => {
   const [first, second] = frame.states;
 
   if (variant === "music") {
@@ -16,6 +16,7 @@ export const ArticleScene = ({ variant, frame, step }: Props) => {
         className="article-scene article-scene--music"
         aria-hidden="true"
         data-step={step}
+        data-preparing={cueStep === 2 && step !== cueStep}
         style={{ "--position": `${position}%`, "--pointer": `${step < 2 ? 34 : position}%` } as CSSProperties}
       >
         <div className="article-scene__pane">
@@ -44,7 +45,7 @@ export const ArticleScene = ({ variant, frame, step }: Props) => {
 
   if (variant === "docx") {
     return (
-      <div className="article-scene article-scene--docx" aria-hidden="true" data-step={step}>
+      <div className="article-scene article-scene--docx" aria-hidden="true" data-step={step} data-preparing={step !== cueStep}>
         <div className="article-scene__pane">
           <span className="article-scene__label">결재 문서 · 동작 예시</span>
           <div className="article-scene__document">

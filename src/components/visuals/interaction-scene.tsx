@@ -12,51 +12,56 @@ const KeyTarget = ({ label, active = false, dim = false, note }: { label: string
   </div>
 );
 
-const FocusScene = ({ story, step, tabOrder }: { story: Story; step: number; tabOrder: boolean }) => {
-  const frame = story.frames[step];
-  const focused = frame.states.findIndex((state) => state.tone === "active");
-  const position = focused < 0 ? story.nodes.length - 1 : focused;
+type SceneProps = { story: Story; step: number; shownStep: number };
+
+const FocusScene = ({ story, step, shownStep, tabOrder }: SceneProps & { tabOrder: boolean }) => {
+  const frame = story.frames[shownStep];
+  const focused = frame?.states.findIndex((state) => state.tone === "active") ?? -1;
+  const position = focused < 0 ? (shownStep < 0 ? 0 : story.nodes.length - 1) : focused;
   return (
     <div className="interaction-scene interaction-scene--keys" aria-hidden="true">
-      <KeyPress input={frame.key} step={step} />
+      <KeyPress input={story.frames[step].key} step={step} />
       <div className="interaction-targets interaction-targets--tracked" style={{ "--focus-index": position } as CSSProperties}>
         <span className="interaction-targets__ring" data-visible={focused >= 0} />
         {story.nodes.map((node, index) => (
           <KeyTarget key={node} label={node}
             active={index === focused}
-            dim={frame.states[index]?.tone === "muted"}
-            note={tabOrder && frame.states[index]?.value === "tabindex=-1" ? "tabindex=-1" : !tabOrder && step === 2 && index === 2 ? "표시 제거" : undefined} />
+            dim={frame?.states[index]?.tone === "muted"}
+            note={tabOrder && frame?.states[index]?.value === "tabindex=-1" ? "tabindex=-1" : !tabOrder && shownStep === 2 && index === 2 ? "표시 제거" : undefined} />
         ))}
       </div>
     </div>
   );
 };
 
-const ControlsScene = ({ story, step, disabled }: { story: Story; step: number; disabled: boolean }) => {
+const ControlsScene = ({ story, step, shownStep, disabled }: SceneProps & { disabled: boolean }) => {
   const input = story.frames[step].key;
+  const click = input === "Click";
+  const pending = step !== shownStep;
   return (
     <div className="interaction-scene interaction-scene--keys" aria-hidden="true">
       <KeyPress input={input} step={step} />
       <div className="interaction-targets">
         {story.nodes.map((node, index) => {
-          const state = story.frames[step].states[index];
-          const activatedWithKey = input === "Enter" && state?.tone === "done";
+          const state = story.frames[shownStep]?.states[index];
+          const activatedWithKey = !pending && input === "Enter" && state?.tone === "done";
           const focused = state?.tone === "active" || activatedWithKey;
           return (
-            <div className="interaction-control" data-clicking={input === "Click"} key={node}>
+            <div className="interaction-control" data-clicking={click && !pending} key={node}>
               <small>{node}</small>
               <div
                 className="interaction-target interaction-target--control sequence-press"
                 data-active={focused}
                 data-dim={disabled && !focused}
                 data-key-activation={activatedWithKey}
-                data-action={input === "Click"}
+                data-action={click && !pending}
+                data-preview={click && pending}
                 data-native-disabled={disabled && index === 0}
               >
                 {disabled ? "저장" : "실행"}
-                {input === "Click" && <ScenePointer />}
+                {click && <ScenePointer />}
               </div>
-              <span className="interaction-result" data-tone={state?.tone}>{state?.value}</span>
+              <span className="interaction-result" data-tone={state?.tone}>{state?.value ?? "대기"}</span>
             </div>
           );
         })}
@@ -65,8 +70,8 @@ const ControlsScene = ({ story, step, disabled }: { story: Story; step: number; 
   );
 };
 
-const DialogScene = ({ story, step }: { story: Story; step: number }) => {
-  const open = step === 1 || step === 2;
+const DialogScene = ({ story, step, shownStep }: SceneProps) => {
+  const open = shownStep === 1 || shownStep === 2;
   return (
     <div className="interaction-scene interaction-scene--keys" aria-hidden="true">
       <KeyPress input={story.frames[step].key} step={step} />
@@ -82,8 +87,8 @@ const DialogScene = ({ story, step }: { story: Story; step: number }) => {
             <b>알림</b>
             <span>내용을 확인하세요.</span>
             <div className="interaction-targets">
-              <KeyTarget label="닫기" active={step === 1} />
-              <KeyTarget label="확인" active={step === 2} />
+              <KeyTarget label="닫기" active={shownStep === 1} />
+              <KeyTarget label="확인" active={shownStep === 2} />
             </div>
           </div>
         </div>
@@ -92,16 +97,16 @@ const DialogScene = ({ story, step }: { story: Story; step: number }) => {
   );
 };
 
-export const InteractionScene = ({ story, step }: { story: Story; step: number }) => {
+export const InteractionScene = ({ story, step, shownStep }: SceneProps) => {
   switch (story.interaction) {
     case "event": return <EventVisual stop={step === 1} />;
-    case "focus": return <FocusScene story={story} step={step} tabOrder={false} />;
-    case "tab": return <FocusScene story={story} step={step} tabOrder />;
-    case "controls": return <ControlsScene story={story} step={step} disabled={false} />;
-    case "disabled": return <ControlsScene story={story} step={step} disabled />;
-    case "dialog": return <DialogScene story={story} step={step} />;
-    case "counter": return <CounterScene step={step} />;
-    case "filter": return <FilterScene step={step} />;
+    case "focus": return <FocusScene story={story} step={step} shownStep={shownStep} tabOrder={false} />;
+    case "tab": return <FocusScene story={story} step={step} shownStep={shownStep} tabOrder />;
+    case "controls": return <ControlsScene story={story} step={step} shownStep={shownStep} disabled={false} />;
+    case "disabled": return <ControlsScene story={story} step={step} shownStep={shownStep} disabled />;
+    case "dialog": return <DialogScene story={story} step={step} shownStep={shownStep} />;
+    case "counter": return <CounterScene step={shownStep} cueStep={step} />;
+    case "filter": return <FilterScene step={shownStep} cueStep={step} />;
     case "request": return <RequestScene step={step} />;
     default: return null;
   }
