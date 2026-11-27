@@ -48,7 +48,9 @@ try {
       await page.evaluate(() => document.fonts.ready);
       if (route === "/yeobaek/css/text-wrap/" && width === 1280) {
         const paragraph = page.locator(".sl-markdown-content p").filter({ hasText: /^제목이 한 줄에 안 들어가는 건 괜찮습니다\./ });
-        await paragraph.locator("br[data-kowrap-break]").first().waitFor();
+        await paragraph.waitFor();
+        await page.waitForFunction(() => document.querySelector(".sl-markdown-content p[data-juliya-wrapped]"));
+        assert.ok(await paragraph.locator("br[data-kowrap-break]").count(), await paragraph.evaluate(element => element.outerHTML));
         assert.equal(await paragraph.getAttribute("data-juliya-wrapped"), "true");
         const widths = await paragraph.evaluate(element => {
           const range = document.createRange();
