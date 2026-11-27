@@ -8,7 +8,9 @@ import { SelectContractExample } from "src/components/examples/design-system/sel
 
 ## 버튼 하나 공통화하는 건 쉬웠는데 Select는 왜 어려울까?
 
-버튼은 스타일과 클릭 동작을 공통화하는 것부터 시작할 수 있습니다. 그런데 Select를 만들다 보면 선택값뿐 아니라 키보드 탐색, 목록의 위치, 폼 제출까지 고려해야 합니다. 화면에 같은 모양이 나온다고 해서 소비자가 같은 방법으로 사용할 수 있다는 보장은 없다는 것을 느끼게 됩니다.
+버튼 공통화가 잘 됐으니 Select도 비슷하게 만들 수 있겠다 싶습니다. 생긴 모양을 맞추고 선택값을 넘기면 일단 화면은 나오겠죠.
+
+그런데 Tab으로 들어가고, 방향키로 항목을 옮기고, 나중에 폼으로 그 값을 제출하려면 어떤 약속이 있어야 할까요?
 
 [Oddmash UI #65](https://github.com/Oddmash/oddmash-ui/issues/65)에서는 네이티브 Select와 커스텀 SelectDropdown이라는 두 가지 API를 하나의 대표 Select로 정리했습니다. 단순히 이름을 바꾸는 작업이 아니라 기존 소비자가 의존하던 입력, 이벤트, DOM과 접근성 계약을 다시 정의하는 일이었습니다.
 
@@ -119,7 +121,7 @@ CSS만으로 충분하지 않은 경우 실제 목록의 scrollTop, clientHeight
 
 ## 재사용은 내부 구현을 감추는 것부터
 
-Select를 공통화했다고 사용처마다 포커스를 직접 옮기고 스크롤 위치를 직접 조정해야 한다면 어느 부분을 공통화한 걸까요? 단순히 같은 UI를 렌더링하는 컴포넌트보다 상태의 책임과 이벤트의 계약까지 일관되게 제공하는 컴포넌트가 더 유용하다고 생각합니다.
+공용 Select를 가져다 썼는데 포커스와 스크롤을 앱마다 다시 붙여야 한다면, 결국 중요한 코드는 또 반복하게 됩니다. 저는 이럴 때 소비자가 받아야 할 이벤트와 컴포넌트 안에서 관리할 상태를 먼저 정하는 편이 낫다고 생각합니다.
 
 ## 참고 자료
 - [Oddmash UI #65](https://github.com/Oddmash/oddmash-ui/issues/65) · [PR #66](https://github.com/Oddmash/oddmash-ui/pull/66) · [PR #122](https://github.com/Oddmash/oddmash-ui/pull/122)

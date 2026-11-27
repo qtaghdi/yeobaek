@@ -6,7 +6,9 @@ description: "렌더에서 계산할 값과 외부 시스템 동기화를 구분
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { ResizeSubscription } from "src/components/examples/react/resize-subscription";
 
-검색창에 입력하면 목록을 필터링하는 기능을 만들어봅시다. 검색어가 바뀔 때마다 useEffect로 결과를 다시 setState하면 잘 동작합니다. 그런데 이미 원본 목록과 검색어가 있는데 굳이 결과까지 상태로 갖고 있어야 할까요?
+검색창에 한 글자 입력하면 바로 목록을 필터링하고 싶습니다. 일단 `useEffect`를 붙이고 검색어가 바뀔 때마다 결과를 상태에 넣어봅니다. 화면도 잘 나옵니다.
+
+근데 원본 목록과 지금 입력한 글자를 이미 알고 있습니다. 필터링 결과는 따로 기억해둘 이유가 있을까요?
 
 ## 렌더 중에 구할 수 있는 값
 

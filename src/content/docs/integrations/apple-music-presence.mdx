@@ -3,7 +3,17 @@ title: "재생 위치가 40초면 Discord에는 무엇을 보내야 할까?"
 description: "Apple Music의 재생 위치를 Discord의 시작·종료 시각으로 표현하고, 탐색과 일시정지에 맞춰 갱신하는 방법입니다."
 ---
 
-Discord 프로필에 지금 듣는 곡을 띄우는 Apple Music 도구를 만들었습니다. 곡이 바뀔 때 제목과 가수를 보내면 무슨 곡을 듣는지는 알 수 있습니다. 그런데 재생 막대도 같이 표시하려면 무엇을 보내야 할까요? 지금 40초를 듣고 있다는 값만 받으면, 그 값은 메시지가 도착한 순간부터 과거가 됩니다.
+import discordPresence from "src/assets/article-media/discord-apple-music.webp?url";
+import VisualStory from "src/components/visuals/visual-story.astro";
+
+Apple Music에서 지금 듣는 곡을 Discord 프로필에 띄우는 도구를 만들었습니다. 제목이랑 가수까지는 보내면 그만이었습니다.
+
+문제는 아래에 붙는 재생 막대였습니다. 지금 40초라고 보내면 알아서 움직일까요? 1초만 지나도 40초라는 값은 이미 지난 위치입니다.
+
+<figure>
+  <img src={discordPresence} width="828" height="340" alt="Discord 활동에서 Apple Music 곡의 재생 위치 3분 58초와 전체 길이 4분 41초가 막대 양쪽에 표시된 화면" />
+  <figcaption>프로젝트에서 공개한 Discord 활동 화면입니다. 곡 정보 아래에 재생 위치와 전체 길이가 표시됩니다.</figcaption>
+</figure>
 
 ## 40초 대신 시작과 끝을 보냅니다
 
@@ -18,6 +28,10 @@ const end = start + Math.ceil(duration);
 
 이 코드는 [프로젝트에서 재생 시간을 만드는 부분](https://github.com/qtaghdi/apple-music-discord-presence/blob/81cc2f87a5708e8f71f1bfd70635f25a6a63a489/src/presence.ts#L41-L48)을 설명하기 위해 입력과 시각 계산만 꺼낸 예입니다. 계산 전에 곡 길이가 0보다 큰 유한한 수이고, 재생 위치도 유한한 수인지 확인합니다. 위치가 유효한 숫자라도 곡의 범위를 벗어나면 0초에서 곡 길이 사이로 제한합니다. 시간 정보를 얻지 못한 곡은 제목과 가수는 표시하되 재생 막대에 필요한 시각을 생략합니다.
 
+아래에서는 재생이 그냥 이어질 때와 곡 안에서 건너뛸 때, 오른쪽의 시각이 달라지는지 보면 됩니다.
+
+<VisualStory story="apple-music-progress" />
+
 여기서 시작은 재생 버튼을 처음 누른 시각과 항상 같지는 않습니다. 지금 이 속도로 재생이 계속된다고 할 때의 기준점입니다. 방금 2분 10초 지점으로 건너뛰었다면, 시작 시각도 그 위치에 맞춰 다시 계산해야 합니다.
 
 ## 시계를 다시 맞출 때가 있습니다
@@ -28,4 +42,4 @@ const end = start + Math.ceil(duration);
 
 일시정지하면 위치는 그대로인데 시계는 계속 갑니다. 이전 시작과 끝을 남겨두면 표시하는 쪽은 노래가 아직 진행되는 것처럼 계산할 수 있습니다. 이 도구는 기본 설정에서는 잠깐 멈춘 곡의 활동을 지웁니다. 멈춘 곡도 표시하는 옵션을 켜면 제목과 가수는 유지하고 시각은 빼 둡니다. [일시정지와 진행 시각을 검증하는 테스트](https://github.com/qtaghdi/apple-music-discord-presence/blob/81cc2f87a5708e8f71f1bfd70635f25a6a63a489/test/presence.test.ts)
 
-재생 막대를 움직이는 데 필요한 정보와, 그 진행을 멈추거나 다시 맞춰야 하는 사건을 나누면 전송할 데이터와 갱신 시점이 더 분명해집니다. 여기서는 시작과 끝을 한 번 보내고, 그 기준으로는 설명할 수 없는 위치나 상태가 들어왔을 때 다시 맞췄습니다.
+처음에는 현재 위치를 보내면 된다고 생각하기 쉽습니다. 막대를 계속 움직이게 하려면 시계에 기준을 잡아 줄 두 값이 필요했습니다. 시작과 끝을 주고, 곡을 건너뛰거나 멈춰 그 기준이 맞지 않을 때만 다시 맞추기로 했습니다.

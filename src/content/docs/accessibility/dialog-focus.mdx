@@ -7,7 +7,9 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { DialogFocusExample } from "src/components/examples/accessibility/dialog-focus";
 
-모달을 열었을 때 내용이 잘 표시되고 Escape로 닫히는 것까지 구현했습니다. 이 정도면 다 된 것 같지만, 키보드로 열었던 사용자가 모달을 닫은 뒤 어떤 요소에 포커스를 두고 있는지는 아직 확인하지 않았습니다.
+모달을 띄우고 Escape로 닫아봅니다. 여기까진 잘 되네요. 그런데 마우스를 내려놓고 같은 동작을 해보면 확인할 게 하나 더 생깁니다.
+
+모달을 닫은 다음 Tab을 누르면 어디로 갈까요? 닫기 전까지만 확인했다면 놓치기 쉬운 문제입니다.
 
 개발자에게는 `isOpen`이 바뀌는 일일 뿐이지만 사용자에게는 하나의 조작 과정입니다.
 

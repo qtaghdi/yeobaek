@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { frameDuration, nextFrame, shouldPlay } from "src/components/visuals/playback-policy";
+import { ArticleScene } from "src/components/visuals/article-scene";
 import { InteractionScene } from "src/components/visuals/interaction-scene";
 import { StoryIllustration } from "src/components/visuals/story-illustration";
 import type { Story } from "src/components/visuals/stories";
@@ -62,7 +63,7 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
   return (
     <figure className="visual-story not-content" aria-label={story.title} data-playing={playing} data-frame={index} data-frame-count={story.frames.length}>
       <div ref={stageRef} className={`visual-story__stage visual-story__stage--${story.layout}`}>
-        {story.interaction ? <InteractionScene story={story} step={index} /> : <>
+        {story.interaction ? <InteractionScene story={story} step={index} /> : story.scene ? <ArticleScene variant={story.scene} frame={frame} step={index} /> : <>
         {hasKeys ? <div className="visual-story__input">
           {frame.key ? <kbd key={index}>{frame.key}</kbd> : null}
         </div> : null}

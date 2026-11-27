@@ -6,7 +6,9 @@ description: "쿼리 키가 캐시를 식별하는 방식과 갱신 범위."
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { QueryKeyCache } from "src/components/examples/react/query-key-cache";
 
-사용자 목록을 호출하고 응답을 state에 저장했습니다. 잘 동작하네요. 그런데 페이지를 나갔다 돌아오면 또 불러오고, 같은 목록을 쓰는 다른 컴포넌트에서도 또 호출하고, 사용자 수정 후에는 어디를 갱신해야 할지 고민하게 됩니다. 이쯤 되면 API를 호출하는 것과 가져온 데이터를 관리하는 것을 구분할 필요가 있습니다.
+사용자 목록을 받아서 잘 보여주고 있습니다. 그런데 페이지를 돌아올 때마다 다시 요청하고, 다른 컴포넌트도 같은 목록을 요청합니다. 수정까지 붙이니 이번에는 어떤 목록을 갱신해야 할지 모르겠습니다.
+
+API 주소만 갖고는 화면에서 가지고 있는 결과들을 구분하기 어렵습니다. 그럼 지금 보고 있는 목록은 무엇으로 찾으면 될까요?
 
 ## Query Key는 데이터의 주소다
 

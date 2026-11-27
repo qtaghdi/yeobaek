@@ -7,7 +7,11 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { EventPropagationExample } from "src/components/examples/browser/event-propagation";
 
-카드를 클릭하면 상세 화면으로 이동하도록 만들고, 카드 안에는 즐겨찾기 버튼을 추가했습니다. 그런데 별을 눌렀을 뿐인데 상세 페이지로 이동해버립니다.
+카드를 누르면 상세 화면으로 들어가게 만들었습니다. 카드 한쪽에는 즐겨찾기 버튼도 달았고요.
+
+별을 눌러봤습니다. 상세 화면이 열립니다.
+
+클릭은 한 번 했는데 왜 두 군데에서 반응한 걸까요?
 
 분명 즐겨찾기 버튼에 별도의 클릭 핸들러를 붙였는데 왜 부모의 핸들러까지 실행될까요?
 
