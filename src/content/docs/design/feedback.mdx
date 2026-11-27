@@ -6,13 +6,15 @@ description: "비동기 복사와 Toast의 수명주기, 독립적인 알림 큐
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { SaveFeedbackExample } from "src/components/examples/design/save-feedback";
 
-## 복사 버튼을 눌렀다고 복사가 된 건 아닙니다
+<span id="복사-버튼을-눌렀다고-복사가-된-건-아닙니다"></span>
+
+## 저장 버튼을 눌렀다고 저장이 된 건 아닙니다
 
 저장 버튼을 누르자마자 “저장했습니다”를 띄웠습니다. 그런데 잠깐 뒤 서버가 실패를 반환합니다. 화면은 이미 사용자에게 다 됐다고 말했고요.
 
 **버튼을 눌렀다는 피드백과 서버가 저장했다는 피드백**은 각각 언제 보여줘야 할까요?
 
-Oddmash UI에서 ClipboardButton과 ToastProvider를 제공하게 된 [#95](https://github.com/Oddmash/oddmash-ui/issues/95)는 여러 소비자가 반복해서 구현하던 복사와 알림의 상태를 공용으로 다루기 위한 사례입니다.
+저장처럼 복사 역시 버튼을 누른 시점과 작업이 실제로 완료된 시점이 다를 수 있습니다. Oddmash UI에서 ClipboardButton과 ToastProvider를 제공하게 된 [#95](https://github.com/Oddmash/oddmash-ui/issues/95)는 여러 소비자가 반복해서 구현하던 복사와 알림의 상태를 공용으로 다루기 위한 사례입니다.
 
 ## 상태별 책임
 

@@ -2,6 +2,8 @@ import references from "./reference-catalog.mjs";
 
 const text = (value) => ({ type: "text", value });
 const element = (tagName, properties, children) => ({ type: "element", tagName, properties, children });
+const linkText = (node) => node.children?.map(linkText).join("") ?? node.value ?? node.alt ?? "";
+const validTitle = (value) => typeof value === "string" && value.trim() && !/^(undefined|null)$/i.test(value.trim());
 
 const inputSummary = "제어형과 비제어형 입력, 날짜 범위 필터의 입력값과 적용값을 살펴봅니다.";
 const relatedSummaries = {
@@ -25,7 +27,9 @@ export const remarkReferenceNotes = () => (tree) => {
         return [child];
       }
       if (!used.has(child.url)) {
-        used.set(child.url, { ...reference, identifier: `source-${used.size + 1}` });
+        const authoredTitle = linkText(child).trim();
+        const title = validTitle(reference.title) ? reference.title.trim() : validTitle(authoredTitle) ? authoredTitle : child.url;
+        used.set(child.url, { ...reference, title, identifier: `source-${used.size + 1}` });
       }
       const { identifier, summary } = used.get(child.url);
       child.title = child.title || summary;
