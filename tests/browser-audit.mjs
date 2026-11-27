@@ -556,6 +556,11 @@ try {
     assert.equal(response.status(), 404);
     assert.equal(sharedHeader.url(), origin + "/yeobaek/" + route);
     await sharedHeader.getByRole("heading", { name: "404" }).waitFor();
+    await sharedHeader.locator(".hero .tagline[data-juliya-wrapped='true']").waitFor({ state: "attached" });
+    await sharedHeader.locator(".not-found p[data-juliya-wrapped='true']").waitFor({ state: "attached" });
+    assert.equal(await sharedHeader.locator(".hero h1[data-juliya-wrapped]").count(), 0, "numeric 404 must not be rewritten");
+    assert.equal(await sharedHeader.locator(".not-found p").textContent(), "주소를 다시 확인해 주세요. 읽고 싶은 글이 있다면 상단의 검색을 이용하거나 홈의 목차에서 찾아보실 수 있습니다.");
+    assert.ok(await sharedHeader.locator(".not-found p").evaluate(el => el.scrollWidth <= el.clientWidth + 2), "404 prose must fit its reading width");
     await sharedHeader.getByRole("link", { name: "홈으로 돌아가기" }).click();
     await sharedHeader.waitForURL(origin + "/yeobaek/");
   }
