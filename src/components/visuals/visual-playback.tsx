@@ -18,7 +18,8 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
   const frame = story.frames[index];
   const previewInput = motionAllowed && Boolean(frame.key);
   const pendingInput = previewInput && !started;
-  const shownStep = pendingInput ? index - 1 : index;
+  const priorStep = story.interaction === "event" ? previousIndex : index - 1;
+  const shownStep = pendingInput ? priorStep : index;
   const shownFrame = story.frames[Math.max(0, shownStep)];
   const last = index === story.frames.length - 1;
   const wantsPlayback = manualPlayback ?? motionAllowed;

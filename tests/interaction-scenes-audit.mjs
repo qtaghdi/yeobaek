@@ -87,6 +87,7 @@ export const auditInteractionScenes = async (browser, origin, screenshotDir) => 
     await awaitingInput().waitFor();
     assert.deepEqual(await visibleTrace(), stopped);
     assert.deepEqual(await visibleCommand(), ["stopPropagation()"]);
+    assert.match(await story.getByRole("status").textContent(), /대상에서 전파 중단/);
     if (screenshotDir) await story.screenshot({ path: screenshotDir + "/event-repeat-cue-320.png" });
     await story.getByRole("button", { name: "자동 재생 일시 정지" }).click();
     await story.and(page.locator('[data-playing="false"]')).waitFor();
