@@ -615,7 +615,9 @@ mobile-starlight-toc .dropdown {
       cursor: pointer;
       &:hover, &:focus-visible { color: var(--text); background: var(--selection); }
       &::before, &::after { content: none; }
-      .sl-anchor-icon { display: inline-flex; align-items: center; }
+      line-height: 1;
+      .sl-anchor-icon { display: grid; place-items: center; line-height: 1; }
+      .sl-anchor-icon svg { display: block; transform: none; inline-size: 1rem; block-size: 1rem; }
     }
     ol { padding-inline-start: 1.5rem; }
     li { padding: .45rem .5rem; border-radius: var(--radius-control); scroll-margin-block-start: 6rem; }
@@ -706,14 +708,14 @@ mobile-starlight-toc .dropdown {
 }
 
 @media (min-width: 72rem) {
-  :root[data-has-sidebar][data-has-toc] {
+  :root {
     --document-toc-width: clamp(12rem, 18vw, var(--sl-sidebar-width));
     --document-content-width: 52rem;
     --document-layout-width: calc(var(--sl-sidebar-width) + var(--document-content-width) + 2 * var(--sl-content-pad-x) + var(--document-toc-width));
     --document-outer-gutter: max(0px, (100% - var(--document-layout-width)) / 2);
   }
 
-  :root[data-has-sidebar][data-has-toc] header.header > .header {
+  header.header > .header {
     max-inline-size: calc(var(--document-layout-width) - 2 * var(--sl-nav-pad-x));
     margin-inline: auto;
   }
@@ -806,3 +808,14 @@ mobile-starlight-toc .dropdown {
 @media (forced-colors: active) {
   .example-frame :is(.example-workbench__controls, .inline-example) input[type="checkbox"]:indeterminate::before { content: none; }
 }
+
+.sl-markdown-content .not-found {
+  max-inline-size: 36rem;
+  margin-block: 1.5rem 3rem;
+  color: var(--text-muted);
+}
+.main-pane:has(.not-found) .hero {
+  padding-block: clamp(3rem, 8vw, 7rem) 2rem;
+  border-block-end: 0;
+}
+.main-pane:has(.not-found) .hero h1 { font-size: clamp(4rem, 10vw, 6rem); letter-spacing: -.065em; font-variant-numeric: tabular-nums; }
