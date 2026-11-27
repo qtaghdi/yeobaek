@@ -1,0 +1,23 @@
+---
+import Default from "@astrojs/starlight/components/Pagination.astro";
+import { getEntry } from "astro:content";
+import { relatedArticles } from "./article-relations.mjs";
+const { id } = Astro.locals.starlightRoute.entry;
+const links = (await Promise.all(relatedArticles(id).map(async slug => {
+  const entry = await getEntry("docs", slug);
+  return entry ? { title: entry.data.title, href: `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${slug}/` } : null;
+}))).filter(link => link !== null);
+---
+{links.length > 0 && <nav class="article-related" aria-label="관련 글">
+  <h2>관련 글</h2>
+  <ul>{links.map(link => <li><a href={link.href}>{link.title}<span aria-hidden="true">↗</span></a></li>)}</ul>
+</nav>}
+<Default><slot /></Default>
+<style>
+  .article-related { margin-block: 2rem; border-block-start: 1px solid var(--border); padding-block-start: 1rem; }
+  h2 { font-size: 1.1rem; margin: 0 0 .5rem; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  a { display: flex; justify-content: space-between; gap: 1rem; padding: .65rem 0; color: var(--text); text-decoration: none; border-block-end: 1px solid var(--border); }
+  a:hover { text-decoration: underline; }
+  span { color: var(--text-muted); }
+</style>
