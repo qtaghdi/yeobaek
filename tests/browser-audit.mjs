@@ -310,7 +310,15 @@ try {
   await citation.click();
   assert.ok(page.url().includes("#user-content-fn-"));
   const source = page.locator("section[data-footnotes] li:target");
-  await source.getByRole("link").waitFor();
+  const sourceLink = source.getByRole("link");
+  await sourceLink.waitFor();
+  const summary = source.locator(".reference-note-summary");
+  assert.equal((await summary.textContent()).trim(), await ref.getAttribute("data-reference-summary"));
+  assert.ok(await summary.evaluate(element => {
+    const title = element.previousElementSibling;
+    return title.getBoundingClientRect().bottom <= element.getBoundingClientRect().top
+      && parseFloat(getComputedStyle(element).fontSize) < parseFloat(getComputedStyle(title).fontSize);
+  }));
   assert.equal(await source.locator("[data-footnote-backref]").count(), 0);
   await page.goBack();
   await page.waitForURL("**/browser/storage/");

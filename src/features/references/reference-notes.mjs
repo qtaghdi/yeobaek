@@ -1,6 +1,17 @@
 import references from "./reference-catalog.mjs";
 
 const text = (value) => ({ type: "text", value });
+const element = (tagName, properties, children) => ({ type: "element", tagName, properties, children });
+
+const inputSummary = "제어형과 비제어형 입력, 날짜 범위 필터의 입력값과 적용값을 살펴봅니다.";
+const relatedSummaries = {
+  "../controlled-input/": inputSummary,
+  "../../react/controlled-input/": inputSummary,
+  "../query-keys/": "조회 조건을 Query Key에 담아 캐시를 구분하고 갱신하는 방법을 살펴봅니다.",
+  "../testing/": "전체 검사와 증분 검사의 결과를 비교해 테스트가 지켜야 할 동작을 살펴봅니다.",
+  "../../css/text-wrap/": "글꼴의 실제 폭을 측정하고 한국어 줄바꿈 위치를 고르는 과정을 살펴봅니다.",
+  "../../browser/layout-observation/": "요소 크기와 글꼴이 달라졌을 때 측정 결과를 갱신하는 방법을 살펴봅니다.",
+};
 
 export const remarkReferenceNotes = () => (tree) => {
   const used = new Map();
@@ -28,23 +39,61 @@ export const remarkReferenceNotes = () => (tree) => {
       type: "footnoteDefinition",
       identifier,
       label: identifier,
-      children: [{
-        type: "paragraph",
-        children: [
-          { type: "link", url, children: [text(title)] },
-          text(`: ${summary}`),
-        ],
-      }],
+      children: [
+        { type: "paragraph", children: [{ type: "link", url, children: [text(title)] }] },
+        { type: "paragraph", data: { hProperties: { className: ["reference-note-summary"] } }, children: [text(summary)] },
+      ],
     });
   }
 };
 
+const mergeAuthoredReferences = (tree) => {
+  const section = tree.children.find(node => node.tagName === "section" && node.properties?.dataFootnotes !== undefined);
+  const notes = section?.children.find(node => node.tagName === "ol");
+  if (!notes) return;
+
+  const index = tree.children.findLastIndex(node =>
+    node.tagName === "h2" && node.children.some(child => child.type === "text" && child.value === "참고 자료"),
+  );
+  if (index < 0) return;
+  const trailing = tree.children.slice(index + 1, tree.children.indexOf(section)).filter(node => node.type !== "text" || node.value.trim());
+  if (trailing.length !== 1 || trailing[0].tagName !== "ul") return;
+
+  const entries = trailing[0].children.filter(node => node.tagName === "li");
+  const links = entries.flatMap(item =>
+    item.children.flatMap(child => child.tagName === "p" ? child.children : [child]),
+  );
+  if (!links.length || links.some(node =>
+    node.tagName !== "a" && node.tagName !== "sup" && (node.type !== "text" || /[^\s·,]/.test(node.value)),
+  )) return;
+
+  const listedUrls = new Set(notes.children.flatMap(item =>
+    (item.children ?? []).flatMap(child =>
+      child.tagName === "p" ? child.children.filter(node => node.tagName === "a").map(node => node.properties.href) : [],
+    ),
+  ));
+  for (const link of links) {
+    if (link.tagName !== "a" || listedUrls.has(link.properties.href)) continue;
+    const url = link.properties.href;
+    listedUrls.add(url);
+    const children = [element("p", {}, [link])];
+    const summary = relatedSummaries[url];
+    if (summary) children.push(element("p", { className: ["reference-note-summary"] }, [text(summary)]));
+    notes.children.push(element("li", {}, children));
+  }
+
+  const id = tree.children[index].properties?.id ?? "참고-자료";
+  if (id !== "footnote-label") section.properties.id = id;
+  tree.children.splice(index, tree.children.indexOf(section) - index);
+};
+
 export const rehypeReferenceNotes = () => (tree) => {
+  mergeAuthoredReferences(tree);
   const visit = (node, inNotes = false) => {
     const notes = inNotes || (node.tagName === "section" && node.properties?.dataFootnotes !== undefined);
     if (notes && node.tagName === "h2" && node.properties?.id === "footnote-label") {
       node.properties.className = ["reference-notes-heading"];
-      node.children = [text("참고 자료 요약")];
+      node.children = [text("참고 자료")];
     }
     if (node.tagName === "a" && typeof node.properties?.href === "string" && references[node.properties.href]) {
       node.properties.dataReferenceSummary = references[node.properties.href].summary;

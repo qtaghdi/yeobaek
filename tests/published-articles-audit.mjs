@@ -25,7 +25,7 @@ export const auditPublishedArticles = async (browser, origin, screenshots) => {
       const contents = page.locator(".sl-markdown-content");
       assert.ok(await contents.locator("h2").count() >= 3);
       assert.ok(await contents.locator("section[data-footnotes] li").count() >= 2);
-      await contents.getByRole("heading", { name: "참고 자료 요약" }).waitFor();
+      await contents.getByRole("heading", { name: "참고 자료", exact: true }).waitFor();
       if (sample === "code") {
         assert.ok(await contents.locator(".expressive-code pre code").count() >= 1);
         await contents.getByRole("button", { name: "코드 복사" }).first().waitFor();

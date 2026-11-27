@@ -73,7 +73,22 @@ for (const route of sourceRoutes) {
   if (page.includes("expressive-code")) {
     assert.ok(!page.includes('data-copied="Copied!"'), `${route}: 복사 결과의 한국어 메시지`);
   }
+  const notes = page.match(/<section data-footnotes[^>]*>[\s\S]*?<\/section>/)?.[0];
+  if (notes) {
+    assert.doesNotMatch(page, /참고 자료 요약|<h2[^>]*id="참고-자료"/, `${route}: 참고 자료 제목 중복`);
+    const entries = [...notes.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/g)].map(match => match[1]);
+    const urls = entries.map(entry => {
+      const links = [...entry.matchAll(/<a\b[^>]*href="([^"]+)"/g)];
+      assert.equal(links.length, 1, `${route}: 항목마다 링크 하나`);
+      assert.match(entry, /<\/a><\/p>\s*<p class="reference-note-summary">[^<]+<\/p>/, `${route}: 링크 아래 설명`);
+      return links[0][1];
+    });
+    assert.equal(new Set(urls).size, urls.length, `${route}: 참고 자료 URL 중복`);
+  }
 }
+const textWrap = await read("css/text-wrap/index.html");
+assert.match(textWrap, /<section data-footnotes[^>]*id="참고-자료"/);
+assert.match(textWrap, /<section data-footnotes[\s\S]*?href="\.\.\/\.\.\/browser\/layout-observation\/"[\s\S]*?<\/section>/);
 const codePage = await read("react/effects/index.html");
 assert.ok(codePage.includes('title="코드 복사"'));
 assert.ok(codePage.includes('data-copied="복사했습니다"'));

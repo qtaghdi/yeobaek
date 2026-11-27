@@ -35,6 +35,7 @@ test("a citation receives a tooltip and repeated URLs share a footnote", () => {
   assert.equal(tree.children.length, 2);
   assert.equal(tree.children[1].type, "footnoteDefinition");
   assert.equal(tree.children[1].children[0].children[0].url, url);
+  assert.equal(tree.children[1].children[1].children[0].value, references[url].summary);
 });
 
 test("generated references keep source links while omitting repeated back links", () => {
@@ -46,7 +47,7 @@ test("generated references keep source links while omitting repeated back links"
   const summary = { type: "element", tagName: "p", children: [link, backref("#user-content-fnref-source-1"), backref("#user-content-fnref-source-1-2")] };
   const section = { type: "element", tagName: "section", properties: { dataFootnotes: "" }, children: [heading, summary, manualBackref] };
   rehypeReferenceNotes()({ type: "root", children: [section] });
-  assert.equal(heading.children[0].value, "참고 자료 요약");
+  assert.equal(heading.children[0].value, "참고 자료");
   assert.deepEqual(summary.children, [link]);
   assert.equal(link.properties.href, url);
   assert.equal(link.properties.dataReferenceSummary, references[url].summary);
