@@ -549,10 +549,15 @@ try {
       const card = rect(".archive-highlights");
       const featured = rect(".archive-featured");
       const latest = rect(".archive-latest");
+      const featuredRows = [...document.querySelectorAll(".archive-featured > a")].map(element => element.getBoundingClientRect());
+      const latestRows = [...document.querySelectorAll(".archive-latest > a")].map(element => element.getBoundingClientRect());
+      const rowsAligned = featuredRows.length === latestRows.length && featuredRows.every((row, index) => Math.abs(row.top - latestRows[index].top) <= 2 && Math.abs(row.bottom - latestRows[index].bottom) <= 2);
       const hero = rect(".landing-hero");
       const title = rect(".site-title");
       const controls = rect(".right-group");
       return {
+        rowsAligned,
+        noLatestDates: !document.querySelector('.archive-latest time'),
         sideBySide: latest.left >= featured.right && Math.abs(latest.top - featured.top) <= 2,
         stacked: latest.top >= featured.bottom,
         center: (search.left + search.right - header.left - header.right) / 2,
@@ -564,7 +569,8 @@ try {
         controlsClearance: controls.left - search.right,
       };
     });
-    assert.ok(width > 736 ? layout.sideBySide : layout.stacked, `${width}px: latest layout`);
+    assert.ok(width > 736 ? layout.sideBySide && layout.rowsAligned : layout.stacked, `${width}px: latest layout and row alignment`);
+    assert.ok(layout.noLatestDates, `${width}px: latest dates should be hidden`);
     assert.ok(Math.abs(layout.contentAlignment) <= 2, `${width}px: featured articles are not centered`);
     assert.ok(Math.abs(layout.heroAlignment) <= 2, `${width}px: hero and featured articles do not align`);
     if (width >= 800) {
