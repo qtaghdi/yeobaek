@@ -1,0 +1,20 @@
+.article-quality {
+  min-inline-size: 0;
+  &__sample { display: grid; gap: .8rem; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--background); padding: .9rem; min-inline-size: 0; }
+  &__sample > a { color: var(--text); text-decoration: underline; justify-self: start; }
+  &__sample > span:not(.om-tooltip), small { color: var(--text-muted); font-size: .78rem; }
+  &__input { position: relative; }
+  &__input span { position: absolute; inset-inline-start: .65rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+  &__input input { box-sizing: border-box; inline-size: 100%; min-inline-size: 0; background: var(--background); color: var(--text); border: 1px solid var(--border-control); border-radius: var(--radius-control); padding: .6rem; font: inherit; }
+  &__input input[data-icon="true"] { padding-inline-start: 2rem; }
+  &__observations { margin: 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .65rem; }
+  &__observations > div { display: grid; gap: .35rem; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--background); padding: .7rem; min-inline-size: 0; }
+  &__observations dt { color: var(--text-muted); font-size: .78rem; overflow-wrap: anywhere; }
+  &__observations dd { margin: 0; font-size: .84rem; font-weight: 600; overflow-wrap: anywhere; }
+}
+.viewport-unit-model { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .55rem; }
+.viewport-unit-model__column { display: grid; align-content: start; gap: .4rem; min-inline-size: 0; font-size: .8rem; }
+.viewport-unit-model__screen { position: relative; box-sizing: border-box; block-size: 165px; border: 1px solid var(--border-control); border-radius: var(--radius-control); overflow: hidden; background: var(--background); }
+.viewport-unit-model__box { display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; background: var(--selection); border: 1px solid var(--text-muted); padding: .45rem; font-size: .72rem; }
+.viewport-unit-model__chrome { position: absolute; inset-inline: 0; bottom: 0; background: repeating-linear-gradient(135deg,var(--surface),var(--surface) 4px,var(--border) 4px,var(--border) 6px); border-block-start: 1px solid var(--border-control); }
+.viewport-unit-model__chrome[style="height: 0%;"] { border: 0; }

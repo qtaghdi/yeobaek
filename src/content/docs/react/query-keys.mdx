@@ -62,3 +62,15 @@ await queryClient.invalidateQueries({
 앞에서 조회 조건을 키에 넣으라고 했지만, 입력창의 모든 값을 키에 넣으라는 뜻은 아닙니다. 기간 필터에서 시작일과 종료일을 편집할 때마다 조회할 필요가 없는 경우도 있습니다. [Oddmash Agents #273](https://github.com/Oddmash/oddmash-agents/issues/273)처럼 적용된 기간만 요청 조건과 키로 사용하면 화면의 편집 상태와 서버 캐시가 뒤섞이지 않습니다.
 
 이 글은 벨로그의 [API 통신에 useEffect 쓰면 안됨?](https://velog.io/@qtaghdi/API-통신에-useEffect-쓰면-안되나)에서 이야기했던 서버 상태를 Query Key 중심으로 다시 정리한 글입니다.
+
+## 조회 조건 하나가 빠진 경우
+
+상태가 active인 목록과 archived인 목록이 있다고 가정합니다. 두 요청이 같은 키만 사용하면 캐시에서 어느 조회 조건의 결과인지 구분할 수 없습니다.
+
+| 요청 | 구분이 필요한 키의 예시 |
+| --- | --- |
+| 전체 목록 | ["projects", "all"] |
+| 진행 중 목록 | ["projects", "active"] |
+| 완료 목록 | ["projects", "archived"] |
+
+요청에 영향을 주는 조건을 키에 포함시키면 이후 무효화 범위도 구체적으로 정할 수 있습니다. [TanStack Query의 Query Keys 문서](https://tanstack.com/query/latest/docs/framework/react/guides/query-keys)

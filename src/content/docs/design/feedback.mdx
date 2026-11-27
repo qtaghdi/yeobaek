@@ -102,6 +102,13 @@ const dismiss = (id: string) => {
 
 저는 Toast가 사라지는 애니메이션보다 사라지는 타이밍을 먼저 보게 됩니다. 아직 읽는 중인데 없어지거나, 키보드로 닫았는데 다음 위치를 잃으면 그 알림으로 할 수 있는 일이 줄어듭니다. 저장이 실제로 끝났을 때 결과를 보여주는 것부터 확인해보죠.
 
+
+## 타이머가 서로 다른 작업을 종료하지 않도록 합니다
+
+설명용으로 알림 A를 0초, 알림 B를 2초에 표시하고 각각 5초 뒤 닫도록 정했다고 해봅시다. 5초에 도착한 A의 만료 시점에 B는 아직 2초가 남아 있습니다. 이때 전체 알림 배열을 비우면 B도 함께 사라집니다.
+
+알림의 표시 시각과 종료 대상은 ID로 연결합니다. A만 닫고 B의 남은 시간을 유지했는지 확인하면 애니메이션이 자연스러워 보인다는 판단과 별개로 수명주기의 정확성을 검증할 수 있습니다.
+
 ## 참고 자료
 
 - [Oddmash UI #40](https://github.com/Oddmash/oddmash-ui/issues/40) · [#64](https://github.com/Oddmash/oddmash-ui/issues/64) · [#95](https://github.com/Oddmash/oddmash-ui/issues/95) · [#120](https://github.com/Oddmash/oddmash-ui/issues/120)

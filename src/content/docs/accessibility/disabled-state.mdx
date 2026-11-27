@@ -39,3 +39,9 @@ import { DisabledStateExample } from "src/components/examples/accessibility/disa
 ## 기본 입력 요소를 없앨 이유가 있을까?
 
 Slider를 커스텀 스타일로 꾸며도 키보드 조작과 비활성화 기능까지 새로 만들 필요는 없습니다. [Oddmash UI #104](https://github.com/Oddmash/oddmash-ui/issues/104)에서처럼 실제 input의 상태를 기준으로 시각적 표현을 맞추면 브라우저가 제공하는 동작을 유지할 수 있습니다.
+
+## 제출이 가능한지까지 확인합니다
+
+폼의 전송값을 확인하면 두 상태의 차이가 더 분명합니다. 같은 이름의 입력이라도 네이티브 disabled 입력은 일반적인 FormData 구성에서 빠질 수 있습니다. aria-disabled만 선언한 입력은 그 속성 자체가 제출을 막지 않습니다.
+
+즉, “비활성처럼 보인다”와 “버튼을 누를 수 없다”, “서버에 값이 전달되지 않는다”는 서로 다른 계약입니다. 입력값을 표시하되 편집만 막으려는 상황이라면 해당 컨트롤이 지원하는 readOnly도 함께 비교해야 합니다.

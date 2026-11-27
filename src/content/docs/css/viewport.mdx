@@ -3,6 +3,9 @@ title: "모바일에서 100vh가 어긋나는 이유"
 description: "모바일 브라우저 UI 변화와 뷰포트 높이 단위."
 ---
 
+import ExampleFrame from "src/components/examples/example-frame.astro";
+import { ViewportUnitsExample } from "src/components/examples/css/viewport-units";
+
 import VisualStory from "src/components/visuals/visual-story.astro";
 
 첫 화면을 화면 높이에 맞춰 `100vh`로 잡았습니다. 데스크톱에서는 멀쩡한데 모바일에서 열어보니 하단 버튼이 주소창 때문에 한 번에 보이지 않습니다.
@@ -37,3 +40,13 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 아래 버튼이 처음부터 보여야 한다면 주소창이 펼쳐진 상태에서 먼저 확인해보세요. 내용이 길어지는 경우에는 고정 높이보다 최소 높이를 주고 스크롤을 허용하는 편이 맞을 수 있습니다. 둘 다 열어보면 화면을 채우는 것과 내용을 다 담는 게 왜 다른지 바로 보입니다.
 
 [관련 이슈 · oddmash-website #30](https://github.com/Oddmash/oddmash-website/issues/30)
+
+## 주소창이 펼쳐진 순간의 높이를 계산해봅시다
+
+아래는 작은 뷰포트 700px, 큰 뷰포트 800px을 가정한 설명 모델입니다. 실제 기기의 측정값이 아닙니다. 주소창을 접거나 펼쳐 보세요. 각 단위의 박스 높이와 현재 보이는 영역의 차이를 확인할 수 있습니다.
+
+<ExampleFrame label="모바일 뷰포트 단위 비교">
+  <ViewportUnitsExample client:load />
+</ExampleFrame>
+
+작은 높이에서 늘어나지 않는 배치를 원한다면 svh가 도움이 될 수 있고, 주소창이 접힐 때 남는 공간까지 맞추려면 dvh를 고려합니다. 실제 브라우저에서 키보드가 열리는 경우는 별도의 뷰포트 정책과 레이아웃 검증이 필요합니다. [MDN: CSS 길이 단위](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/length)

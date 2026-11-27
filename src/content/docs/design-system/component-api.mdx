@@ -123,6 +123,13 @@ CSS만으로 충분하지 않은 경우 실제 목록의 scrollTop, clientHeight
 
 공용 Select를 가져다 썼는데 포커스와 스크롤을 앱마다 다시 붙여야 한다면, 결국 중요한 코드는 또 반복하게 됩니다. 저는 이럴 때 소비자가 받아야 할 이벤트와 컴포넌트 안에서 관리할 상태를 먼저 정하는 편이 낫다고 생각합니다.
 
+
+## 폼을 초기화했을 때도 같은 계약인가요?
+
+비제어형 Select에서 기본 선택값을 A로 정한 뒤 B를 선택하고 폼을 초기화하는 상황을 생각해봅시다. 초기화 뒤 선택 라벨뿐 아니라 hidden input의 값도 A가 되어야 합니다. 외부 value로 제어하는 경우에는 소비자가 실제로 value를 변경할 때 선택이 바뀝니다.
+
+테스트에서 폼을 제출했을 때 FormData의 값까지 읽어보면 시각 표시만 정상인 경우도 찾아낼 수 있습니다. 소비자 코드는 어떤 상태를 자신이 결정하고 어떤 상태를 컴포넌트에 맡기는지 분명히 해야 합니다.
+
 ## 참고 자료
 - [Oddmash UI #65](https://github.com/Oddmash/oddmash-ui/issues/65) · [PR #66](https://github.com/Oddmash/oddmash-ui/pull/66) · [PR #122](https://github.com/Oddmash/oddmash-ui/pull/122)
 - [실제 Select 구현](https://github.com/Oddmash/oddmash-ui/blob/25ecce212b4c3a2a2100d6190a191722087135cb/src/select-dropdown.tsx) · [공개 export](https://github.com/Oddmash/oddmash-ui/blob/25ecce212b4c3a2a2100d6190a191722087135cb/src/select.tsx)
