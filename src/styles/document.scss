@@ -129,15 +129,15 @@ header.header { border-block-end: 1px solid var(--border); }
 }
 
 .archive-featured {
-  margin-block: 2rem 2.5rem;
+  margin-block: 1.5rem 0;
   display: grid;
   gap: 0;
 }
-.archive-featured > h2 { font-size: 1.15rem; margin: 0 0 .65rem; padding: 0; }
+.archive-featured > h2 { margin: 0 0 .4rem; padding: 0; }
 .archive-featured > a {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: .3rem 1rem;
+  gap: .18rem 1rem;
   align-items: center;
   padding: .85rem .65rem;
   border-block-end: 1px solid var(--border);
@@ -165,16 +165,6 @@ header.header { border-block-end: 1px solid var(--border); }
   .archive-featured > a:is(:hover, :focus-visible) > svg { transform: none; }
 }
 
-.chapter-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-block-start: 2.5rem; }
-.chapter-heading h2 { margin: 0; padding: 0 !important; }
-.chapter-heading > span { color: var(--text-muted); font-size: .85rem; }
-.chapter-index { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 2.25rem; margin-block: 1.4rem 4rem; }
-.chapter-index > .chapter { border-block-start: 1px solid var(--border); padding-block: 1.25rem 1.5rem; min-inline-size: 0; margin: 0; }
-.chapter-label { display: flex; gap: .75rem; align-items: baseline; }
-.chapter-label > span { color: var(--text-muted); font: 600 .8rem var(--mono); }
-.chapter-label > h3 { font-size: 1.1rem; font-weight: 700; margin: 0; }
-.chapter > p { color: var(--text-muted); font-size: .86rem; margin-block: .45rem .8rem; line-height: 1.65; }
-.chapter > ul { list-style: none; padding: 0; margin: 0; }
 .chapter li { margin: 0; }
 .chapter li > a {
   display: block;
@@ -250,7 +240,6 @@ header.header { border-block-end: 1px solid var(--border); }
   .example-choices__options label:has(input:checked) { border-color: Highlight; outline: 2px solid Highlight; }
 }
 @media (max-width: 46rem) {
-  .chapter-index { grid-template-columns: minmax(0, 1fr); }
   .hero { padding-block: 2.25rem 2rem; }
   .hero h1 { font-size: clamp(2rem, 8vw, 2.75rem); }
 }

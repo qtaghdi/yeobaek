@@ -12,6 +12,27 @@ export const auditPublishedNavigation = async (browser, origin, screenshotDir) =
     assert.deepEqual(articles, expected);
     assert.deepEqual(await index.locator(".chapter-section > h3").allTextContents(), ["프론트엔드", "디자인", "개발과 운영", "백엔드", "AI"]);
     assert.match(await page.locator(".chapter-heading").textContent(), /42개 글/);
+    for (const [width, columns] of [[320, 1], [736, 1], [737, 2], [1007, 2], [1008, 3], [1280, 3]]) {
+      await page.setViewportSize({ width, height: 900 });
+      const geometry = await page.evaluate((columns) => {
+        const gap = (first, second) => second.getBoundingClientRect().top - first.getBoundingClientRect().bottom;
+        const title = document.querySelector(".hero h1");
+        const tagline = document.querySelector(".hero .tagline");
+        const sections = [...document.querySelectorAll(".chapter-section")];
+        const chapters = [...sections[0].querySelectorAll(".chapter")];
+        const description = chapters[0].querySelector("p");
+        const original = description.textContent;
+        description.textContent += " 설명이 길어서 두 줄 이상 이어지는 경우에도 장 제목과 첫 번째 글의 위치를 확인합니다.";
+        const firstRow = chapters.slice(0, columns);
+        const listStarts = firstRow.map(chapter => chapter.querySelector("li > a").getBoundingClientRect().top);
+        const aligned = Math.max(...listStarts) - Math.min(...listStarts) <= 1;
+        const overflow = sections.some(section => section.scrollWidth > section.clientWidth + 1);
+        const introSpacing = gap(title, tagline) > 0 && gap(title, tagline) < gap(tagline, document.querySelector(".hero .actions"));
+        description.textContent = original;
+        return { aligned, overflow, introSpacing };
+      }, columns);
+      assert.deepEqual(geometry, { aligned: true, overflow: false, introSpacing: true }, width + "px");
+    }
     await page.getByRole("link", { name: "글 둘러보기" }).click();
     await page.waitForURL(url => decodeURIComponent(url.hash) === "#목차");
     if (screenshotDir) await index.screenshot({ path: screenshotDir + "/index-desktop.png" });
