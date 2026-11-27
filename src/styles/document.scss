@@ -1,6 +1,5 @@
 @use "./tokens";
 @use "./controls";
-@use "./introduction";
 
 :root, :root[data-theme="light"], :root[data-theme="dark"] {
   --sl-font: var(--font);
@@ -70,6 +69,7 @@ header.header { border-block-end: 1px solid var(--border); }
     word-break: keep-all;
     overflow-wrap: anywhere;
   }
+  :where(p):not(.not-content *, .example-frame *, .visual-story *, .article-diagram *, .chapter-index *, [data-footnotes] *) { text-wrap: balance; }
   :where(p, li):not(.not-content *, .example-frame *, .visual-story *) :is(code, a) { overflow-wrap: anywhere; }
   :where(p, li):not(.not-content *, .example-frame *, .visual-story *) > code { white-space: break-spaces; }
   :where(th, td) { line-height: 1.65; overflow-wrap: anywhere; vertical-align: top; }
@@ -111,6 +111,7 @@ header.header { border-block-end: 1px solid var(--border); }
   text-wrap: balance;
 }
 [data-juliya-wrapped] { text-wrap: wrap !important; }
+.sl-markdown-content p[data-juliya-wrapped]:not(:has(br[data-kowrap-break])) { text-wrap: balance !important; }
 :focus-visible:not(.example-frame *) {
   outline: var(--focus-width) solid var(--focus);
   outline-offset: var(--focus-offset);
