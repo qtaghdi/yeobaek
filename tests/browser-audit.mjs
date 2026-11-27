@@ -49,6 +49,21 @@ try {
       assert.ok(response?.ok(), `${route}: document response failed`);
       await page.locator(".main-pane").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
+      if (route === "/yeobaek/css/text-wrap/") {
+        const heading = page.locator(".sl-markdown-content h2").filter({ hasText: "한글은 다 표시됐는데 왜 읽기 불편할까?" });
+        await heading.locator("xpath=..").locator(".sl-anchor-link").waitFor({ state: "attached" });
+        await page.locator(".sl-markdown-content h2[data-juliya-wrapped='true']").first().waitFor({ state: "attached" });
+        assert.equal(await heading.getAttribute("data-juliya-wrapped"), "true", "inline section headings must have a measurable width");
+        assert.equal(await heading.textContent(), "한글은 다 표시됐는데 왜 읽기 불편할까?");
+        const layout = await heading.evaluate(element => {
+          const box = element.getBoundingClientRect();
+          const anchor = element.nextElementSibling.getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          return { width: element.clientWidth, contained: [...range.getClientRects()].every(rect => !rect.width || rect.right <= box.right + 2), separate: anchor.left >= box.right - 1 };
+        });
+        assert.ok(layout.width > 0 && layout.contained && layout.separate, JSON.stringify(layout));
+      }
       if (route === "/yeobaek/css/text-wrap/" && width === 1280) {
         const paragraph = page.locator(".sl-markdown-content p").filter({ hasText: /^제목이 한 줄에 안 들어가는 건 괜찮습니다\./ });
         await paragraph.waitFor();

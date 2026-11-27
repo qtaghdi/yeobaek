@@ -147,6 +147,10 @@ export default {
     "title": "Juliya #155",
     "summary": "여백에서 처음 표시된 문장이 나중에 다시 줄바꿈되는 현상을 마운트 시점·폰트·크기 관찰 관점에서 조사하는 이슈입니다."
   },
+  "https://github.com/Oddmash/juliya/releases/tag/v0.4.4": {
+    "title": "Juliya 0.4.4",
+    "summary": "같은 줄 수와 폭을 유지할 수 있을 때 한국어 부사어와 서술어의 분리 비용을 높이는 개선입니다."
+  },
   "https://github.com/Oddmash/juliya/releases/tag/v0.4.3": {
     "title": "Juliya 0.4.3",
     "summary": "뷰포트가 바뀔 때 본문 폭이 그대로여도 개행이 삽입되기 전의 인라인 스타일을 다시 확인하는 수정이 포함된 릴리스입니다."
