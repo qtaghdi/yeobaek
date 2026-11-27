@@ -5,7 +5,7 @@ const isProse = (element: HTMLElement) => {
   const text = element.textContent?.trim() ?? "";
   return text.length >= 12 && text.length <= 500 && /[가-힣]/.test(text) &&
     !element.closest(excluded) && !element.hasAttribute("data-juliya-prose") &&
-    element.childElementCount === 0 && element.clientWidth > 0;
+    [...element.querySelectorAll("*")].every(child => child.matches("strong, em")) && element.clientWidth > 0;
 };
 
 const fits = (element: HTMLElement) => {

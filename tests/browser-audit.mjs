@@ -50,8 +50,10 @@ try {
         const paragraph = page.locator(".sl-markdown-content p").filter({ hasText: /^제목이 한 줄에 안 들어가는 건 괜찮습니다\./ });
         await paragraph.waitFor();
         await page.waitForFunction(() => document.querySelector(".sl-markdown-content p[data-juliya-wrapped]"));
-        assert.ok(await paragraph.locator("br[data-kowrap-break]").count(), await paragraph.evaluate(element => element.outerHTML));
         assert.equal(await paragraph.getAttribute("data-juliya-wrapped"), "true");
+        await paragraph.evaluate(element => { element.style.maxWidth = "360px"; });
+        await page.clock.runFor(300);
+        assert.ok(await paragraph.locator("br[data-kowrap-break]").count(), await paragraph.evaluate(element => element.outerHTML));
         const widths = await paragraph.evaluate(element => {
           const range = document.createRange();
           range.selectNodeContents(element);
@@ -59,6 +61,8 @@ try {
         });
         assert.ok(widths.length >= 2 && widths.at(-1) >= Math.max(...widths) * .5, "본문 마지막 줄이 지나치게 짧지 않아야 함");
         assert.equal(await paragraph.textContent(), "제목이 한 줄에 안 들어가는 건 괜찮습니다. 그런데 줄 끝에 단어가 어색하게 끊기거나 마지막 줄에 몇 글자만 남으면 같은 제목도 읽기 어렵습니다.");
+        await paragraph.evaluate(element => { element.style.removeProperty("max-width"); });
+        await page.clock.runFor(300);
       }
       const proseOverflow = await page.evaluate(() => {
         const prose = document.querySelectorAll(".sl-markdown-content p, .sl-markdown-content li");
