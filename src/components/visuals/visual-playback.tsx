@@ -1,12 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { frameDuration, nextFrame, shouldPlay } from "src/components/visuals/playback-policy";
+import { frameDuration, inputPreviewDuration, nextFrame, shouldPlay } from "src/components/visuals/playback-policy";
 import { ArticleScene } from "src/components/visuals/article-scene";
 import { InteractionScene } from "src/components/visuals/interaction-scene";
 import { StoryIllustration } from "src/components/visuals/story-illustration";
 import type { Story } from "src/components/visuals/stories";
 
 export const VisualPlayback = ({ story }: { story: Story }) => {
-  const [index, setIndex] = useState(0);
+  const [{ index, started }, setPlayback] = useState({ index: 0, started: false });
   const [manualPlayback, setManualPlayback] = useState<boolean | null>(null);
   const [motionAllowed, setMotionAllowed] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -14,6 +14,10 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const remainingTime = useRef({ index, milliseconds: 0 });
   const frame = story.frames[index];
+  const previewInput = motionAllowed && Boolean(frame.key);
+  const pendingInput = previewInput && !started;
+  const shownStep = pendingInput ? index - 1 : index;
+  const shownFrame = story.frames[Math.max(0, shownStep)];
   const last = index === story.frames.length - 1;
   const wantsPlayback = manualPlayback ?? motionAllowed;
   const playing = shouldPlay(wantsPlayback, visible, pageVisible);
@@ -54,15 +58,21 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
     const segment = remainingTime.current;
     const remaining = segment.index === index ? segment.milliseconds || duration : duration;
     const startedAt = performance.now();
+    const isCurrentPage = () => !document.hidden && stageRef.current?.isConnected;
+    const cueTimer = previewInput ? window.setTimeout(() => {
+      if (!isCurrentPage()) return;
+      setPlayback(current => current.index === index && !current.started ? { index, started: true } : current);
+    }, Math.max(0, inputPreviewDuration - (duration - remaining))) : undefined;
     const timer = window.setTimeout(() => {
-      if (document.hidden || !stageRef.current?.isConnected) return;
-      setIndex((current) => nextFrame(current, story.frames.length));
+      if (!isCurrentPage()) return;
+      setPlayback(current => ({ index: nextFrame(current.index, story.frames.length), started: false }));
     }, remaining);
     return () => {
+      window.clearTimeout(cueTimer);
       window.clearTimeout(timer);
       remainingTime.current = { index, milliseconds: Math.max(1, remaining - (performance.now() - startedAt)) };
     };
-  }, [playing, index, duration, story.frames.length]);
+  }, [playing, index, previewInput, duration, story.frames.length]);
 
   useLayoutEffect(() => {
     for (const animation of stageRef.current?.getAnimations({ subtree: true }) ?? []) {
@@ -76,9 +86,9 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
   const hasKeys = story.frames.some((step) => step.key);
 
   return (
-    <figure className="visual-story not-content" aria-label={story.title} data-playing={playing} data-frame={index} data-frame-count={story.frames.length}>
+    <figure className="visual-story not-content" aria-label={story.title} data-playing={playing} data-input-pending={pendingInput} data-frame={index} data-frame-count={story.frames.length}>
       <div ref={stageRef} className={`visual-story__stage visual-story__stage--${story.layout}`}>
-        {story.interaction ? <InteractionScene story={story} step={index} /> : story.scene ? <ArticleScene variant={story.scene} frame={frame} step={index} /> : <>
+        {story.interaction ? <InteractionScene story={story} step={index} shownStep={shownStep} /> : story.scene ? <ArticleScene variant={story.scene} frame={shownFrame} step={Math.max(0, shownStep)} cueStep={index} /> : <>
         {hasKeys ? <div className="visual-story__input">
           {frame.key ? <kbd key={index}>{frame.key}</kbd> : null}
         </div> : null}
@@ -102,7 +112,7 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
           })}
         </div>
         </>}
-        <span className="visual-story__sr-only" role="status" aria-live={wantsPlayback ? "off" : "polite"}>{frame.label}: {frame.note}</span>
+        <span className="visual-story__sr-only" role="status" aria-live={wantsPlayback ? "off" : "polite"}>{shownFrame.label}: {shownFrame.note}</span>
         <span className="visual-story__sr-only">{story.frames.map((step) => `${step.label}: ${step.note}`).join(" ")}</span>
         <button type="button" className="visual-story__play" onClick={togglePlay} aria-label={wantsPlayback ? "자동 재생 일시 정지" : "자동 재생 시작"}>
           <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">

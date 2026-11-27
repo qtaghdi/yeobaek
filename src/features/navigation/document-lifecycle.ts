@@ -4,7 +4,8 @@ import { highlightDocumentMatch } from "src/features/search/document-highlight";
 import { mountNavigationMotion } from "src/features/navigation/navigation-motion";
 import { mountReferenceTooltips } from "src/features/references/reference-tooltip";
 
-const selectors = ".hero h1, .hero .tagline, h1#_top, .pagination-links .link-title, .sl-markdown-content :is(h2, h3, p)";
+const chapterTitle = ".chapter-label > h4";
+const selectors = `${chapterTitle}, .hero h1, .hero .tagline, h1#_top, .pagination-links .link-title, .sl-markdown-content :is(h2, h3, p)`;
 const mountWrapping = () => {
   let disposed = false;
   const cleanups: (() => void)[] = [];
@@ -12,8 +13,9 @@ const mountWrapping = () => {
     if (disposed) return;
     for (const element of document.querySelectorAll<HTMLElement>(selectors)) {
       const text = element.textContent?.trim() ?? "";
-      if (!/[가-힣]/.test(text) || text.length < 12 || text.length > 180 || !element.clientWidth) continue;
-      if (element.closest(".not-content, .example-frame, .chapter-index, [data-search-highlight], [data-footnotes]") || element.querySelector("a, code, pre, button, input, select, textarea, svg, astro-island")) continue;
+      const isChapterTitle = element.matches(chapterTitle);
+      if (!/[가-힣]/.test(text) || (!isChapterTitle && text.length < 12) || text.length > 180 || !element.clientWidth) continue;
+      if ((!isChapterTitle && element.closest(".chapter-index")) || element.closest(".not-content, .example-frame, [data-search-highlight], [data-footnotes]") || element.querySelector("a, code, pre, button, input, select, textarea, svg, astro-island")) continue;
       if ([...element.children].some(child => !["MARK", "STRONG", "EM", "SPAN", "BR"].includes(child.tagName))) continue;
       try {
         const controller = mountKowrap(element, { inline: true, locale: "ko" });

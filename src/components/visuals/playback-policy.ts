@@ -1,3 +1,5 @@
+export const inputPreviewDuration = 1200;
+
 export const frameDuration = (note: string, last: boolean) =>
   Math.min(5200, Math.max(3000, 2300 + note.length * 27)) + (last ? 1000 : 0);
 

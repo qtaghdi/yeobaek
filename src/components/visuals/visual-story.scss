@@ -222,7 +222,7 @@
   }
 }
 
-.visual-story[data-playing="true"] .interaction-keypress kbd { animation-play-state: running; }
+.visual-story[data-playing="true"][data-input-pending="false"] .interaction-keypress kbd { animation-play-state: running; }
 
 @keyframes interaction-keypress {
   0%, 100% {
@@ -361,3 +361,5 @@
 
   &[data-visible="false"] { opacity: 0; }
 }
+
+.visual-story[data-frame="0"][data-input-pending="true"] .interaction-targets__ring { transition: none; }

@@ -52,7 +52,7 @@
     transition: opacity 180ms, inset-inline-start 380ms var(--ease-out);
   }
 
-  &--music:is([data-step="1"], [data-step="2"]) &__seek { opacity: 1; }
+  &--music:is([data-preparing="true"], [data-step="2"]) &__seek { opacity: 1; }
   &--music[data-step="1"] &__track > span { transition-duration: 820ms; transition-timing-function: linear; }
   &--music[data-step="0"] &__track > span { transition-duration: 0ms; }
   &--music[data-step="2"] {
@@ -124,7 +124,19 @@
     transform: translate(5px, -3px);
     transition: transform 310ms var(--ease-out), opacity 180ms;
   }
-  &--docx[data-step="1"] &__select-pointer { opacity: 1; transform: translateY(3.7rem); }
+  &--docx[data-step="0"][data-preparing="true"] &__select-pointer { opacity: 1; }
+  &--docx[data-step="1"] &__select-pointer {
+    animation: article-pointer-away 600ms var(--ease-out) both;
+
+    .scene-pointer { animation: article-pointer-press 220ms var(--ease-out) both; }
+  }
+  &--docx[data-step="1"][data-preparing="true"] &__select-pointer {
+    animation: none;
+    opacity: 1;
+    transform: translateY(3.7rem);
+    .scene-pointer { animation: none; }
+  }
+  &--docx[data-step="1"] &__choices { transition-delay: 100ms; }
   &--docx[data-step="1"] &__document > strong > span { transform: rotate(180deg); }
   &--docx[data-step="2"] {
     .article-scene__select-pointer {
@@ -229,4 +241,10 @@
   0% { transform: translateX(0); opacity: 0; }
   20%, 76% { opacity: 1; }
   100% { transform: translateX(525%); opacity: 0; }
+}
+
+
+@keyframes article-pointer-away {
+  0%, 45% { opacity: 1; }
+  100% { opacity: 0; }
 }

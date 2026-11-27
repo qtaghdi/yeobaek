@@ -73,6 +73,10 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .visual-story {
+    .sequence-press[data-preview="true"] .scene-pointer {
+      opacity: 1;
+      transform: translate(10px, 11px);
+    }
     .sequence-press[data-action="true"] {
       .scene-pointer { animation: sequence-pointer 700ms both; }
 
@@ -114,7 +118,7 @@
 }
 
 @keyframes sequence-pointer {
-  0% { opacity: 0; transform: translate(10px, 11px); }
+  0% { opacity: 1; transform: translate(10px, 11px); }
   44%, 85% { opacity: 1; transform: translate(0, 0); }
   100% { opacity: 0; transform: translate(2px, 3px); }
 }

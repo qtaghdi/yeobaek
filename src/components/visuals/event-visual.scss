@@ -113,7 +113,11 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  astro-island:not([ssr]) .event-visual {
+  astro-island:not([ssr]) .visual-story[data-input-pending="true"] .event-visual {
+    &__pointer { transform: translate(2.5rem, 1.85rem); }
+    &__trace li { opacity: 0; }
+  }
+  astro-island:not([ssr]) .visual-story[data-input-pending="false"] .event-visual {
     &__target {
       animation: event-button-click var(--click-at) linear both;
     }
