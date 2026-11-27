@@ -1,0 +1,54 @@
+---
+title: "링크에 툴팁을 붙일 때 놓치기 쉬운 것"
+description: "여백의 참고 자료를 사례로 링크와 추가 설명의 역할, 키보드 조작과 Tooltip의 수명 주기를 살펴봅니다."
+---
+
+여백의 글에서는 실제 이슈나 구현 코드에 참고 자료 링크를 연결합니다. 글을 읽다가 출처의 내용을 잠깐 확인하고 싶은데, 클릭할 때마다 다른 페이지로 이동하면 읽던 흐름이 끊깁니다.
+
+처음에는 링크의 `title` 속성으로 설명을 제공했습니다. 브라우저가 알아서 표시해 주지만 그 시점이나 모양을 일관되게 제어하기 어렵습니다. 그래서 [Oddmash UI #152](https://github.com/Oddmash/oddmash-ui/issues/152)에서 정적 HTML 링크에도 연결할 수 있는 Tooltip을 제안했습니다.
+
+## 링크와 설명은 같은 요소일 필요가 없습니다
+
+링크는 이동을 담당하고 Tooltip은 부가 설명을 제공합니다. 링크를 버튼이나 별도의 클릭 가능한 영역으로 바꾸면 새 탭에서 열기, 키보드 이동처럼 이미 브라우저가 제공하던 동작까지 달라집니다.
+
+`aria-describedby`는 설명 요소의 ID를 연결합니다. 이미 다른 설명이 연결돼 있다면 기존 ID를 잃지 않도록 추가하고, 제거할 때는 자신이 추가한 연결만 정리해야 합니다.
+
+| 입력 | 확인할 결과 |
+| --- | --- |
+| Tab | 링크에 포커스가 가고 설명이 표시됨 |
+| Escape | 설명만 닫히고 포커스가 유지됨 |
+| 포인터 이동 | 링크에서 설명으로 이동해도 읽을 수 있음 |
+| Enter | 기존 링크를 따라 이동 |
+
+## 정적 문서에서도 같은 기능을 사용하려면
+
+React 컴포넌트뿐 아니라 Astro에서 렌더링한 HTML도 연결할 수 있어야 했습니다. [PR #153](https://github.com/Oddmash/oddmash-ui/pull/153)에서는 React Tooltip과 프레임워크 독립적인 DOM 컨트롤러를 함께 제공했습니다. [PR #159](https://github.com/Oddmash/oddmash-ui/pull/159)에서는 포커스와 포인터 이동 중 설명이 유지되는 조건을 보완했습니다. 두 기능은 [0.11.0](https://github.com/Oddmash/oddmash-ui/releases/tag/v0.11.0)에 포함되었습니다.
+
+```html
+<a id="reference" href="/guide">가이드</a>
+<span id="reference-tip" class="om-tooltip" hidden>
+  사용 방법을 설명하는 문서입니다.
+</span>
+```
+
+```ts
+import { mountTooltip } from "@oddmash/ui/tooltip-controller";
+import "@oddmash/ui/styles.css";
+
+const trigger = document.getElementById("reference");
+const panel = document.getElementById("reference-tip");
+
+const controller = trigger && panel ? mountTooltip(trigger, panel) : null;
+
+export const dispose = () => controller?.destroy();
+```
+
+패키지를 해석하는 빌드 환경을 가정한 예제입니다. 문서를 교체하기 전에 `dispose`를 호출해 이벤트와 설명 연결을 정리합니다.
+
+## 설명이 사라지는 시점도 중요합니다
+
+링크에서 포인터가 벗어나는 순간 무조건 닫으면 설명으로 포인터를 옮기는 사람은 내용을 읽기 어렵습니다. 링크와 Tooltip 사이의 간격, 포커스 상태, Escape로 닫은 상태를 각각 고려해야 합니다. #159에서는 이 간격을 통과하는 포인터도 별도로 처리했습니다.
+
+여백의 참고 자료 번호에 키보드 포커스를 두거나 마우스로 가리켜 보세요. 설명을 닫더라도 원래 링크의 역할이 바뀌지 않는 것이 중요합니다.
+
+Tooltip에는 짧은 부가 설명만 두는 편이 좋습니다. 터치 장치에서는 호버가 없을 수 있고, 필수 정보라면 본문을 통해서도 확인할 수 있어야 하기 때문입니다.
