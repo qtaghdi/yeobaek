@@ -22,7 +22,14 @@ export const auditInteractionScenes = async (browser, origin, screenshotDir) => 
     const inputStarted = () => story.and(page.locator('[data-input-pending="false"]'));
     await awaitingInput().waitFor();
     assert.equal(await event.locator(".scene-pointer__arrow").evaluate(el => getComputedStyle(el).opacity), "1");
-    const trace = () => event.locator("li").evaluateAll(rows => rows.map(row => getComputedStyle(row).opacity));
+    const currentTrace = event.locator('[data-previous="false"]');
+    const trace = () => currentTrace.locator("li").evaluateAll(rows => rows.map(row => getComputedStyle(row).opacity));
+    const visibleTrace = () => event.locator("li").evaluateAll(rows => rows
+      .filter(row => getComputedStyle(row).visibility === "visible" && getComputedStyle(row).opacity === "1")
+      .map(row => row.textContent));
+    const visibleCommand = () => event.locator("code").evaluateAll(commands => commands
+      .filter(command => getComputedStyle(command).visibility === "visible")
+      .map(command => command.textContent));
     assert.deepEqual(await trace(), ["0", "0", "0"]);
     await page.clock.fastForward(800);
     assert.equal(await awaitingInput().count(), 1);
@@ -43,7 +50,7 @@ export const auditInteractionScenes = async (browser, origin, screenshotDir) => 
         arrow: opacity(".scene-pointer__arrow"),
         hand: opacity(".scene-pointer__hand"),
         scale: getComputedStyle(el.querySelector(".event-visual__target")).scale,
-        trace: [...el.querySelectorAll("li")].map(row => Number(getComputedStyle(row).opacity)),
+        trace: [...el.querySelectorAll('[data-previous="false"] li')].map(row => Number(getComputedStyle(row).opacity)),
       };
     }, time);
 
@@ -59,17 +66,34 @@ export const auditInteractionScenes = async (browser, origin, screenshotDir) => 
     assert.equal(release.trace[1], 0);
     assert.equal(release.scale, "1");
     assert.deepEqual((await seek(770)).trace, [1, 1, 1]);
-    assert.deepEqual(await event.locator("li").allTextContents(), ["부모 캡처", "대상 버튼", "부모 버블"]);
+    const propagated = ["부모 캡처", "대상 버튼", "부모 버블"];
+    const stopped = ["부모 캡처", "대상 버튼", "부모 버블 호출 안 됨"];
+    assert.deepEqual(await visibleTrace(), propagated);
     if (screenshotDir) await story.screenshot({ path: screenshotDir + "/event-normal-320.png" });
     await advance(1);
-    const blocked = event.locator('li[data-blocked="true"]');
-    assert.match(await blocked.textContent(), /부모 버블.*호출 안 됨/);
+    await awaitingInput().waitFor();
+    assert.deepEqual(await visibleTrace(), propagated);
+    assert.deepEqual(await visibleCommand(), ["click"]);
+    if (screenshotDir) await story.screenshot({ path: screenshotDir + "/event-next-cue-320.png" });
+    await page.clock.fastForward(1250);
+    await inputStarted().waitFor();
+    await seek(512);
+    assert.deepEqual(await visibleTrace(), propagated);
+    assert.deepEqual(await visibleCommand(), ["click"]);
+    await seek(770);
+    assert.deepEqual(await visibleTrace(), stopped);
+    assert.deepEqual(await visibleCommand(), ["stopPropagation()"]);
+    await advance(0);
+    await awaitingInput().waitFor();
+    assert.deepEqual(await visibleTrace(), stopped);
+    assert.deepEqual(await visibleCommand(), ["stopPropagation()"]);
+    assert.match(await story.getByRole("status").textContent(), /대상에서 전파 중단/);
+    if (screenshotDir) await story.screenshot({ path: screenshotDir + "/event-repeat-cue-320.png" });
     await story.getByRole("button", { name: "자동 재생 일시 정지" }).click();
     await story.and(page.locator('[data-playing="false"]')).waitFor();
     assert.ok(await event.evaluate(el => el.getAnimations({ subtree: true }).every(animation => animation.playState !== "running")));
     await page.emulateMedia({ reducedMotion: "reduce" });
-    assert.deepEqual(await event.locator("li").evaluateAll(rows => rows.map(row => getComputedStyle(row).opacity)), ["1", "1", "1"]);
-    if (screenshotDir) await story.screenshot({ path: screenshotDir + "/event-blocked-320.png" });
+    assert.deepEqual(await visibleTrace(), propagated);
 
     const frame = page.getByRole("region", { name: "이벤트 전파 순서" });
     const button = frame.getByRole("button", { name: "안쪽 버튼" });
@@ -176,6 +200,14 @@ export const auditInteractionScenes = async (browser, origin, screenshotDir) => 
     assert.ok(await screenHeight() > smallHeight);
     await advance(2);
     assert.equal(await screenHeight(), smallHeight);
+
+    await startAtRest("integrations/apple-music-presence");
+    const musicHeight = (await story.boundingBox()).height;
+    for (const step of [1, 2, 3, 0]) {
+      await advance(step);
+      assert.ok(Math.abs((await story.boundingBox()).height - musicHeight) < 1, `music frame ${step} shifted adjacent prose`);
+      if (screenshotDir && [3, 0].includes(step)) await story.screenshot({ path: screenshotDir + `/music-${step}-320.png` });
+    }
     console.log("Cursor timing, key labels, date application, request order and viewport illustration passed");
   } finally {
     await page.close();

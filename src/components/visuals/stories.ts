@@ -1,7 +1,7 @@
 type Tone = "idle" | "active" | "done" | "muted" | "warning";
 type NodeState = { value: string; tone?: Tone };
 export type Frame = { label: string; note: string; key?: string; states: NodeState[] };
-export type Story = { title: string; interaction?: "event" | "focus" | "tab" | "controls" | "dialog" | "disabled" | "counter" | "filter" | "request"; scene?: "music" | "docx" | "revision"; illustration?: "loading" | "stacking" | "text-width" | "scrollbar" | "viewport" | "flex"; layout: "flow" | "comparison" | "keyboard"; nodes: string[]; frames: Frame[] };
+export type Story = { title: string; interaction?: "event" | "focus" | "tab" | "controls" | "dialog" | "counter" | "filter" | "request"; scene?: "music" | "docx" | "revision"; illustration?: "loading" | "stacking" | "text-width" | "scrollbar" | "viewport"; layout: "flow" | "comparison" | "keyboard"; nodes: string[]; frames: Frame[] };
 
 const s = (value: string, tone: Tone = "idle"): NodeState => ({ value, tone });
 const f = (label: string, note: string, states: NodeState[], key?: string): Frame => ({ label, note, states, key });
@@ -100,17 +100,6 @@ export const stories = {
       f("닫고 돌아가기", "Escape로 닫으면 가능한 경우 트리거로 포커스를 복원합니다.", [s("포커스 복원", "active"), s("닫힘", "muted"), s("활성")], "Escape"),
     ],
   },
-  "disabled-state": {
-    interaction: "disabled",
-    title: "저장 버튼에 접근하는 것과 저장이 실행되는 것은 다르다",
-    layout: "comparison",
-    nodes: ["disabled", "aria-disabled", "aria-disabled + 실행 조건"],
-    frames: [
-      f("세 저장 버튼", "세 버튼 모두 비활성 상태를 전달합니다. 아직 저장은 실행되지 않았습니다.", [s("저장 0회"), s("저장 0회"), s("저장 0회")]),
-      f("각 버튼에 Tab으로 접근", "disabled는 Tab 순서에서 건너뜁니다. aria-disabled가 있는 두 버튼은 포커스를 받을 수 있습니다.", [s("건너뜀", "muted"), s("포커스", "active"), s("포커스", "active")], "Tab"),
-      f("각 버튼을 클릭", "aria-disabled만 붙인 가운데 버튼에서만 저장이 실행됩니다. disabled는 브라우저가 차단하고, 마지막 버튼은 코드가 차단합니다.", [s("저장 0회", "done"), s("저장 1회", "warning"), s("저장 0회", "done")], "Click"),
-    ],
-  },
   "stacking-context": {
     illustration: "stacking",
     title: "9999가 부모의 쌓임 맥락을 이기지 못하는 이유",
@@ -120,17 +109,6 @@ export const stories = {
       f("부모가 독립 맥락을 만들기 전", "부모 A가 별도 쌓임 맥락을 만들지 않으면 자식 A의 z-index가 외부 요소와 비교될 수 있습니다.", [s("auto"), s("9999", "active"), s("2")]),
       f("부모 A가 1", "부모 A가 독립 맥락을 만들면 자식 A의 9999는 A 안에서만 의미를 갖습니다.", [s("1"), s("9999", "muted"), s("2 · 위쪽", "active")]),
       f("부모 A가 3", "이제 부모 A 전체가 B보다 위에 배치됩니다. 자식의 값은 그대로입니다.", [s("3 · 위쪽", "active"), s("9999", "done"), s("2", "muted")]),
-    ],
-  },
-  "flex-overflow": {
-    illustration: "flex",
-    title: "flex: 1과 자동 최소 크기",
-    layout: "comparison",
-    nodes: ["컨테이너", "파일명", "삭제 버튼"],
-    frames: [
-      f("짧은 파일명", "파일명 영역과 버튼이 같은 줄에 들어갑니다.", [s("300px"), s("짧은 이름", "done"), s("정상 표시", "done")]),
-      f("긴 문자열", "자동 최소 크기 때문에 파일명이 충분히 줄어들지 못하면 버튼이 화면 밖으로 밀립니다.", [s("300px"), s("최소 콘텐츠 폭", "warning"), s("넘침", "warning")]),
-      f("min-width: 0 적용", "파일명 영역이 줄어들 수 있게 허용하고 필요하면 말줄임을 적용합니다.", [s("300px"), s("긴 파일명…", "active"), s("정상 표시", "done")]),
     ],
   },
   "css-cascade": {

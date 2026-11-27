@@ -22,6 +22,19 @@ export const auditExamplesInContext = async (browser, origin, screenshotDir) => 
     const native = trial("native").getByRole("button", { name: "저장" });
     const ariaOnly = trial("aria-only").getByRole("button", { name: "저장" });
     const guarded = trial("guarded").getByRole("button", { name: "저장" });
+    const comparison = page.locator(".main-pane");
+    assert.equal(await comparison.locator(".visual-story").count(), 0, "the button example is the only demonstration");
+    await disabled.evaluate(element => {
+      element.tabIndex = -1;
+      element.focus();
+    });
+    await page.keyboard.press("Tab");
+    assert.equal(await ariaOnly.evaluate(el => el === document.activeElement), true);
+    await page.keyboard.press("Tab");
+    assert.equal(await guarded.evaluate(el => el === document.activeElement), true);
+    if (screenshotDir) await disabled.screenshot({ path: screenshotDir + "/disabled-keyboard-390.png" });
+    await page.keyboard.press("Shift+Tab");
+    assert.equal(await ariaOnly.evaluate(el => el === document.activeElement), true);
     await native.scrollIntoViewIfNeeded();
     await native.focus();
     assert.equal(await native.evaluate(el => el === document.activeElement), false);
@@ -170,8 +183,27 @@ export const auditExamplesInContext = async (browser, origin, screenshotDir) => 
     await feedback.getByRole("status").filter({ hasText: "변경 사항을 저장했습니다." }).waitFor();
     if (screenshotDir) await feedback.screenshot({ path: screenshotDir + "/feedback.png" });
 
-    const select = await go("design-system/component-api", "Select의 활성 항목과 폼 전송값 확인");
+    let releaseSelect;
+    const selectModuleGate = new Promise(resolve => { releaseSelect = resolve; });
+    await page.route("**/select-contract.*.js", async route => {
+      await selectModuleGate;
+      await route.continue();
+    });
+    await page.goto(origin + "/yeobaek/design-system/component-api/", { waitUntil: "domcontentloaded" });
+    const select = page.getByRole("region", { name: "Select의 활성 항목과 폼 전송값 확인" });
     const combobox = select.getByRole("combobox", { name: "작업 상태" });
+    try {
+      await select.scrollIntoViewIfNeeded();
+      await select.getByRole("status").filter({ hasText: "예제를 준비하는 중입니다." }).waitFor();
+      for (const control of [combobox, ...await select.getByRole("button").all()]) {
+        assert.ok(await control.isDisabled(), "controls must wait for the example to be ready");
+      }
+      if (screenshotDir) await select.screenshot({ path: screenshotDir + "/select-preparing-390.png" });
+    } finally {
+      releaseSelect();
+    }
+    await select.getByRole("status").filter({ hasText: "전송값이 여기에 표시됩니다." }).waitFor();
+    assert.ok(await combobox.isEnabled());
     const formValue = select.locator('input[name="status"]');
     assert.equal(await formValue.inputValue(), "in-progress");
     await combobox.press("Enter");
@@ -188,6 +220,7 @@ export const auditExamplesInContext = async (browser, origin, screenshotDir) => 
     await combobox.press("Enter");
     await select.getByRole("button", { name: "전송값 확인" }).click();
     await select.getByRole("status").filter({ hasText: "status=done" }).waitFor();
+    if (screenshotDir) await select.screenshot({ path: screenshotDir + "/select-submitted-390.png" });
     await select.getByRole("button", { name: "초기 상태로" }).click();
     assert.equal(await formValue.inputValue(), "in-progress");
 

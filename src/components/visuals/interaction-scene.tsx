@@ -34,7 +34,7 @@ const FocusScene = ({ story, step, shownStep, tabOrder }: SceneProps & { tabOrde
   );
 };
 
-const ControlsScene = ({ story, step, shownStep, disabled }: SceneProps & { disabled: boolean }) => {
+const ControlsScene = ({ story, step, shownStep }: SceneProps) => {
   const input = story.frames[step].key;
   const click = input === "Click";
   const pending = step !== shownStep;
@@ -52,13 +52,11 @@ const ControlsScene = ({ story, step, shownStep, disabled }: SceneProps & { disa
               <div
                 className="interaction-target interaction-target--control sequence-press"
                 data-active={focused}
-                data-dim={disabled && !focused}
                 data-key-activation={activatedWithKey}
                 data-action={click && !pending}
                 data-preview={click && pending}
-                data-native-disabled={disabled && index === 0}
               >
-                {disabled ? "저장" : "실행"}
+                실행
                 {click && <ScenePointer />}
               </div>
               <span className="interaction-result" data-tone={state?.tone}>{state?.value ?? "대기"}</span>
@@ -97,13 +95,12 @@ const DialogScene = ({ story, step, shownStep }: SceneProps) => {
   );
 };
 
-export const InteractionScene = ({ story, step, shownStep }: SceneProps) => {
+export const InteractionScene = ({ story, step, shownStep, previousStep }: SceneProps & { previousStep: number }) => {
   switch (story.interaction) {
-    case "event": return <EventVisual stop={step === 1} />;
+    case "event": return <EventVisual stop={step === 1} previousStop={previousStep < 0 ? undefined : previousStep === 1} />;
     case "focus": return <FocusScene story={story} step={step} shownStep={shownStep} tabOrder={false} />;
     case "tab": return <FocusScene story={story} step={step} shownStep={shownStep} tabOrder />;
-    case "controls": return <ControlsScene story={story} step={step} shownStep={shownStep} disabled={false} />;
-    case "disabled": return <ControlsScene story={story} step={step} shownStep={shownStep} disabled />;
+    case "controls": return <ControlsScene story={story} step={step} shownStep={shownStep} />;
     case "dialog": return <DialogScene story={story} step={step} shownStep={shownStep} />;
     case "counter": return <CounterScene step={shownStep} cueStep={step} />;
     case "filter": return <FilterScene step={shownStep} cueStep={step} />;

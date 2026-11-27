@@ -51,9 +51,17 @@
 
   &__trace {
     display: grid;
+    min-inline-size: 0;
+  }
+
+  &__result {
+    grid-area: 1 / 1;
+    display: grid;
     gap: .5rem;
     align-items: start;
     min-inline-size: 0;
+
+    &[data-previous="true"] { visibility: hidden; }
 
     code {
       width: max-content;
@@ -115,7 +123,9 @@
 @media (prefers-reduced-motion: no-preference) {
   astro-island:not([ssr]) .visual-story[data-input-pending="true"] .event-visual {
     &__pointer { transform: translate(2.5rem, 1.85rem); }
-    &__trace li { opacity: 0; }
+    &__result[data-previous="false"] li { opacity: 0; }
+    &:has(.event-visual__result[data-previous="true"]) .event-visual__result[data-previous="false"] { visibility: hidden; }
+    &__result[data-previous="true"] { visibility: visible; }
   }
   astro-island:not([ssr]) .visual-story[data-input-pending="false"] .event-visual {
     &__target {
@@ -137,7 +147,15 @@
         event-pointer-arrow 200ms step-end 1240ms forwards;
     }
 
-    &__trace li {
+    &:has(.event-visual__result[data-previous="true"]) .event-visual__result[data-previous="false"] code {
+      animation: event-result-show 0s var(--click-at) both;
+    }
+
+    &__result[data-previous="true"] {
+      animation: event-result-hide 0s var(--click-at) both;
+    }
+
+    &__result[data-previous="false"] li {
       animation: event-trace-appear 90ms ease-out var(--click-at) both;
       &:nth-child(2) { animation-delay: calc(var(--click-at) + 55ms); }
       &:nth-child(3) { animation-delay: calc(var(--click-at) + 110ms); }
@@ -145,8 +163,18 @@
 
   }
   .visual-story[data-playing="false"] .event-visual {
-    &__target, &__pointer, &__pointer svg, &__trace li { animation-play-state: paused; }
+    &__target, &__pointer, &__pointer svg, &__result, &__result code, &__result li { animation-play-state: paused; }
   }
+}
+
+@keyframes event-result-hide {
+  from { visibility: visible; }
+  to { visibility: hidden; }
+}
+
+@keyframes event-result-show {
+  from { visibility: hidden; }
+  to { visibility: visible; }
 }
 
 @keyframes event-pointer-approach {

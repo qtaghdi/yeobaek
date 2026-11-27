@@ -45,7 +45,7 @@ export const StoryIllustration = ({ variant, step }: { variant: NonNullable<Stor
       </div>
     </div>
   );
-  if (variant === "viewport") return (
+  return (
     <div className="story-art story-art--viewport" aria-hidden="true">
       <div className="viewport-sequence__phone" data-collapsed={step === 1} data-unit={["svh", "lvh", "dvh"][step]}>
         <div className="viewport-sequence__address"><span>yeobaek</span></div>
@@ -53,14 +53,6 @@ export const StoryIllustration = ({ variant, step }: { variant: NonNullable<Stor
           <b>{["100svh", "100lvh", "100dvh"][step]}</b>
           <span>{step === 1 ? "주소창 접힘" : "주소창 펼침"}</span>
         </div>
-      </div>
-    </div>
-  );
-  return (
-    <div className="story-art story-art--flex" aria-hidden="true">
-      <div className="story-art__file-row">
-        <div className="story-art__filename" data-step={step}>{step === 0 ? "report.pdf" : "very-long-unbreakable-file-name.pdf"}</div>
-        <span className="story-art__delete">삭제</span>
       </div>
     </div>
   );
