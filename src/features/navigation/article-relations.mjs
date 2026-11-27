@@ -5,6 +5,7 @@ const topicGroups = [
     "accessibility/focus-ring",
     "accessibility/tab-order",
     "accessibility/dialog-focus",
+    "accessibility/reference-tooltip",
     "accessibility/disabled-state",
     "design-system/component-api"
   ],
@@ -32,6 +33,7 @@ const topicGroups = [
     "language/type-runtime",
     "react/state-snapshot",
     "react/controlled-input",
+    "design-system/input-leading-icon",
     "react/effects",
     "react/state-location"
   ],
@@ -48,6 +50,8 @@ const topicGroups = [
     "design-system/why-design-system",
     "design-system/component-api",
     "design-system/compatibility",
+    "design-system/input-leading-icon",
+    "accessibility/reference-tooltip",
     "design/visual-hierarchy"
   ],
   [
