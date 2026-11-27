@@ -95,8 +95,7 @@
     .intro-reading > a { transition: background var(--motion-control) var(--ease-out); }
   }
 
-  @media (max-width: 30rem) {
-    .intro-lead .intro-lead__statement > br { display: none; }
-    .intro-lead .intro-lead__statement > br::after { content: " "; }
+  @media (min-width: 48rem) {
+    .intro-lead .intro-lead__statement > span { display: block; }
   }
 }

@@ -5,7 +5,7 @@ description: 직접 겪은 문제와 선택의 이유를 기록하는 기술 노
 
 <div class="intro-lead">
   <p class="intro-lead__label">개인 기술 노트</p>
-  <p class="intro-lead__statement">동작하는 코드 너머,<br>왜 그렇게 만들었는지.</p>
+  <p class="intro-lead__statement"><span>동작하는 코드 너머,</span> <span>왜 그렇게 만들었는지.</span></p>
   <p class="intro-lead__description">직접 써본 기술, 만들다 막혔던 일, 시간이 지나 달라진 생각을 기록합니다.</p>
 </div>
 
