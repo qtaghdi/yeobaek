@@ -18,16 +18,21 @@ export const auditArticleVisuals = async (browser, origin, screenshotDir) => {
     await storage.getByRole("button", { name: "이 탭 새로고침" }).click();
     await storage.getByRole("button", { name: "임시 검색어 지우기" }).waitFor();
     assert.equal(await storage.locator('output[aria-label="표시 밀도"]').textContent(), "좁은 간격");
-    const [independent] = await Promise.all([
-      context.waitForEvent("page"),
-      storage.getByRole("link", { name: "독립 탭에서 열기" }).click(),
-    ]);
-    try {
-      await independent.getByRole("button", { name: "기본 간격으로 복구" }).waitFor();
-      assert.equal(await independent.locator('output[aria-label="이 탭의 임시 검색어"]').textContent(), "저장된 검색어 없음");
-    } finally {
-      await independent.close();
-    }
+    const url = page.url();
+    await storage.getByRole("button", { name: "독립 탭 열기" }).click();
+    assert.equal(await storage.locator('output[aria-label="표시 밀도"]').textContent(), "좁은 간격");
+    assert.equal(await storage.locator('output[aria-label="이 탭의 임시 검색어"]').textContent(), "저장된 검색어 없음");
+    await storage.getByRole("button", { name: "탭 1", exact: true }).press("Enter");
+    assert.equal(await storage.locator('output[aria-label="이 탭의 임시 검색어"]').textContent(), "줄바꿈");
+    await storage.getByRole("button", { name: "현재 탭 닫기" }).click();
+    assert.equal(await storage.locator('output[aria-label="이 탭의 임시 검색어"]').textContent(), "저장된 검색어 없음");
+    assert.equal(await storage.locator('output[aria-label="표시 밀도"]').textContent(), "좁은 간격");
+    assert.equal(context.pages().length, 1);
+    assert.equal(page.url(), url);
+    assert.deepEqual(await page.evaluate(() => [localStorage.getItem("yeobaek-example-storage-density"), sessionStorage.getItem("yeobaek-example-storage-draft")]), [null, null]);
+    if (screenshotDir) await storage.screenshot({ path: screenshotDir + "/storage-virtual-browser.png" });
+    await storage.getByRole("button", { name: "전체 초기화" }).click();
+    assert.equal(await storage.locator('output[aria-label="표시 밀도"]').textContent(), "기본 간격");
 
     const editor = await go("react/state-location", "미리보기와 변경 이력 비교");
     const marker = editor.getByRole("button", { name: "지도에서 말 옮기기" });
