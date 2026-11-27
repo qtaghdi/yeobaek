@@ -59,7 +59,7 @@ const checkMotion = async (browser, origin) => {
     await story.getByRole("button", { name: "자동 재생 시작" }).click();
     await page.waitForFunction(() => document.querySelector(".visual-story")?.dataset.playing === "true");
     const toc = page.locator("starlight-toc nav");
-    await toc.getByRole("link", { name: "참고 자료 요약" }).click();
+    await toc.getByRole("link", { name: "참고 자료", exact: true }).click();
     await page.waitForFunction(() => document.querySelector(".visual-story")?.dataset.playing === "false");
     const offscreen = await story.getAttribute("data-frame");
     await page.clock.fastForward(13000);
