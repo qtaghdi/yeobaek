@@ -46,11 +46,26 @@ export const auditLandingHandwriting = async (browser, origin) => {
     await surface.scrollIntoViewIfNeeded();
     await page.evaluate(() => {
       const surface = document.querySelector(".landing-notes");
-      const viewBox = surface.viewBox.baseVal;
+      const drawingArea = surface.querySelector(".landing-note__wipe");
+      const drawingBounds = drawingArea.getBBox();
       const completed = new Set();
       const contained = new Map();
       const premature = new Set();
+      const tools = new Set();
+      const clippedTools = new Set();
+      const extendedTools = new Set();
+      Math.random = () => .999;
       const observer = new MutationObserver(() => {
+        const stage = surface.getBoundingClientRect();
+        const originalRight = new DOMPoint(drawingBounds.x + drawingBounds.width, 0).matrixTransform(surface.getScreenCTM()).x;
+        for (const name of ["hand", "eraser"]) {
+          const tool = surface.querySelector(`.landing-note__${name}`);
+          if (Number(tool.getAttribute("opacity")) <= .05) continue;
+          const rect = tool.getBoundingClientRect();
+          tools.add(name);
+          if (rect.right > originalRight) extendedTools.add(name);
+          if (tool.closest("[clip-path]") || rect.left < stage.left - 1 || rect.right > stage.right + 1 || rect.top < stage.top - 1 || rect.bottom > stage.bottom + 1) clippedTools.add(name);
+        }
         const note = surface.querySelector('[data-topic][opacity="1"]');
         const drawing = note.querySelector(".landing-note__writing");
         const rule = note.querySelector(".landing-note__underline");
@@ -60,15 +75,15 @@ export const auditLandingHandwriting = async (browser, origin) => {
           const matrix = drawing.transform.baseVal.getItem(0).matrix;
           const left = bounds.x + matrix.e;
           const top = bounds.y + matrix.f;
-          contained.set(label, left > viewBox.x && top > viewBox.y && left + bounds.width < viewBox.x + viewBox.width && top + bounds.height < viewBox.y + viewBox.height);
+          contained.set(label, left > drawingBounds.x && top > drawingBounds.y && left + bounds.width < drawingBounds.x + drawingBounds.width && top + bounds.height < drawingBounds.y + drawingBounds.height);
         }
         if (!rule.hasAttribute("stroke-dasharray")) return;
         const offset = rule.getAttribute("stroke-dashoffset");
         if ((offset === null || Number(offset) < rule.getTotalLength()) && note.querySelector(".landing-note__lettering [stroke-dashoffset]")) premature.add(label);
         if (offset === null) completed.add(label);
       });
-      observer.observe(surface, { attributes: true, subtree: true, attributeFilter: ["stroke-dashoffset", "opacity"] });
-      window.landingHandwritingAudit = { completed, contained, premature };
+      observer.observe(surface, { attributes: true, subtree: true, attributeFilter: ["stroke-dashoffset", "opacity", "transform"] });
+      window.landingHandwritingAudit = { completed, contained, premature, tools, clippedTools, extendedTools };
     });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     const toggle = page.getByRole("button", { name: "손글씨 애니메이션 일시 정지" });
@@ -78,11 +93,17 @@ export const auditLandingHandwriting = async (browser, origin) => {
       completed: [...window.landingHandwritingAudit.completed],
       contained: [...window.landingHandwritingAudit.contained],
       premature: [...window.landingHandwritingAudit.premature],
+      tools: [...window.landingHandwritingAudit.tools],
+      clippedTools: [...window.landingHandwritingAudit.clippedTools],
+      extendedTools: [...window.landingHandwritingAudit.extendedTools],
     }));
     assert.deepEqual(cycle.completed.sort(), [...expectedTopics].sort());
     assert.equal(cycle.contained.length, expectedTopics.length);
     for (const [topic, fits] of cycle.contained) assert.ok(fits, `${topic}: note outside of its drawing area`);
     assert.deepEqual(cycle.premature, []);
+    assert.deepEqual(cycle.tools.sort(), ["eraser", "hand"]);
+    assert.deepEqual(cycle.extendedTools.sort(), ["eraser", "hand"], "both tools must be able to pass the original drawing edge");
+    assert.deepEqual(cycle.clippedTools, [], "moving tools must stay inside the expanded stage without a clipping ancestor");
     await toggle.focus();
     await toggle.press("Enter");
     const paused = await surface.evaluate(el => el.innerHTML);

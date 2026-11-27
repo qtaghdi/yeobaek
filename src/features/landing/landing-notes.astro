@@ -57,13 +57,10 @@ const topics = documentSections.flatMap(section => section.topics).map(text => {
 ---
 
 <landing-note class="landing-note">
-  <svg class="landing-notes" viewBox="0 -54 374 218" role="img" aria-label={"손글씨 메모, " + topics[0].text}>
+  <svg class="landing-notes" viewBox="-40 -90 560 280" role="img" aria-label={"손글씨 메모, " + topics[0].text}>
     <defs>
       <clipPath id="landing-note-eraser">
         <rect class="landing-note__wipe" x="0" y="-54" width="374" height="218" />
-      </clipPath>
-      <clipPath id="landing-note-tools">
-        <rect x="0" y="-54" width="374" height="218" />
       </clipPath>
       <filter id="landing-note-eraser-ink" x="-.1" y="-.1" width="1.2" height="1.2" color-interpolation-filters="sRGB">
         <feComponentTransfer><feFuncA type="linear" slope="2.6" intercept="-.045" /></feComponentTransfer>
@@ -108,7 +105,7 @@ const topics = documentSections.flatMap(section => section.topics).map(text => {
         <path d={index % 2 ? "M-1.5 .1q1.5 -1 3 .55" : "M-2 0q1.7 1.8 3.7 .6"} opacity="0" />
       ))}
     </g>
-    <g clip-path="url(#landing-note-tools)" aria-hidden="true">
+    <g aria-hidden="true">
       <g class="landing-note__hand" opacity="0">
         <image href={pencilHand.src} x="-24.5" y="-105.8" width="170" height="113.333" />
       </g>
