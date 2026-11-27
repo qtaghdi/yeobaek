@@ -139,10 +139,12 @@ try {
   await go("browser/events");
   await click("안쪽 버튼");
   assert.deepEqual(await frame().locator("ol li").allTextContents(), ["부모 캡처", "대상 버튼", "부모 버블"]);
+  assert.equal(await frame().locator(".event-propagation__path [data-fired=true]").count(), 3);
   await click("기록 지우기");
   await frame().getByRole("checkbox").check();
   await click("안쪽 버튼");
   assert.deepEqual(await frame().locator("ol li").allTextContents(), ["부모 캡처", "대상 버튼"]);
+  assert.equal(await frame().locator(".event-propagation__path [data-fired=true]").count(), 2);
   await click("기록 지우기");
   assert.deepEqual(await frame().locator("ol li").allTextContents(), ["버튼을 눌러 보세요."]);
   await frame().getByRole("checkbox").uncheck();
@@ -250,9 +252,11 @@ try {
   await requests.first().click();
   await requests.last().click();
   assert.deepEqual(await frame().locator("output").allTextContents(), ["1", "3"]);
+  assert.deepEqual(await frame().locator(".state-trace__queue strong").allTextContents(), ["1", "1", "1", "1", "2", "3"]);
   await requests.first().click();
   await requests.last().click();
   assert.deepEqual(await frame().locator("output").allTextContents(), ["2", "6"]);
+  assert.deepEqual(await frame().locator(".state-trace__queue strong").allTextContents(), ["2", "2", "2", "4", "5", "6"]);
   await click("초기화");
   assert.deepEqual(await frame().locator("output").allTextContents(), ["0", "0"]);
 
