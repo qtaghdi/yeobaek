@@ -77,15 +77,19 @@ export const auditPublishedNavigation = async (browser, origin, screenshotDir) =
     assert.equal(await open(inner), true);
     await outer.press("Enter");
     assert.equal(await open(outer), false);
-    await sidebar.getByRole("link", { name: "여백 소개" }).click();
-    await page.waitForURL("**/start/");
+    assert.equal(await sidebar.getByRole("link", { name: "여백 소개" }).count(), 0);
+    await sidebar.getByRole("link", { name: "재사용 가능한 컴포넌트의 API" }).click();
+    await page.waitForURL("**/design-system/component-api/");
     assert.equal(await open(outer), false);
     await outer.press("Enter");
     assert.equal(await open(inner), true);
     await sidebar.getByRole("link", { name: "폴더 구조보다 중요한 모듈 경계" }).click();
     await page.waitForURL("**/architecture/module-boundaries/");
     await sidebar.locator('a[aria-current="page"][href$="/architecture/module-boundaries/"]').waitFor();
-    console.log("Published navigation, chapter links, mobile menu and nested sidebar persistence passed");
+    await page.goto(base + "start/");
+    await page.waitForURL(base);
+    assert.equal(await page.locator(".chapter-index").count(), 1);
+    console.log("Published navigation, chapter links, legacy redirect, mobile menu and nested sidebar persistence passed");
   } finally {
     await page.close();
   }

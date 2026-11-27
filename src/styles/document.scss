@@ -111,6 +111,7 @@ header.header { border-block-end: 1px solid var(--border); }
   text-wrap: balance;
 }
 [data-juliya-wrapped] { text-wrap: wrap !important; }
+.sl-markdown-content p[data-juliya-wrapped]:not(:has(br[data-kowrap-break])) { text-wrap: balance !important; }
 :focus-visible:not(.example-frame *) {
   outline: var(--focus-width) solid var(--focus);
   outline-offset: var(--focus-offset);
