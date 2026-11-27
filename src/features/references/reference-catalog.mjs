@@ -1,4 +1,6 @@
 export default {
+  "https://github.com/Oddmash/oddmash-ui/releases/tag/v0.12.0": { "title": "Oddmash UI 0.12.0", "summary": "Input의 장식용 leadingIcon 슬롯이 공개된 릴리스입니다." },
+  "https://github.com/Oddmash/oddmash-ui/releases/tag/v0.11.0": { "title": "Oddmash UI 0.11.0", "summary": "Tooltip과 정적 HTML 컨트롤러가 공개된 릴리스입니다." },
   "https://github.com/Oddmash/oddmash-ui/issues/152": { "title": "Oddmash UI #152", "summary": "기존 링크의 조작 계약을 유지하는 Tooltip 및 정적 HTML 컨트롤러 요청입니다." },
   "https://github.com/Oddmash/oddmash-ui/pull/153": { "title": "Oddmash UI PR #153", "summary": "Tooltip과 mountTooltip의 공개 API 및 구현을 추가합니다." },
   "https://github.com/Oddmash/oddmash-ui/pull/159": { "title": "Oddmash UI PR #159", "summary": "툴팁의 포커스, 포인터 이동 상태와 정적 HTML 사용 예제를 개선합니다." },
