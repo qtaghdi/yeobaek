@@ -591,7 +591,7 @@ mobile-starlight-toc .dropdown {
       line-height: 1.4;
     }
     .reference-notes-heading + .sl-anchor-link {
-      position: static;
+      position: relative;
       margin: 0;
       padding: .2rem;
       inline-size: 1.6rem;
@@ -604,6 +604,7 @@ mobile-starlight-toc .dropdown {
       border-radius: var(--radius-small);
       cursor: pointer;
       &:hover, &:focus-visible { color: var(--text); background: var(--selection); }
+      &::before, &::after { content: none; }
       .sl-anchor-icon { display: inline-flex; align-items: center; }
     }
     ol { padding-inline-start: 1.5rem; }

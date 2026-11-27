@@ -52,10 +52,12 @@ try {
           const link = heading.nextElementSibling;
           const a = heading.getBoundingClientRect();
           const b = link?.getBoundingClientRect();
-          return b && { gap: b.left - a.right, midlineDelta: Math.abs((a.top + a.bottom - b.top - b.bottom) / 2), cursor: getComputedStyle(link).cursor };
+          return b && { gap: b.left - a.right, midlineDelta: Math.abs((a.top + a.bottom - b.top - b.bottom) / 2), cursor: getComputedStyle(link).cursor, before: getComputedStyle(link, "::before").content, after: getComputedStyle(link, "::after").content };
         });
         assert.ok(geometry && geometry.gap >= 0 && geometry.midlineDelta < 3, `${route}: reference permalink overlaps heading`);
         assert.equal(geometry.cursor, "pointer");
+        assert.equal(geometry.before, "none");
+        assert.equal(geometry.after, "none");
       }
       const geometry = await page.evaluate(() => ({
         viewport: document.documentElement.clientWidth,
