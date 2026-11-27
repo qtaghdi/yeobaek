@@ -120,6 +120,18 @@ try {
   }
   assert.ok(pages.length >= 39 && storyCount >= 22 && exampleCount >= 28, `pages=${pages.length}, visuals=${storyCount}, examples=${exampleCount}`);
 
+  const staticPage = await browser.newPage({ javaScriptEnabled: false });
+  try {
+    await staticPage.goto(origin + "/yeobaek/integrations/apple-music-presence/");
+    const story = staticPage.locator(".visual-story");
+    assert.ok(await story.locator(".article-scene--music").isVisible());
+    assert.equal(await story.locator(".visual-story__play").count(), 1);
+    assert.equal(await story.locator(".visual-story__play").isVisible(), false);
+    assert.match(await story.locator(".visual-story__sr-only").last().textContent(), /일시정지/);
+  } finally {
+    await staticPage.close();
+  }
+
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   const go = async (route) => { await page.goto(origin + "/yeobaek/" + route + "/"); await page.locator(".main-pane").first().waitFor(); await page.waitForFunction(() => !document.querySelector(".example-frame astro-island[ssr]")); };
   const frame = () => page.locator(".example-frame");
