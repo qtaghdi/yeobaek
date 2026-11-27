@@ -34,11 +34,13 @@ const articleCount = chapters.reduce((count, chapter) => count + chapter.article
           const chapterId = `chapter-${Number(number)}`;
           return (
             <section class="chapter" aria-labelledby={chapterId}>
-              <div class="chapter-label">
-                <span aria-hidden="true">{number}</span>
-                <h4 id={chapterId}>{title}</h4>
+              <div class="chapter-intro">
+                <div class="chapter-label">
+                  <span aria-hidden="true">{number}</span>
+                  <h4 id={chapterId}>{title}</h4>
+                </div>
+                <p>{description}</p>
               </div>
-              <p>{description}</p>
               <ul>
                 {articles.map(({slug, title}) => <li><a href={`./${slug}/`}>{title}</a></li>)}
               </ul>

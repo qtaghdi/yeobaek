@@ -12,6 +12,8 @@
   }
 
   .hero h1 { text-wrap: pretty; }
+  .hero .copy { gap: clamp(.65rem, 1.4vw, .95rem); }
+  .hero .stack { gap: clamp(1.25rem, 2.6vw, 1.8rem); }
   .hero .tagline { max-inline-size: 31rem; }
   .hero .actions { justify-content: flex-start; }
 }
@@ -74,11 +76,11 @@
 @media (max-width: 46rem) {
   .landing-hero {
     grid-template-columns: minmax(0, 1fr);
-    gap: .8rem;
-    padding-block: 2.25rem 1.25rem;
+    gap: .3rem;
+    padding-block: 2rem .9rem;
   }
 
-  .landing-note { width: min(91%, 18rem); }
+  .landing-note { width: min(88%, 16rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {

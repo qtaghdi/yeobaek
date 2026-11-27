@@ -7,7 +7,7 @@ export const documentSections = [
       {
         number: "01",
         title: "웹 플랫폼과 접근성",
-        description: "브라우저 동작, 이벤트, 키보드와 포커스의 원리.",
+        description: "브라우저 이벤트와 키보드·포커스",
         pages: [
           "browser/events",
           "accessibility/semantic-controls",
@@ -21,7 +21,7 @@ export const documentSections = [
       {
         number: "02",
         title: "CSS·텍스트·렌더링",
-        description: "레이아웃과 측정, CSS 우선순위, 한국어 줄바꿈.",
+        description: "레이아웃, CSS 우선순위, 한국어 줄바꿈",
         pages: [
           "css/cascade",
           "css/flex-overflow",
@@ -36,7 +36,7 @@ export const documentSections = [
       {
         number: "03",
         title: "React와 상태·데이터",
-        description: "상태의 책임과 동기화, 타입, 비동기 요청.",
+        description: "React 상태와 타입, 비동기 요청",
         pages: [
           "language/type-runtime",
           "react/state-snapshot",
@@ -60,7 +60,7 @@ export const documentSections = [
       {
         number: "04",
         title: "컴포넌트와 디자인 시스템",
-        description: "디자인 토큰과 공개 API, 소비자 호환성.",
+        description: "디자인 토큰, 공개 API와 호환성",
         pages: [
           "design-system/tokens",
           "design-system/why-design-system",
@@ -71,7 +71,7 @@ export const documentSections = [
       {
         number: "05",
         title: "복합 인터랙션과 제품 UI",
-        description: "시각적 위계와 실제 상태에 맞는 사용자 경험.",
+        description: "정보의 위계, 로딩과 피드백",
         pages: [
           "design/visual-hierarchy",
           "design/loading-states",
@@ -89,7 +89,7 @@ export const documentSections = [
       {
         number: "06",
         title: "아키텍처와 개발자 경험",
-        description: "모듈 경계와 구조를 선택하는 기준.",
+        description: "기능과 모듈의 경계를 정하는 기준",
         pages: [
           "architecture/module-boundaries",
           "architecture/monorepo",
@@ -98,7 +98,7 @@ export const documentSections = [
       {
         number: "07",
         title: "검증·배포·운영",
-        description: "검증해야 할 계약과 실제 배포의 차이.",
+        description: "테스트 대상과 빌드·배포의 조건",
         pages: [
           "architecture/testing",
           "architecture/delivery",
@@ -107,7 +107,7 @@ export const documentSections = [
       {
         number: "08",
         title: "도구 연동과 파일 형식",
-        description: "다른 앱과 데이터를 주고받고 파일의 상태를 보존하는 방법.",
+        description: "앱 연동과 문서에 값을 저장하는 법",
         pages: [
           "integrations/apple-music-presence",
           "integrations/docx-dropdown-choice",
@@ -123,7 +123,7 @@ export const documentSections = [
       {
         number: "09",
         title: "데이터와 쓰기 요청",
-        description: "동시 수정과 재전송을 서버에서 다루는 방법.",
+        description: "동시 수정과 재전송 처리",
         pages: [
           "backend/workbook-revisions",
           "backend/error-grouping",
@@ -139,7 +139,7 @@ export const documentSections = [
       {
         number: "10",
         title: "개발을 돕는 에이전트",
-        description: "검사 결과를 해석하고 리뷰를 시작하는 조건.",
+        description: "검사 결과와 리뷰 시작 조건",
         pages: ["ai/review-ci-gating"],
       },
     ],
