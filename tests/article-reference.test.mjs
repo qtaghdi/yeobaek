@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { documentSections } from "../src/features/navigation/document-sections.mjs";
 import { relatedArticles } from "../src/features/navigation/article-relations.mjs";
-import { parseArticleDates } from "../src/features/navigation/article-dates.mjs";
+import { parseArticleDates, newestArticles } from "../src/features/navigation/article-dates.mjs";
 
 test("모든 공개 글에 유효한 관련 글이 있고 자기 자신은 포함하지 않는다", () => {
   const routes = documentSections.flatMap(section => section.chapters.flatMap(chapter => chapter.pages));
@@ -19,4 +19,11 @@ test("문서의 최초 변경과 마지막 변경을 구분하고 없는 날짜�
   assert.deepEqual(parseArticleDates("2026-11-27\n2026-11-26\n2026-11-24\n"), { created: "2026-11-24", updated: "2026-11-27" });
   assert.deepEqual(parseArticleDates("2026-11-24"), { created: "2026-11-24", updated: "2026-11-24" });
   assert.equal(parseArticleDates(""), null);
+});
+
+test("최신 글은 수정일이 아니라 최초 작성 시각 기준으로 정렬한다", () => {
+  const older = { id: "older", createdAt: 100, updated: "2026-11-27" };
+  const newer = { id: "newer", createdAt: 200, updated: "2026-11-26" };
+  assert.deepEqual(newestArticles([older, newer], 1), [newer]);
+  assert.deepEqual(newestArticles([]), []);
 });
