@@ -1,4 +1,4 @@
-import { mountTooltip } from "@oddmash/ui/tooltip-controller";
+import { mountTooltip } from "src/components/ui/tooltip-controller";
 
 export const mountReferenceTooltips = () => {
   const cleanup: (() => void)[] = [];
@@ -6,7 +6,7 @@ export const mountReferenceTooltips = () => {
     const summary = trigger.dataset.referenceSummary;
     if (!summary || trigger.closest("[data-footnotes]")) continue;
     const panel = document.createElement("span");
-    panel.className = "om-tooltip";
+    panel.className = "yb-tooltip";
     panel.textContent = summary;
     panel.hidden = true;
     trigger.after(panel);

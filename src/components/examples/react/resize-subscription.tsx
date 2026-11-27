@@ -1,4 +1,4 @@
-import { Button } from "@oddmash/ui/button";
+import { Button } from "src/components/ui/controls";
 import { useEffect, useRef, useState } from "react";
 import "src/components/examples/example.scss";
 import "./resize-subscription.scss";

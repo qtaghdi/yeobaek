@@ -2,7 +2,7 @@
   min-inline-size: 0;
   &__sample { display: grid; gap: .8rem; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--background); padding: .9rem; min-inline-size: 0; }
   &__sample > a { color: var(--text); text-decoration: underline; justify-self: start; }
-  &__sample > span:not(.om-tooltip), small { color: var(--text-muted); font-size: .78rem; }
+  &__sample > span:not(.yb-tooltip), small { color: var(--text-muted); font-size: .78rem; }
   &__input { position: relative; }
   &__input span { position: absolute; inset-inline-start: .65rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
   &__input input { box-sizing: border-box; inline-size: 100%; min-inline-size: 0; background: var(--background); color: var(--text); border: 1px solid var(--border-control); border-radius: var(--radius-control); padding: .6rem; font: inherit; }

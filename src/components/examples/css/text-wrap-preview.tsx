@@ -1,5 +1,4 @@
-import { Input } from "@oddmash/ui/input";
-import { Slider } from "@oddmash/ui/slider";
+import { Input, Slider } from "src/components/ui/controls";
 import { useState } from "react";
 import "src/components/examples/example.scss";
 import "./text-wrap-preview.scss";

@@ -1,4 +1,5 @@
 @use "./tokens";
+@use "./controls";
 
 :root, :root[data-theme="light"], :root[data-theme="dark"] {
   --sl-font: var(--font);
@@ -65,7 +66,14 @@ header.header { border-block-end: 1px solid var(--border); }
   :is(p, li) { line-height: 1.85; }
   :where(p, li):not(.not-content *, .example-frame *, .visual-story *, .chapter-index *, [data-footnotes] *) {
     text-wrap: pretty;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
   }
+  :where(p, li):not(.not-content *, .example-frame *, .visual-story *) :is(code, a) { overflow-wrap: anywhere; }
+  :where(p, li):not(.not-content *, .example-frame *, .visual-story *) > code { white-space: break-spaces; }
+  :where(th, td) { line-height: 1.65; overflow-wrap: anywhere; vertical-align: top; }
+  :where(p) + :where(p):not(.not-content *, .example-frame *, .visual-story *, [data-footnotes] *) { margin-block-start: 1.05rem; }
+  :where(table) { font-size: .92em; }
   :where(p, li):not(.not-content *, .example-frame *, .visual-story *) > strong {
     font-weight: 700;
     color: var(--text);
@@ -643,7 +651,7 @@ mobile-starlight-toc .dropdown {
 @media (min-width: 72rem) {
   .document-loading { inset-inline-end: calc(var(--sl-sidebar-width) + 1rem); }
 }
-.om-tooltip {
+.yb-tooltip {
   position: fixed;
   inset: auto;
   z-index: 1001;
@@ -665,7 +673,7 @@ mobile-starlight-toc .dropdown {
   overflow-wrap: anywhere;
   word-break: normal;
 }
-.om-tooltip[hidden] { display: none; }
+.yb-tooltip[hidden] { display: none; }
 .example-frame, .visual-story { inline-size: 100%; max-inline-size: 100%; box-sizing: border-box; }
 .example-frame :where(.inline-example, .example-workbench, .stack-demo, .design-demo) { min-inline-size: 0; max-inline-size: 100%; }
 .example-frame :where(input, select, button) { max-inline-size: 100%; }
@@ -742,39 +750,21 @@ mobile-starlight-toc .dropdown {
 
 
 .example-frame {
-  --om-semantic-color-bg: var(--background);
-  --om-semantic-color-surface: var(--surface-raised);
-  --om-semantic-color-text: var(--text);
-  --om-semantic-color-muted: var(--text-muted);
-  --om-semantic-color-border: var(--border-control);
-  --om-semantic-color-border-subtle: var(--border);
-  --om-semantic-color-action: var(--text);
-  --om-semantic-color-on-action: var(--background);
-  --om-semantic-color-action-hover: color-mix(in srgb, var(--text) 85%, var(--background));
-  --om-semantic-color-accent: var(--om-semantic-color-action);
-  --om-semantic-color-on-accent: var(--om-semantic-color-on-action);
-  --om-semantic-color-accent-hover: var(--om-semantic-color-action-hover);
-  --om-semantic-color-focus: var(--focus);
-  --om-semantic-font-family: var(--font);
-  --om-semantic-radius-sm: var(--radius-small);
-  --om-semantic-radius-md: var(--radius-control);
-  --om-semantic-radius-lg: var(--radius-surface);
-
   :where(button, select, option, a[href], input[type="button"], input[type="submit"], input[type="reset"], input[type="checkbox"], input[type="radio"], input[type="range"], [role="option"], summary):where(:not(:disabled):not([aria-disabled="true"])) { cursor: pointer; }
   :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="number"], textarea):where(:not(:disabled)) { cursor: text; }
   :is(button, input, select, option, textarea, [role="option"]):is(:disabled, [aria-disabled="true"]) { cursor: not-allowed; }
   label:has(input:is([type="checkbox"], [type="radio"]):not(:disabled):not([aria-disabled="true"])) { cursor: pointer; }
   label:has(input:is([type="checkbox"], [type="radio"]):is(:disabled, [aria-disabled="true"])) { cursor: not-allowed; }
 
-  .om-select-dropdown-trigger,
-  .om-button {
+  .yb-select__trigger,
+  .yb-button {
     min-block-size: var(--control-height);
     border-radius: var(--radius-control);
     font-family: var(--font);
   }
-  .om-select-dropdown-trigger:not(:disabled) { background-color: var(--surface-raised); border-color: var(--border-control); }
-  .om-select-dropdown-trigger:not(:disabled):is(:hover, [aria-expanded="true"]) { border-color: var(--text-muted); }
-  .om-select-dropdown [role="listbox"] {
+  .yb-select__trigger:not(:disabled) { background-color: var(--surface-raised); border-color: var(--border-control); }
+  .yb-select__trigger:not(:disabled):is(:hover, [aria-expanded="true"]) { border-color: var(--text-muted); }
+  .yb-select [role="listbox"] {
     background: var(--surface-raised);
     color: var(--text);
     border: 1px solid var(--border);
@@ -782,19 +772,19 @@ mobile-starlight-toc .dropdown {
     padding: .35rem;
     box-shadow: 0 8px 24px #0002;
   }
-  .om-select-dropdown [role="option"] {
+  .yb-select [role="option"] {
     min-block-size: 2.5rem;
     padding: .5rem .65rem;
     border-radius: var(--radius-small);
     box-sizing: border-box;
   }
-  .om-select-dropdown [role="option"]:not([aria-disabled="true"]):is(:hover, [data-active="true"]) {
+  .yb-select [role="option"]:not([aria-disabled="true"]):is(:hover, [data-active="true"]) {
     background: var(--selection);
     color: var(--text);
   }
-  .om-select-dropdown [role="option"][aria-selected="true"] { font-weight: 650; }
-  .om-select-dropdown [role="option"][data-keyboard-active="true"] { outline: 2px solid var(--focus); outline-offset: -2px; }
-  .om-select-dropdown [role="option"][aria-disabled="true"] { color: var(--text-muted); }
+  .yb-select [role="option"][aria-selected="true"] { font-weight: 650; }
+  .yb-select [role="option"][data-keyboard-active="true"] { outline: 2px solid var(--focus); outline-offset: -2px; }
+  .yb-select [role="option"][aria-disabled="true"] { color: var(--text-muted); }
 }
 
 .example-frame :is(.example-workbench__controls, .inline-example) input[type="checkbox"]:indeterminate {

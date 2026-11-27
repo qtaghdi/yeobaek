@@ -1,4 +1,4 @@
-import { Checkbox } from "@oddmash/ui/checkbox";
+import { Checkbox } from "src/components/ui/controls";
 import { useEffect, useRef, useState } from "react";
 import "src/components/examples/example.scss";
 import "./layout-observation-preview.scss";

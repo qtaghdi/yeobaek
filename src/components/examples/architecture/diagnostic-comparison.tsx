@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Radio } from "@oddmash/ui/radio";
+import { Radio } from "src/components/ui/controls";
 import "./diagnostic-comparison.scss";
 
 type Diagnostic = { path: string; rule: string };

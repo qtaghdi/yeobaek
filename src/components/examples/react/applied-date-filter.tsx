@@ -1,5 +1,4 @@
-import { Button } from "@oddmash/ui/button";
-import { Input } from "@oddmash/ui/input";
+import { Button, Input } from "src/components/ui/controls";
 import { useId, useState } from "react";
 import "src/components/examples/example.scss";
 import "./applied-date-filter.scss";

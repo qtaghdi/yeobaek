@@ -230,6 +230,13 @@ export const auditExamplesInContext = async (browser, origin, screenshotDir) => 
     if (screenshotDir) await select.screenshot({ path: screenshotDir + "/select-submitted-390.png" });
     await select.getByRole("button", { name: "초기 상태로" }).click();
     assert.equal(await formValue.inputValue(), "in-progress");
+    await combobox.click();
+    await press(options.filter({ hasText: "검토 대기" }));
+    assert.equal(await formValue.inputValue(), "in-progress");
+    await options.filter({ hasText: "완료" }).click();
+    assert.equal(await formValue.inputValue(), "done");
+    await select.getByRole("button", { name: "초기 상태로" }).click();
+    assert.equal(await formValue.inputValue(), "in-progress");
 
     const assets = await go("architecture/delivery", "배포 경로별 이미지 요청");
     await assets.getByRole("status").filter({ hasText: "이미지가 로드되었습니다." }).waitFor();

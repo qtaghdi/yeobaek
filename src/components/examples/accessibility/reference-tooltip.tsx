@@ -1,5 +1,5 @@
-import { mountTooltip } from "@oddmash/ui/tooltip-controller";
-import { Button } from "@oddmash/ui/button";
+import { mountTooltip } from "src/components/ui/tooltip-controller";
+import { Button } from "src/components/ui/controls";
 import { useEffect, useRef, useState } from "react";
 import "src/components/examples/example.scss";
 import "../article-quality.scss";
@@ -33,7 +33,7 @@ export const ReferenceTooltipExample = () => {
       <div className="article-quality__sample">
         <span id="example-reference-hint">예제 내 이동입니다.</span>
         <a ref={trigger} href="#example-reference-result" aria-describedby="example-reference-hint" onClick={event => { event.preventDefault(); setActivations(value => value + 1); }}>가이드 참고 링크</a>
-        <span ref={panel} id="example-reference-tip" className="om-tooltip" hidden>원본 가이드의 부가 설명입니다.</span>
+        <span ref={panel} id="example-reference-tip" className="yb-tooltip" hidden>원본 가이드의 부가 설명입니다.</span>
         <Button type="button" className="inline-example__button" onClick={() => setEnabled(value => !value)}>{enabled ? "툴팁 연결 해제" : "툴팁 연결"}</Button>
       </div>
       <dl className="article-quality__observations">

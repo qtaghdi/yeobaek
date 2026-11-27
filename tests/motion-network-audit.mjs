@@ -172,6 +172,7 @@ const checkFixedWidthWrapping = async (browser, origin) => {
         document.head.append(style);
         const fixture = document.createElement("p");
         fixture.id = "qa-fixed-width-wrap";
+        fixture.dataset.juliyaProse = "true";
         const strong = document.createElement("strong");
         strong.textContent = emphasis;
         fixture.append(prefix, strong, suffix);

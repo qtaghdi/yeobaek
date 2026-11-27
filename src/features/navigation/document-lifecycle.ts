@@ -5,7 +5,7 @@ import { mountNavigationMotion } from "src/features/navigation/navigation-motion
 import { mountReferenceTooltips } from "src/features/references/reference-tooltip";
 
 const chapterTitle = ".chapter-label > h4";
-const selectors = `${chapterTitle}, .hero h1, .hero .tagline, h1#_top, .pagination-links .link-title, .sl-markdown-content :is(h2, h3, p)`;
+const selectors = `${chapterTitle}, .hero h1, .hero .tagline, h1#_top, .pagination-links .link-title, .sl-markdown-content :is(h2, h3, p[data-juliya-prose])`;
 const mountWrapping = () => {
   let disposed = false;
   const cleanups: (() => void)[] = [];

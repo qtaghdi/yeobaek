@@ -46,6 +46,17 @@ try {
       assert.ok(response?.ok(), `${route}: document response failed`);
       await page.locator(".main-pane").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
+      const proseOverflow = await page.evaluate(() => {
+        const prose = document.querySelectorAll(".sl-markdown-content p, .sl-markdown-content li");
+        return [...prose].filter(el => !el.closest(".not-content, .example-frame, .chapter-index, table, pre, [data-footnotes]")).filter(el => {
+          const box = el.getBoundingClientRect();
+          if (box.width < 1) return false;
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          return [...range.getClientRects()].some(rect => rect.width > 0 && rect.right > box.right + 3);
+        }).map(el => el.textContent.trim().slice(0, 80));
+      });
+      assert.deepEqual(proseOverflow, [], `${route}: prose overflow`);
       const referenceHeading = page.locator('section[data-footnotes] .reference-notes-heading');
       if (await referenceHeading.count()) {
         const geometry = await referenceHeading.evaluate(heading => {

@@ -1,7 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Button } from "@oddmash/ui/button";
-import { Select, type SelectOption } from "@oddmash/ui/select";
-import "@oddmash/ui/styles.css";
+import { Button } from "src/components/ui/controls";
+import { Select, type SelectOption } from "src/components/ui/select";
 import "src/components/examples/example.scss";
 import "./select-contract.scss";
 

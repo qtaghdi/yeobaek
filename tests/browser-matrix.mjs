@@ -464,6 +464,26 @@ const checkQualityExamples = async (browser, engine) => {
     await page.waitForFunction(() => document.querySelector("#example-reference-hint + a")?.getAttribute("aria-describedby") === "example-reference-hint");
     await assertNoOverflow(page, engine + ": tooltip example");
 
+    await page.goto(origin + "design-system/component-api/");
+    const selectFrame = page.getByRole("region", { name: "Select의 활성 항목과 폼 전송값 확인" });
+    await selectFrame.scrollIntoViewIfNeeded();
+    const select = selectFrame.getByRole("combobox", { name: "작업 상태" });
+    await selectFrame.getByRole("status").filter({ hasText: "전송값이 여기에 표시됩니다." }).waitFor();
+    await select.press("Enter");
+    await select.press("ArrowDown");
+    const activeId = await select.getAttribute("aria-activedescendant");
+    assert.equal(await page.evaluate(id => document.getElementById(id)?.textContent.trim(), activeId), "완료");
+    await select.press("Escape");
+    assert.equal(await selectFrame.locator('input[name="status"]').inputValue(), "in-progress");
+    await select.press("Enter");
+    await select.press("ArrowDown");
+    await select.press("Enter");
+    assert.equal(await selectFrame.locator('input[name="status"]').inputValue(), "done");
+    await selectFrame.getByRole("button", { name: "초기 상태로" }).click();
+    assert.equal(await selectFrame.locator('input[name="status"]').inputValue(), "in-progress");
+    await assertNoOverflow(page, engine + ": independent Select");
+
+
     await go(page, "design-system/input-leading-icon/");
     const inputFrame = page.getByRole("region", { name: "입력 요소 정체성 비교" });
     const input = inputFrame.getByRole("textbox", { name: "검색어" });
