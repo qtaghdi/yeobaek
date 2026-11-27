@@ -128,3 +128,6 @@ assert.ok(index.length >= 37);
 assert.ok(index.every(entry => entry.url.startsWith("/yeobaek/") && entry.sections.length));
 assert.ok(!(await readdir(dist)).includes("lab"));
 console.log(`Verified ${sourceRoutes.length} document routes, search index and visual scenes.`);
+
+const manifest = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+assert.ok(!manifest.dependencies["@oddmash/ui"], "여백 UI 런타임은 독립적으로 유지");

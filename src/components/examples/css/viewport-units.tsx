@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@oddmash/ui/button";
+import { Button } from "src/components/ui/controls";
 import "src/components/examples/example.scss";
 import "../article-quality.scss";
 

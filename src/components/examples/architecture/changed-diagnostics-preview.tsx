@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Radio } from "@oddmash/ui/radio";
+import { Radio } from "src/components/ui/controls";
 import "./changed-diagnostics-preview.scss";
 
 const diagnostics = [

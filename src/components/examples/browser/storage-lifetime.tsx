@@ -1,4 +1,4 @@
-import { Button } from "@oddmash/ui/button";
+import { Button } from "src/components/ui/controls";
 import { useState } from "react";
 import { initialStorage, updateStorage, maxTabs, type StorageAction } from "src/components/examples/browser/storage-model";
 import "src/components/examples/example.scss";

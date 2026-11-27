@@ -1,4 +1,4 @@
-import { Button } from "@oddmash/ui/button";
+import { Button } from "src/components/ui/controls";
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import "src/components/examples/example.scss";
 import "./edit-history.scss";

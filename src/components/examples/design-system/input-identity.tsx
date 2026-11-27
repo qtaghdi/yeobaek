@@ -1,4 +1,4 @@
-import { Button } from "@oddmash/ui/button";
+import { Button } from "src/components/ui/controls";
 import { useLayoutEffect, useRef, useState } from "react";
 import "src/components/examples/example.scss";
 import "../article-quality.scss";
