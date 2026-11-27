@@ -94,3 +94,11 @@
     border: 2px solid var(--border-control);
   }
 }
+
+.stack-demo__scope { inline-size: min(100%, 450px); display: grid; gap: .5rem; margin-block-start: .85rem; }
+.stack-demo__scope > strong { font-size: .8rem; }
+.stack-demo__scope-row { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .6rem; align-items: start; }
+.stack-demo__scope-row > div { display: grid; gap: .35rem; border: 1px solid var(--border-control); background: var(--background); border-radius: var(--radius-control); padding: .65rem; min-inline-size: 0; }
+.stack-demo__scope-row span { font-size: .75rem; color: var(--text-muted); }
+.stack-demo__scope-row code { font-size: .85rem; overflow-wrap: anywhere; }
+.stack-demo__scope-child { display: grid; gap: .3rem; border: 1px dashed var(--border-control); padding: .4rem; background: var(--surface); border-radius: var(--radius-small); }

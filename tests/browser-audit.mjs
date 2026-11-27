@@ -135,14 +135,19 @@ try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   const go = async (route) => { await page.goto(origin + "/yeobaek/" + route + "/"); await page.locator(".main-pane").first().waitFor(); await page.waitForFunction(() => !document.querySelector(".example-frame astro-island[ssr]")); };
   const frame = () => page.locator(".example-frame");
+  const layoutScreenshotDir = process.env.LAYOUT_SCREENSHOT_DIR;
+  if (layoutScreenshotDir) await (await import("node:fs/promises")).mkdir(layoutScreenshotDir, { recursive: true });
   const click = async (name) => frame().getByRole("button", { name, exact: true }).click();
   await go("browser/events");
   await click("안쪽 버튼");
   assert.deepEqual(await frame().locator("ol li").allTextContents(), ["부모 캡처", "대상 버튼", "부모 버블"]);
+  assert.equal(await frame().locator(".event-propagation__path [data-fired=true]").count(), 3);
   await click("기록 지우기");
   await frame().getByRole("checkbox").check();
   await click("안쪽 버튼");
   assert.deepEqual(await frame().locator("ol li").allTextContents(), ["부모 캡처", "대상 버튼"]);
+  assert.equal(await frame().locator(".event-propagation__path [data-fired=true]").count(), 2);
+  if (layoutScreenshotDir) await frame().screenshot({ path: join(layoutScreenshotDir, "event-propagation-stopped.png") });
   await click("기록 지우기");
   assert.deepEqual(await frame().locator("ol li").allTextContents(), ["버튼을 눌러 보세요."]);
   await frame().getByRole("checkbox").uncheck();
@@ -236,6 +241,7 @@ try {
   assert.equal(await topLayer(), "child");
   await frame().getByLabel("부모 A z-index").selectOption("1");
   assert.equal(await topLayer(), "sibling");
+  if (layoutScreenshotDir) await frame().screenshot({ path: join(layoutScreenshotDir, "stacking-context-scope.png") });
   await frame().getByLabel("부모 A z-index").selectOption("3");
   assert.equal(await topLayer(), "child");
   await click("초기화");
@@ -250,9 +256,12 @@ try {
   await requests.first().click();
   await requests.last().click();
   assert.deepEqual(await frame().locator("output").allTextContents(), ["1", "3"]);
+  assert.deepEqual(await frame().locator(".state-trace__queue strong").allTextContents(), ["1", "1", "1", "1", "2", "3"]);
   await requests.first().click();
   await requests.last().click();
   assert.deepEqual(await frame().locator("output").allTextContents(), ["2", "6"]);
+  assert.deepEqual(await frame().locator(".state-trace__queue strong").allTextContents(), ["2", "2", "2", "4", "5", "6"]);
+  if (layoutScreenshotDir) await frame().screenshot({ path: join(layoutScreenshotDir, "state-snapshot-queue.png") });
   await click("초기화");
   assert.deepEqual(await frame().locator("output").allTextContents(), ["0", "0"]);
 
@@ -416,8 +425,6 @@ try {
   await searchPage.locator("h1").filter({ hasText: "포커스 링" }).waitFor();
   await searchPage.close();
 
-  const layoutScreenshotDir = process.env.LAYOUT_SCREENSHOT_DIR;
-  if (layoutScreenshotDir) await (await import("node:fs/promises")).mkdir(layoutScreenshotDir, { recursive: true });
   for (const theme of ["light", "dark"]) {
     const layoutPage = await browser.newPage({ viewport: { width: 1920, height: 900 }, colorScheme: theme, reducedMotion: "reduce" });
     const measureLayout = () => layoutPage.evaluate(() => {
@@ -633,7 +640,7 @@ try {
   } finally {
     await referencePage.close();
   }
-  await auditArticleVisuals(browser, origin);
+  await auditArticleVisuals(browser, origin, layoutScreenshotDir);
   await auditSearchRaces(browser, origin);
   await runMotionNetworkAudit(browser, origin);
   console.log(`Verified ${storyCount} visual scenes and ${exampleCount} interactive examples at both viewport widths plus interaction contracts.`);

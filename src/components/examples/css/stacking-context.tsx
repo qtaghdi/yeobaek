@@ -58,6 +58,13 @@ const Layers = ({
 const Playground = (args: StackArgs) => (
   <div className="stack-demo">
     <Layers {...args} />
+    <div className="stack-demo__scope" aria-label="현재 쌓임 맥락의 비교 범위">
+      <strong>같은 장면에서 비교하는 요소</strong>
+      <div className="stack-demo__scope-row">
+        <div><span>{args.parentZ !== "auto" || args.transform || args.opacity < 1 || args.isolate ? "부모 A의 맥락" : "자식 A"}</span><code>z: {args.parentZ !== "auto" ? args.parentZ : args.transform || args.opacity < 1 || args.isolate ? 0 : args.childZ}</code>{(args.parentZ !== "auto" || args.transform || args.opacity < 1 || args.isolate) && <div className="stack-demo__scope-child"><span>자식 A · 내부</span><code>z: {args.childZ}</code></div>}</div>
+        <div><span>부모 B</span><code>z: 2</code></div>
+      </div>
+    </div>
   </div>
 );
 

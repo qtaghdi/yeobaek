@@ -1,5 +1,17 @@
 # 여백 작업 가이드
 
+## 여백 전용 제작 스킬
+
+작업 목적에 맞는 저장소 스킬을 먼저 읽고 적용합니다. 여백의 콘텐츠 제작에는 아래 기준이 공통 스킬의 일반적인 기본값보다 우선합니다. 공용 컴포넌트 계약과 접근성은 Oddmash 공통 기준을 유지합니다.
+
+| 작업 | 적용 스킬 |
+| --- | --- |
+| 글 작성·수정 | [.agents/skills/yeobaek-writing](.agents/skills/yeobaek-writing/SKILL.md) |
+| 사실·프로젝트 근거 확인 | [.agents/skills/yeobaek-research](.agents/skills/yeobaek-research/SKILL.md) |
+| 도식·장면·모션 | [.agents/skills/yeobaek-visual](.agents/skills/yeobaek-visual/SKILL.md) |
+| 본문 조작 예제 | [.agents/skills/yeobaek-interactive](.agents/skills/yeobaek-interactive/SKILL.md) |
+| 품질 검수·공개 | [.agents/skills/yeobaek-review](.agents/skills/yeobaek-review/SKILL.md) |
+
 ## 제품과 콘텐츠
 
 - 여백은 작성자가 직접 써본 기술과 만들면서 겪은 일을 기록하는 한국어 기술 블로그입니다. 문서가 중심이며 실험과 시각 자료는 이해를 돕는 보조 수단입니다. 별도 실험 사이트나 Storybook을 추가하지 않습니다.
