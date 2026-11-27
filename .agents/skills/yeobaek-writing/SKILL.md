@@ -11,3 +11,4 @@ description: "Draft or revise Yeobaek Korean technical articles, explanations, e
 - Preserve distinctions among browser, framework, library version, application policy and simulation. Do not claim an experience or measurement without evidence.
 - When revising a short article, deepen one genuinely useful gap; don't add prose or media to fill space. New articles follow the repository draft approval policy.
 - Read sibling yeobaek-research before making factual or project claims and yeobaek-review before publishing.
+- Highlight the actual answer or distinction in each article using sparse semantic strong text; reserve emphasis (rendered as subtle underline) for a meaningful caveat or contrast. Never emphasize whole paragraphs or links as decoration. Preserve wording, code, links and anchors. Review Korean line breaks in real rendered widths, including inline markup, long identifiers and CSS fallback.

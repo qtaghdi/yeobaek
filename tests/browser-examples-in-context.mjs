@@ -68,6 +68,8 @@ export const auditExamplesInContext = async (browser, origin, screenshotDir) => 
       return button && getComputedStyle(button).paddingTop === expected;
     }, value);
     await waitForPadding("12px");
+    assert.equal(await layer.evaluate(el => getComputedStyle(el).cursor), "pointer");
+    assert.equal(await layer.evaluate(el => getComputedStyle(el.closest("label")).cursor), "pointer");
     await layer.press("Space");
     await waitForPadding("8px");
     await layer.press("Space");
@@ -210,6 +212,11 @@ export const auditExamplesInContext = async (browser, origin, screenshotDir) => 
     await combobox.press("ArrowDown");
     const active = await combobox.getAttribute("aria-activedescendant");
     assert.ok(active);
+    assert.equal(await combobox.evaluate(el => getComputedStyle(el).cursor), "pointer");
+    const options = select.getByRole("option");
+    assert.equal(await options.filter({ hasText: "검토 대기" }).evaluate(el => getComputedStyle(el).cursor), "not-allowed");
+    assert.equal(await options.filter({ hasText: "완료" }).evaluate(el => getComputedStyle(el).cursor), "pointer");
+
     assert.equal(await page.evaluate(id => document.getElementById(id)?.textContent.trim(), active), "완료");
     assert.equal(await formValue.inputValue(), "in-progress");
     await combobox.press("Escape");

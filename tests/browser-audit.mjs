@@ -46,6 +46,17 @@ try {
       assert.ok(response?.ok(), `${route}: document response failed`);
       await page.locator(".main-pane").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
+      const referenceHeading = page.locator('section[data-footnotes] .reference-notes-heading');
+      if (await referenceHeading.count()) {
+        const geometry = await referenceHeading.evaluate(heading => {
+          const link = heading.nextElementSibling;
+          const a = heading.getBoundingClientRect();
+          const b = link?.getBoundingClientRect();
+          return b && { gap: b.left - a.right, midlineDelta: Math.abs((a.top + a.bottom - b.top - b.bottom) / 2), cursor: getComputedStyle(link).cursor };
+        });
+        assert.ok(geometry && geometry.gap >= 0 && geometry.midlineDelta < 3, `${route}: reference permalink overlaps heading`);
+        assert.equal(geometry.cursor, "pointer");
+      }
       const geometry = await page.evaluate(() => ({
         viewport: document.documentElement.clientWidth,
         scroll: document.documentElement.scrollWidth,

@@ -63,6 +63,21 @@ header.header { border-block-end: 1px solid var(--border); }
   word-break: keep-all;
 
   :is(p, li) { line-height: 1.85; }
+  :where(p, li):not(.not-content *, .example-frame *, .visual-story *, .chapter-index *, [data-footnotes] *) {
+    text-wrap: pretty;
+  }
+  :where(p, li):not(.not-content *, .example-frame *, .visual-story *) > strong {
+    font-weight: 700;
+    color: var(--text);
+  }
+  :where(p, li):not(.not-content *, .example-frame *, .visual-story *) > em {
+    font-style: normal;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--text) 42%, transparent);
+    text-decoration-thickness: .09em;
+    text-underline-offset: .22em;
+    text-decoration-skip-ink: auto;
+  }
   :is(h2, h3) {
     line-height: 1.4;
     letter-spacing: -.025em;
@@ -393,8 +408,10 @@ mobile-starlight-toc .dropdown {
     min-block-size: 2.5rem;
     padding: .45rem .65rem;
     border-radius: var(--radius-control);
+    cursor: pointer;
   }
-  .example-workbench__controls select option:is(:checked, :hover, :focus-visible) {
+  .example-workbench__controls select option:disabled { cursor: not-allowed; color: var(--text-muted); }
+  .example-workbench__controls select option:not(:disabled):is(:checked, :hover, :focus-visible) {
     background: var(--selection);
     color: var(--text);
   }
@@ -559,7 +576,36 @@ mobile-starlight-toc .dropdown {
     scroll-margin-block-start: 6rem;
     font-size: .95rem;
     color: var(--text-muted);
-    .reference-notes-heading { font-size: 1.1rem; color: var(--text); margin-block: 0 .75rem; }
+    .sl-heading-wrapper:has(> .reference-notes-heading) {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      margin-block: 0 .75rem;
+    }
+    .reference-notes-heading {
+      display: block;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      line-height: 1.4;
+    }
+    .reference-notes-heading + .sl-anchor-link {
+      position: static;
+      margin: 0;
+      padding: .2rem;
+      inline-size: 1.6rem;
+      block-size: 1.6rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      color: var(--text-muted);
+      border-radius: var(--radius-small);
+      cursor: pointer;
+      &:hover, &:focus-visible { color: var(--text); background: var(--selection); }
+      .sl-anchor-icon { display: inline-flex; align-items: center; }
+    }
     ol { padding-inline-start: 1.5rem; }
     li { padding: .45rem .5rem; border-radius: var(--radius-control); scroll-margin-block-start: 6rem; }
     li:target { background: var(--selection); color: var(--text); }
@@ -691,4 +737,79 @@ mobile-starlight-toc .dropdown {
   :root[data-has-sidebar][data-has-toc] .document-loading {
     inset-inline-end: calc(var(--document-outer-gutter) + var(--document-toc-width) + 1rem);
   }
+}
+
+
+.example-frame {
+  --om-semantic-color-bg: var(--background);
+  --om-semantic-color-surface: var(--surface-raised);
+  --om-semantic-color-text: var(--text);
+  --om-semantic-color-muted: var(--text-muted);
+  --om-semantic-color-border: var(--border-control);
+  --om-semantic-color-border-subtle: var(--border);
+  --om-semantic-color-action: var(--text);
+  --om-semantic-color-on-action: var(--background);
+  --om-semantic-color-action-hover: color-mix(in srgb, var(--text) 85%, var(--background));
+  --om-semantic-color-accent: var(--om-semantic-color-action);
+  --om-semantic-color-on-accent: var(--om-semantic-color-on-action);
+  --om-semantic-color-accent-hover: var(--om-semantic-color-action-hover);
+  --om-semantic-color-focus: var(--focus);
+  --om-semantic-font-family: var(--font);
+  --om-semantic-radius-sm: var(--radius-small);
+  --om-semantic-radius-md: var(--radius-control);
+  --om-semantic-radius-lg: var(--radius-surface);
+
+  :where(button, select, option, a[href], input[type="button"], input[type="submit"], input[type="reset"], input[type="checkbox"], input[type="radio"], input[type="range"], [role="option"], summary):where(:not(:disabled):not([aria-disabled="true"])) { cursor: pointer; }
+  :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="number"], textarea):where(:not(:disabled)) { cursor: text; }
+  :is(button, input, select, option, textarea, [role="option"]):is(:disabled, [aria-disabled="true"]) { cursor: not-allowed; }
+  label:has(input:is([type="checkbox"], [type="radio"]):not(:disabled):not([aria-disabled="true"])) { cursor: pointer; }
+  label:has(input:is([type="checkbox"], [type="radio"]):is(:disabled, [aria-disabled="true"])) { cursor: not-allowed; }
+
+  .om-select-dropdown-trigger,
+  .om-button {
+    min-block-size: var(--control-height);
+    border-radius: var(--radius-control);
+    font-family: var(--font);
+  }
+  .om-select-dropdown-trigger:not(:disabled) { background-color: var(--surface-raised); border-color: var(--border-control); }
+  .om-select-dropdown-trigger:not(:disabled):is(:hover, [aria-expanded="true"]) { border-color: var(--text-muted); }
+  .om-select-dropdown [role="listbox"] {
+    background: var(--surface-raised);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    padding: .35rem;
+    box-shadow: 0 8px 24px #0002;
+  }
+  .om-select-dropdown [role="option"] {
+    min-block-size: 2.5rem;
+    padding: .5rem .65rem;
+    border-radius: var(--radius-small);
+    box-sizing: border-box;
+  }
+  .om-select-dropdown [role="option"]:not([aria-disabled="true"]):is(:hover, [data-active="true"]) {
+    background: var(--selection);
+    color: var(--text);
+  }
+  .om-select-dropdown [role="option"][aria-selected="true"] { font-weight: 650; }
+  .om-select-dropdown [role="option"][data-keyboard-active="true"] { outline: 2px solid var(--focus); outline-offset: -2px; }
+  .om-select-dropdown [role="option"][aria-disabled="true"] { color: var(--text-muted); }
+}
+
+.example-frame :is(.example-workbench__controls, .inline-example) input[type="checkbox"]:indeterminate {
+  background: var(--text);
+  border-color: var(--text);
+}
+.example-frame :is(.example-workbench__controls, .inline-example) input[type="checkbox"]:indeterminate::before {
+  inline-size: .65rem;
+  block-size: 0;
+  border-width: 0 0 2px;
+  transform: none;
+}
+.example-frame :is(.example-workbench__controls, .inline-example) input[type="checkbox"]:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
+}
+@media (forced-colors: active) {
+  .example-frame :is(.example-workbench__controls, .inline-example) input[type="checkbox"]:indeterminate::before { content: none; }
 }

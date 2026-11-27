@@ -12,3 +12,4 @@ description: "Review or evaluate Yeobaek articles and examples for correctness, 
 - Compare representative before/after screenshots and behavior. Report verified, failed, not applicable and unverified separately.
 - Run the repository's check/lint/test/build/test:build/test:browser plus applicable browser matrix. Confirm exact PR revision before merge; validate deployed URL if asked to deploy.
 - Maintain an actionable backlog. Group recurring defects by owning skill and revise instructions after real evidence, not after arbitrary cosmetic preferences.
+- Inspect visible heading permalink geometry (including reference notes), checkbox and select options, cursor state, both themes and actual focus indicators. Verify prose emphasis and line wrapping with inline strong/em and references; inspect readable fallback without script. Do not infer visual quality from source or screenshots of only one state.
