@@ -7,7 +7,7 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { StateSnapshotExample } from "src/components/examples/react/state-snapshot";
 
-카운터에서 setCount를 세 번 호출했습니다. 당연히 3이 나올 것 같은데 1이 나옵니다. setCount가 내가 보고 있는 count 변수 자체를 수정한다고 생각하면 납득하기 어려운 결과입니다.
+버튼 한 번에 숫자를 3 올려보려고 `setCount`를 세 번 호출했습니다. 결과는 1이었습니다. 세 번 다 실행된 게 맞다면, 호출할 때마다 꺼내 쓴 `count`는 도대체 몇이었을까요?
 
 ## 렌더마다 다른 count가 있다
 

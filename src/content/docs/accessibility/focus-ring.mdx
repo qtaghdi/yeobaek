@@ -7,7 +7,7 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { FocusRingExample } from "src/components/examples/accessibility/focus-ring";
 
-포커스 링이 예쁘지 않다고 CSS에 `outline: none`을 넣어본 적은 없으신가요? 마우스로 클릭할 때는 별 문제가 없어 보입니다. 그런데 마우스를 잠깐 내려놓고 Tab만 눌러보면 이야기가 달라집니다. 현재 위치는 어디일까요?
+버튼을 눌렀는데 테두리가 마음에 안 듭니다. `outline: none`을 넣으면 바로 사라지죠. 여기서 마우스를 내려놓고 Tab을 몇 번 눌러보세요. 지금 어떤 버튼에 있는지 알 수 있나요?
 
 ## 마우스를 내려놓고 확인해봅시다
 
@@ -42,7 +42,7 @@ button:focus-visible {
 
 ## 공통 컴포넌트에서 링이 필요한 이유
 
-버튼의 배경이 달라져도 포커스를 찾을 수 있어야 합니다. 그래서 저는 기본 스타일을 지울 때 링을 같이 없애기보다는 공통 토큰으로 대체하는 방향이 낫다고 생각합니다. 마우스 클릭만으로 테스트하면 이 차이가 거의 보이지 않습니다. Tab으로 버튼과 링크를 이동해보면 훨씬 쉽게 이해됩니다.
+공통 버튼의 기본 링을 지웠다면, 저는 같은 자리에 토큰으로 링을 다시 그려두는 편이 낫다고 생각합니다. 버튼 배경을 바꾼 뒤에는 마우스를 내려놓고 Tab으로 버튼과 링크를 한 번 돌아보세요. 클릭만 해서는 잘 안 보이는 차이입니다.
 
 [관련 이슈 · oddmash-ui #42](https://github.com/Oddmash/oddmash-ui/issues/42)
 

@@ -1,12 +1,47 @@
 type Tone = "idle" | "active" | "done" | "muted" | "warning";
 type NodeState = { value: string; tone?: Tone };
-type Frame = { label: string; note: string; key?: string; states: NodeState[] };
-export type Story = { title: string; interaction?: "event" | "focus" | "tab" | "controls" | "dialog" | "disabled" | "counter" | "filter" | "request"; illustration?: "loading" | "stacking" | "text-width" | "scrollbar" | "viewport" | "flex"; layout: "flow" | "comparison" | "keyboard"; nodes: string[]; frames: Frame[] };
+export type Frame = { label: string; note: string; key?: string; states: NodeState[] };
+export type Story = { title: string; interaction?: "event" | "focus" | "tab" | "controls" | "dialog" | "disabled" | "counter" | "filter" | "request"; scene?: "music" | "docx" | "revision"; illustration?: "loading" | "stacking" | "text-width" | "scrollbar" | "viewport" | "flex"; layout: "flow" | "comparison" | "keyboard"; nodes: string[]; frames: Frame[] };
 
 const s = (value: string, tone: Tone = "idle"): NodeState => ({ value, tone });
 const f = (label: string, note: string, states: NodeState[], key?: string): Frame => ({ label, note, states, key });
 
 export const stories = {
+  "apple-music-progress": {
+    scene: "music",
+    title: "탐색 전후에 달라지는 Discord 재생 시간",
+    layout: "comparison",
+    nodes: ["Apple Music", "Discord"],
+    frames: [
+      f("같은 재생 위치", "21:00:00에 재생 위치는 0:40입니다. 20:59:20과 21:03:20을 시작과 끝으로 전달합니다.", [s("0:40"), s("20:59:20 ~ 21:03:20")]),
+      f("재생 중", "5초 뒤 Apple Music은 0:45입니다. Discord는 새 시각을 받지 않고 같은 기준으로 0:45를 표시할 수 있습니다.", [s("0:45"), s("20:59:20 ~ 21:03:20")]),
+      f("곡 안에서 이동", "21:00:05에 2:10으로 이동합니다. 20:57:55와 21:01:55를 새 시작과 끝으로 보냅니다.", [s("2:10"), s("20:57:55 ~ 21:01:55")]),
+      f("일시정지", "일시정지한 곡도 표시하는 옵션을 켠 경우 제목은 남으며 Discord에는 재생 시각을 보내지 않습니다.", [s("2:10"), s("재생 시각 없음")]),
+    ],
+  },
+  "docx-choice-save": {
+    scene: "docx",
+    title: "드롭다운 선택으로 바뀌는 두 XML 값",
+    layout: "comparison",
+    nodes: ["문서에서 선택", "저장할 XML"],
+    frames: [
+      f("현재 선택", "문서에는 검토 중이 보이고, XML에는 본문 문자열 검토 중과 내부 값 reviewing이 들어 있습니다.", [s("검토 중"), s("reviewing")]),
+      f("목록 열기", "목록에는 검토 중과 완료가 있습니다. 여기까지는 저장할 값이 바뀌지 않습니다.", [s("검토 중"), s("reviewing")]),
+      f("완료 선택", "완료를 선택하면 w:t는 완료, w:lastValue는 done으로 같이 바뀝니다.", [s("완료"), s("done")]),
+    ],
+  },
+  "workbook-revision-conflict": {
+    scene: "revision",
+    title: "오래된 기준으로 온 쓰기가 셀을 덮어쓰지 않는 과정",
+    layout: "comparison",
+    nodes: ["서버에 저장된 셀", "AI의 쓰기 요청"],
+    frames: [
+      f("같은 문서를 읽음", "AI가 리비전 12의 비어 있는 B4를 읽습니다.", [s("빈 셀"), s("12 읽음")]),
+      f("사람이 먼저 저장", "사람이 B4에 42를 써서 저장합니다. 현재 문서는 리비전 13입니다.", [s("42"), s("12 읽음")]),
+      f("예전 문서 기준으로 쓰기", "AI가 리비전 12를 기준으로 B4에 수식을 쓰려고 합니다. 서버는 충돌을 반환하고 기존 값 42를 보존합니다.", [s("42"), s("충돌")]),
+    ],
+  },
+
   "event-propagation": {
     interaction: "event",
     title: "클릭이 부모에서 자식으로, 다시 부모로",

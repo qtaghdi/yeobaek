@@ -10,7 +10,7 @@ import { runMotionNetworkAudit } from "./motion-network-audit.mjs";
 
 const root = fileURLToPath(new URL("../dist/", import.meta.url));
 const { chromium } = await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href);
-const types = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".woff2": "font/woff2" };
+const types = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".webp": "image/webp" };
 const server = createServer(async (request, response) => {
   try {
     const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
@@ -49,7 +49,7 @@ try {
       const geometry = await page.evaluate(() => ({
         viewport: document.documentElement.clientWidth,
         scroll: document.documentElement.scrollWidth,
-        examples: [...document.querySelectorAll(".example-frame, .visual-story")].map((element) => ({ label: element.getAttribute("aria-label"), width: element.clientWidth, scroll: element.scrollWidth })),
+        examples: [...document.querySelectorAll(".example-frame, .visual-story, .article-diagram")].map((element) => ({ label: element.getAttribute("aria-label"), width: element.clientWidth, scroll: element.scrollWidth })),
         visuals: document.querySelectorAll(".visual-story").length,
         interactive: document.querySelectorAll(".example-frame").length
       }));
@@ -91,6 +91,19 @@ try {
             const layers = await scene.locator(".story-art--stacking").evaluate(el => [...el.children].map(child => getComputedStyle(child).zIndex));
             assert.deepEqual(layers, [[ "auto", "2"], ["1", "2"], ["3", "2"]][step]);
             assert.equal(await scene.locator(".story-art__layer-child").evaluate(el => getComputedStyle(el).zIndex), "9999");
+          }
+          if (route === "/yeobaek/integrations/apple-music-presence/") {
+            const discord = scene.locator(".article-scene__pane").nth(1);
+            assert.equal(await discord.locator("code").textContent(), ["", "20:59:20 ~ 21:03:20", "20:57:55 ~ 21:01:55", "재생 시각 없음"][step]);
+            assert.equal(await discord.locator(".article-scene__track").isVisible(), step !== 3);
+          }
+          if (route === "/yeobaek/integrations/docx-dropdown-choice/") {
+            assert.deepEqual(await scene.locator(".article-scene__field strong").allTextContents(),
+              step === 1 ? ["검토 중", "reviewing"] : ["완료", "done"]);
+          }
+          if (route === "/yeobaek/backend/workbook-revisions/") {
+            assert.equal(await scene.locator(".article-scene__sheet strong").textContent(), "42");
+            assert.equal(await scene.locator(".article-scene__request strong").textContent(), step === 1 ? "12 읽음" : "충돌");
           }
           const dimensions = await scene.evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
           assert.ok(dimensions.scroll <= dimensions.width + 3, width + " " + route + " frame " + step + ": overflow");

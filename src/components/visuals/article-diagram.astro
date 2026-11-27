@@ -1,0 +1,88 @@
+---
+type Column = { label: string; entries: string[] };
+interface Props {
+  caption: string;
+  columns: Column[];
+}
+const { caption, columns } = Astro.props;
+---
+<figure class="article-diagram not-content">
+  <div class="article-diagram__columns">
+    {columns.map(({ label, entries }, index) => (
+      <div class="article-diagram__column">
+        {index > 0 && <span class="article-diagram__arrow" aria-hidden="true">→</span>}
+        <strong>{label}</strong>
+        <ul>
+          {entries.map((entry) => <li>{entry}</li>)}
+        </ul>
+      </div>
+    ))}
+  </div>
+  <figcaption>{caption}</figcaption>
+</figure>
+
+<style lang="scss">
+  .article-diagram {
+    margin: 1.6rem 0 2rem;
+    padding: clamp(.85rem, 3vw, 1.35rem);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-surface);
+    background: var(--surface);
+    color: var(--text);
+    overflow-wrap: anywhere;
+
+    &__columns {
+      display: grid;
+      grid-auto-columns: minmax(0, 1fr);
+      grid-auto-flow: column;
+      align-items: stretch;
+      gap: 1.55rem;
+    }
+
+    &__column {
+      display: grid;
+      position: relative;
+      align-content: start;
+      gap: .45rem;
+      padding: .65rem .75rem;
+      min-inline-size: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-control);
+      background: var(--background);
+      font-size: .88rem;
+
+      > ul {
+        display: grid;
+        gap: .32rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        color: var(--text-muted);
+      }
+    }
+
+    &__arrow {
+      position: absolute;
+      inset-inline-end: calc(100% + .3rem);
+      inset-block-start: calc(50% - .55rem);
+      color: var(--text-muted);
+      line-height: 1.1;
+    }
+
+    > figcaption {
+      margin-block-start: .7rem;
+      color: var(--text-muted);
+      font-size: .83rem;
+    }
+
+    @media (max-width: 34rem) {
+      &__columns { grid-auto-flow: row; }
+      &__arrow {
+        inset-inline-end: calc(50% - .35rem);
+        inset-block-start: auto;
+        inset-block-end: calc(100% + .3rem);
+        transform: rotate(90deg);
+      }
+    }
+  }
+</style>

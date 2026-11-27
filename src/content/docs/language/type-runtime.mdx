@@ -6,7 +6,9 @@ description: "타입 선언과 실제 API 응답 검증의 차이."
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { RuntimeUserExample } from "src/components/examples/language/runtime-user";
 
-API 응답에 User 타입을 붙였고 TypeScript도 통과했습니다. 그런데 실제 화면에서 name이 undefined입니다. 타입이 맞다고 알려준 것은 나인데 서버가 거기에 맞춰 응답해줄 이유는 없습니다.
+API 응답에 `User` 타입을 붙였습니다. 에디터에서도 자동완성이 잘 뜨고 TypeScript 검사도 통과했습니다.
+
+근데 화면을 열어보니 `name`이 `undefined`입니다. 방금 확인한 타입은 대체 뭘 검사한 걸까요?
 
 ## as는 값을 변환하지 않습니다
 

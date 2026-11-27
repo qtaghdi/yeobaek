@@ -7,7 +7,9 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import CascadePreview from "src/components/examples/css/cascade-preview.astro";
 
-공용 버튼에 margin을 추가했는데 기존 스타일이 계속 적용됩니다. 이쯤 되면 !important를 넣고 싶어집니다. 다만 매번 그렇게 하면 다음번에 덮어쓸 사람은 더 큰 문제를 만나게 됩니다.
+공용 버튼에 여백을 조금 주려고 CSS를 한 줄 추가했습니다. 새로고침해도 그대로입니다. 이쯤 되면 `!important`를 쓰면 되겠다 싶죠.
+
+그 전에 개발자 도구에서 어떤 선언이 이겼는지부터 봅시다. 파일의 맨 아래에 있어도 적용되지 않는 이유가 거기에 있습니다.
 
 ## 명시도보다 먼저 결정되는 것
 
@@ -47,6 +49,6 @@ app 레이어를 켜면 더 짧은 선택자가 이깁니다. 적용된 선언�
 
 ## 공통 스타일은 어디까지 책임질까?
 
-라이브러리의 스타일과 소비자 페이지의 스타일이 경쟁하지 않도록 역할과 우선순위를 정해두면 매번 선택자를 길게 만들 필요가 줄어듭니다. DevTools에서 실제로 어떤 선언이 이긴 것인지부터 확인하는 편이 좋습니다.
+버튼 여백 하나 때문에 선택자를 길게 붙이기 전에 DevTools부터 열어보세요. 어떤 선언이 이겼는지 보면 우선순위를 어디에서 정해야 할지 보입니다. 라이브러리와 페이지의 스타일에 그 역할을 나눠두면 다음번에도 같은 싸움을 할 일이 줄어듭니다.
 
 [관련 이슈 · oddmash-website #74](https://github.com/Oddmash/oddmash-website/issues/74)

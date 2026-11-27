@@ -7,7 +7,9 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { TabOrderExample } from "src/components/examples/accessibility/tab-order";
 
-탭 키를 계속 눌러 폼을 채우다가 갑자기 화면 위로 포커스가 뛰어간다면 어떨까요? 마우스로는 아무 문제 없어 보이던 레이아웃도 DOM 순서와 시각적 순서가 다르면 키보드 사용자에게 꽤 불편합니다.
+폼을 위에서부터 채우면서 Tab을 눌러봅니다. 다음 칸으로 갈 줄 알았는데 포커스가 방금 지나온 칸보다 위로 갑니다.
+
+눈으로 읽는 순서와 브라우저가 Tab으로 이동하는 순서가 달라지면 이런 일이 생깁니다. 화면 배치만 봐서는 알아차리기 어렵죠.
 
 ## 숫자를 붙이면 해결될까요?
 

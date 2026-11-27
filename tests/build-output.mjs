@@ -45,7 +45,7 @@ const requiredRoutes = [
   "design-system/why-design-system",
   "design/team-balance"
 ];
-const visualRoutes = ["browser/events", "accessibility/focus-ring", "accessibility/tab-order", "accessibility/dialog-focus", "css/text-wrap", "react/server-state", "design/loading-states"];
+const visualRoutes = ["browser/events", "accessibility/focus-ring", "accessibility/tab-order", "accessibility/dialog-focus", "css/text-wrap", "react/server-state", "design/loading-states", "integrations/apple-music-presence", "integrations/docx-dropdown-choice", "backend/workbook-revisions"];
 
 const read = (path) => readFile(join(dist, path), "utf8");
 const sourceRoutes = (await readdir(docs, { recursive: true }))
@@ -57,6 +57,14 @@ for (const route of new Set([...requiredRoutes, ...sourceRoutes])) {
 for (const route of visualRoutes) {
   assert.ok((await read(join(route, "index.html"))).includes("visual-story__stage"), route);
 }
+for (const route of ["ai/review-ci-gating", "architecture/monorepo", "backend/error-grouping", "design-system/why-design-system", "react/auth-lifecycle"]) {
+  const page = await read(join(route, "index.html"));
+  assert.match(page, /<figure class="article-diagram[^>]*>[\s\S]+?<figcaption[^>]*>[^<]+<\/figcaption>/, route);
+}
+const musicPage = await read("integrations/apple-music-presence/index.html");
+const screenshot = musicPage.match(/<img src="\/yeobaek\/([^"]+discord-apple-music[^"]+\.webp)"[^>]+alt="Discord 활동[^"]+"/);
+assert.ok(screenshot, "Apple Music screenshot with alternative text");
+await read(screenshot[1]);
 const unavailableReference = /https:\/\/github\.com\/oddmash\/vertactics\/(?:issues\/(?:67|82)|pull\/83|commit\/90a6784ae34eb3735382ae70b65603dfacef2298)\b/i;
 for (const route of sourceRoutes) {
   const page = await read(join(route, "index.html"));

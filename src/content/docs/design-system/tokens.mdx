@@ -7,7 +7,7 @@ import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import ThemeTokenPreview from "src/components/examples/design-system/theme-token-preview.astro";
 
-공통 버튼을 다섯 화면에 만들고 나서 배경색을 바꿔달라는 요청이 들어왔습니다. 파일을 다섯 개 찾아서 고치면 됩니다. 근데 다음번엔 열 개라면요? 같은 결정을 반복하고 있다면 그 결정을 공유하는 방법부터 고민할 필요가 있습니다.
+버튼 배경을 바꿔달라는 요청이 왔습니다. 다섯 곳에 만들어둔 버튼이니 다섯 파일을 열면 되죠. 근데 다음 프로젝트에 버튼이 열 개 생겨도 그렇게 해야 할까요? 버튼마다 색을 정했던 것부터 다시 보게 됩니다.
 
 ## 색상 이름보다 색상의 역할
 
@@ -38,7 +38,7 @@ import ThemeTokenPreview from "src/components/examples/design-system/theme-token
 
 ## 모든 값을 토큰으로 만들 필요는 없다
 
-여러 곳에서 동일한 디자인 결정을 공유하거나 일관된 운영이 필요한 경우 토큰으로 만듭니다. 단일 화면의 특별한 값까지 무조건 공통 토큰으로 만들면 오히려 이름만 늘어납니다.
+여러 화면이 진짜로 같은 결정을 공유할 때 토큰을 꺼내면 됩니다. 지금 이 화면에서만 쓰는 값을 전부 토큰으로 올리면, 다음에 버튼을 바꿀 때 파일 대신 토큰 이름을 찾게 될 수도 있으니까요.
 
 [Oddmash UI](https://github.com/Oddmash/oddmash-ui) · [MDN: CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties)
 
