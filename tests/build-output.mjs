@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
+import { articleDates, newestArticles } from "../src/features/navigation/article-dates.mjs";
 import { documentSections } from "../src/features/navigation/document-sections.mjs";
 
 const dist = fileURLToPath(new URL("../dist/", import.meta.url));
@@ -110,12 +111,17 @@ assert.ok((await read("browser/events/index.html")).includes("<title>클릭 이�
 assert.ok(home.includes("/yeobaek/favicon.svg"));
 assert.match(home, /class="archive-highlights"/);
 assert.match(home, /id="latest-heading"[^>]*>최신 글/);
+const latest = home.match(/<section class="archive-latest"[\s\S]*?<\/section>/)?.[0];
+assert.ok(latest);
+assert.doesNotMatch(latest, /<time\b/);
 if (process.env.CI) {
-  const latest = home.match(/<section class="archive-latest"[\s\S]*?<\/section>/)?.[0];
-  assert.ok(latest);
-  const dates = [...latest.matchAll(/<time datetime="(\d{4}-\d{2}-\d{2})"/g)].map(match => match[1]);
-  assert.equal(dates.length, 3);
-  assert.deepEqual(dates, [...dates].sort().reverse());
+  const expected = newestArticles(catalog.flatMap(id => {
+    const dates = articleDates(id);
+    return dates ? [{ id, ...dates }] : [];
+  }));
+  const links = [...latest.matchAll(/<a href="\.\/([^"]+)\/"/g)].map(match => match[1]);
+  assert.equal(links.length, 3);
+  assert.deepEqual(links, expected.map(article => article.id));
 }
 const index = JSON.parse(await read("search-index.json"));
 assert.ok(index.length >= 37);
