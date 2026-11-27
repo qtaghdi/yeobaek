@@ -93,6 +93,34 @@ header.header { border-block-end: 1px solid var(--border); }
     text-wrap: balance;
   }
   h2:not(.example-frame *) { padding-block-end: .7rem; }
+  .sl-heading-wrapper:not(.not-content *, .example-frame *, .visual-story *, .article-diagram *, [data-footnotes] *):has(> :is(h2, h3) + .sl-anchor-link) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: .35rem;
+    > :is(h2, h3) {
+      display: block;
+      min-inline-size: 0;
+      overflow-wrap: anywhere;
+    }
+    > .sl-anchor-link {
+      position: relative;
+      margin: .2em 0 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 1.6rem;
+      block-size: 1.6rem;
+      padding: .2rem;
+      color: var(--text-muted);
+      border-radius: var(--radius-small);
+      cursor: pointer;
+      line-height: 1;
+      &::before, &::after { content: none; }
+      .sl-anchor-icon { display: grid; place-items: center; line-height: 1; }
+      .sl-anchor-icon svg { display: block; transform: none; inline-size: 1rem; block-size: 1rem; }
+    }
+  }
   a:not([class]) {
     text-decoration-color: var(--text-muted);
     text-underline-offset: .2em;

@@ -63,6 +63,7 @@
 | 탐색·UI | 헤더, 메뉴, 사이드바, 우측 목차, 검색 결과·강조, 참고 자료 링크, 각주, 폼, 버튼, Select, Checkbox, 표 등은 DOM 변경 없이 CSS fallback. |
 | 시각 자료·코드 | 조작 예제, 시각 자료, 도식, 코드 및 인라인 링크·코드가 섞인 문단은 원본 마크업과 상호작용을 보존하고 CSS fallback. |
 
+- 소제목 h2·h3는 앵커와 별개로 안정적인 측정 폭을 확보합니다. display:inline으로 인해 clientWidth가 0이 되거나 생성된 개행에 따라 측정 폭이 축소되는 구조를 피하고, 앵커가 겹치지 않도록 검증합니다.
 - 제목·Hero·페이지 이동 제목·명시적인 `p[data-juliya-prose]`는 한글 포함 12~180자이며 실제 표시 폭이 있는 경우 적용합니다. 챕터 제목은 최소 길이 제한을 두지 않습니다. 자동 일반 본문은 한글 포함 12~500자이며 평문 또는 strong·em만 포함하고 표시 폭이 있는 경우 적용합니다. `data-juliya-prose`는 안전한 대상에 한해 사용하고 자동 본문과 중복 적용하지 않습니다.
 - `.not-content`, `.example-frame`, `.visual-story`, `.article-diagram`, 검색 강조, 각주 영역은 제외합니다. 제목 내부 링크·코드·컨트롤·SVG·island 및 안전하지 않은 자식 마크업은 제외합니다. 짧은 텍스트, 숫자·영문만 있는 텍스트, 긴 문장도 강제 개행하지 않습니다.
 - CSS fallback은 `word-break: keep-all`, `overflow-wrap: anywhere`, 제목의 `text-wrap: balance`, 본문의 `text-wrap: pretty`를 읽기 영역에 적절하게 적용합니다. 일반 본문의 실제 렌더 폭이 넘치면 원문을 복원하고 fallback을 사용합니다. 글꼴 준비 전과 JavaScript 없이도 읽을 수 있어야 합니다. 임의 br 삽입으로 개별 화면을 맞추지 않습니다.

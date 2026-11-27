@@ -3,6 +3,6 @@ allowBuilds:
   esbuild: true
   sharp: true
 minimumReleaseAgeExclude:
-  - '@oddmash/juliya@0.4.3'
+  - '@oddmash/juliya@0.4.4'
 patchedDependencies:
   '@astrojs/react@4.4.2': patches/@astrojs__react@4.4.2.patch
