@@ -236,7 +236,7 @@ const checkDocumentLoading = async (browser, origin) => {
 
 export const runMotionNetworkAudit = async (browser, origin) => {
   await checkMotion(browser, origin);
-  await auditInteractionScenes(browser, origin);
+  await auditInteractionScenes(browser, origin, process.env.LAYOUT_SCREENSHOT_DIR);
   await auditLandingHandwriting(browser, origin);
   await auditPublishedNavigation(browser, origin);
   await auditPublishedArticles(browser, origin);

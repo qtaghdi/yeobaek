@@ -1,3 +1,7 @@
+.content-panel > .sl-container:has(.landing-hero, .archive-featured) {
+  margin-inline: auto;
+}
+
 .archive-featured > h2,
 .chapter-heading > h2 {
   font-size: clamp(1.25rem, 2.4vw, 1.55rem);

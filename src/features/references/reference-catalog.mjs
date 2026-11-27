@@ -455,6 +455,12 @@ export default {
     "title": "Astro: Islands",
     "summary": "Astro가 정적 HTML에 필요한 클라이언트 인터랙션만 독립적으로 하이드레이션하는 Islands 모델을 설명합니다."
   },
+  "https://support.apple.com/guide/safari/keyboard-shortcuts-and-gestures-cpsh003/mac": {
+    "summary": "Mac용 Safari에서 Tab과 Option + Tab으로 포커스를 이동하는 방법과 고급 설정을 안내합니다."
+  },
+  "https://docs.github.com/en/actions/reference/workflows-and-actions/variables#default-environment-variables": {
+    "summary": "워크플로를 다시 실행할 때 실행 ID와 번호가 유지되고 시도 횟수가 증가하는 규칙을 설명합니다."
+  },
   "https://docs.github.com/en/pages": {
     "title": "GitHub Pages",
     "summary": "저장소의 정적 사이트 배포, 프로젝트 경로와 GitHub Pages 설정에 관한 공식 문서입니다."

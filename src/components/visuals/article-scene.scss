@@ -219,6 +219,7 @@
     &--music { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     &--music &__pane { padding: .55rem; }
     &--music &__time, &__payload code { font-size: .67rem; }
+    &--music &__payload code { min-block-size: 2lh; }
   }
 }
 

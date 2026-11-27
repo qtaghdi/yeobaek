@@ -3,7 +3,6 @@ title: "비활성화와 접근성 상태"
 description: "disabled, aria-disabled와 inert가 담당하는 동작."
 ---
 
-import VisualStory from "src/components/visuals/visual-story.astro";
 import ExampleFrame from "src/components/examples/example-frame.astro";
 import { DisabledStateExample } from "src/components/examples/accessibility/disabled-state";
 
@@ -21,9 +20,7 @@ import { DisabledStateExample } from "src/components/examples/accessibility/disa
 
 특히 `aria-disabled`는 비활성이라는 의미만 전달한다는 점이 중요합니다. 버튼을 눌렀을 때 실행되는 코드는 직접 막아야 하고, 화면에서도 현재 조작할 수 없는 상태라는 것을 알아볼 수 있어야 합니다.
 
-<VisualStory story="disabled-state" />
-
-세 저장 버튼을 각각 클릭하거나 Tab과 Enter로 조작해 보세요. 가운데 버튼은 비활성 상태를 전달하지만 저장 횟수가 올라갑니다. 마지막 버튼은 Tab으로 접근할 수 있어도 저장 횟수가 그대로입니다.
+세 저장 버튼을 각각 클릭해 보세요. 가운데 버튼만 저장 횟수가 올라갑니다. 키보드로도 해볼까요? Tab을 누르면 첫 번째 버튼을 건너뛰고 가운데 버튼에 포커스가 갑니다. 한 번 더 눌러 마지막 버튼으로 이동한 뒤 Enter를 눌러도 저장 횟수는 그대로입니다.
 
 <ExampleFrame label="비활성 버튼의 포커스와 실행 비교">
   <DisabledStateExample client:visible />

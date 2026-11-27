@@ -525,27 +525,37 @@ try {
   const featuredPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await featuredPage.goto(origin + "/yeobaek/");
   const featuredLink = featuredPage.locator(".archive-featured > a").first();
-  for (const width of [800, 1024, 1152, 1280, 1920, 2560]) {
+  for (const width of [390, 768, 800, 844, 1024, 1152, 1280, 1920, 2560]) {
     await featuredPage.setViewportSize({ width, height: 900 });
     const layout = await featuredPage.evaluate(() => {
       const rect = selector => document.querySelector(selector).getBoundingClientRect();
       const header = rect("header.header > .header");
       const search = rect(".search-trigger");
       const card = rect(".archive-featured > a");
+      const hero = rect(".landing-hero");
       const title = rect(".site-title");
       const controls = rect(".right-group");
       return {
         center: (search.left + search.right - header.left - header.right) / 2,
+        contentAlignment: (card.left + card.right - header.left - header.right) / 2,
+        heroAlignment: (hero.left + hero.right - card.left - card.right) / 2,
         left: search.left - card.left,
         right: search.right - card.right,
         titleClearance: search.left - title.right,
         controlsClearance: controls.left - search.right,
       };
     });
-    assert.ok(Math.abs(layout.center) <= 2, `${width}px: search is not centered`);
-    assert.ok(layout.titleClearance > 0 && layout.controlsClearance > 0, `${width}px: search overlaps other header controls`);
+    assert.ok(Math.abs(layout.contentAlignment) <= 2, `${width}px: featured articles are not centered`);
+    assert.ok(Math.abs(layout.heroAlignment) <= 2, `${width}px: hero and featured articles do not align`);
+    if (width >= 800) {
+      assert.ok(Math.abs(layout.center) <= 2, `${width}px: search is not centered`);
+      assert.ok(layout.titleClearance > 0 && layout.controlsClearance > 0, `${width}px: search overlaps other header controls`);
+    }
     if (width >= 1280) {
       assert.ok(Math.abs(layout.left) <= 2 && Math.abs(layout.right) <= 2, `${width}px: search and featured articles should use the same width`);
+    }
+    if (layoutScreenshotDir && [390, 1024, 1920].includes(width)) {
+      await featuredPage.screenshot({ path: join(layoutScreenshotDir, `landing-${width}.png`), fullPage: true });
     }
   }
   await featuredPage.setViewportSize({ width: 1280, height: 900 });
@@ -592,7 +602,7 @@ try {
     releaseResponse();
     await slowPage.close();
   }
-  await auditExamplesInContext(browser, origin);
+  await auditExamplesInContext(browser, origin, layoutScreenshotDir);
   await auditArticleVisuals(browser, origin);
   await auditSearchRaces(browser, origin);
   await runMotionNetworkAudit(browser, origin);

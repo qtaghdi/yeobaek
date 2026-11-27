@@ -6,7 +6,9 @@ import { StoryIllustration } from "src/components/visuals/story-illustration";
 import type { Story } from "src/components/visuals/stories";
 
 export const VisualPlayback = ({ story }: { story: Story }) => {
-  const [{ index, started }, setPlayback] = useState({ index: 0, started: false });
+  const [{ index, previousIndex, started }, setPlayback] = useState({
+    index: 0, previousIndex: -1, started: false,
+  });
   const [manualPlayback, setManualPlayback] = useState<boolean | null>(null);
   const [motionAllowed, setMotionAllowed] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -61,11 +63,13 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
     const isCurrentPage = () => !document.hidden && stageRef.current?.isConnected;
     const cueTimer = previewInput ? window.setTimeout(() => {
       if (!isCurrentPage()) return;
-      setPlayback(current => current.index === index && !current.started ? { index, started: true } : current);
+      setPlayback(current => current.index === index && !current.started ? { ...current, started: true } : current);
     }, Math.max(0, inputPreviewDuration - (duration - remaining))) : undefined;
     const timer = window.setTimeout(() => {
       if (!isCurrentPage()) return;
-      setPlayback(current => ({ index: nextFrame(current.index, story.frames.length), started: false }));
+      setPlayback(current => ({
+        index: nextFrame(current.index, story.frames.length), previousIndex: current.index, started: false,
+      }));
     }, remaining);
     return () => {
       window.clearTimeout(cueTimer);
@@ -88,7 +92,7 @@ export const VisualPlayback = ({ story }: { story: Story }) => {
   return (
     <figure className="visual-story not-content" aria-label={story.title} data-playing={playing} data-input-pending={pendingInput} data-frame={index} data-frame-count={story.frames.length}>
       <div ref={stageRef} className={`visual-story__stage visual-story__stage--${story.layout}`}>
-        {story.interaction ? <InteractionScene story={story} step={index} shownStep={shownStep} /> : story.scene ? <ArticleScene variant={story.scene} frame={shownFrame} step={Math.max(0, shownStep)} cueStep={index} /> : <>
+        {story.interaction ? <InteractionScene story={story} step={index} shownStep={shownStep} previousStep={previousIndex} /> : story.scene ? <ArticleScene variant={story.scene} frame={shownFrame} step={Math.max(0, shownStep)} cueStep={index} /> : <>
         {hasKeys ? <div className="visual-story__input">
           {frame.key ? <kbd key={index}>{frame.key}</kbd> : null}
         </div> : null}

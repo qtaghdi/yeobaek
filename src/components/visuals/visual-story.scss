@@ -175,11 +175,6 @@
 .story-art__scrollbar { background: var(--border-control); flex: none; transition: width 240ms var(--ease-out); }
 
 .story-art--viewport { display: flex; justify-content: center; gap: 1.2rem; }
-.story-art--flex { display: grid; place-items: center; }
-.story-art__file-row { inline-size: min(90%, 16rem); display: flex; align-items: center; gap: .5rem; padding: .45rem; border: 2px dashed var(--border-control); border-radius: var(--radius-control); background: var(--background); }
-.story-art__filename { flex: 1; min-inline-size: auto; white-space: nowrap; }
-.story-art__filename[data-step="2"] { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; }
-.story-art__delete { flex: none; padding: .35rem .55rem; border: 1px solid var(--border-control); border-radius: var(--radius-small); background: var(--surface); }
 @media (prefers-reduced-motion: reduce) {
   .story-art * { transition: none !important; }
 }
