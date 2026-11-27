@@ -81,6 +81,8 @@ for (const route of sourceRoutes) {
     const urls = entries.map(entry => {
       const links = [...entry.matchAll(/<a\b[^>]*href="([^"]+)"/g)];
       assert.equal(links.length, 1, `${route}: 항목마다 링크 하나`);
+      const title = entry.match(/<a\b[^>]*>([\s\S]*?)<\/a>/)?.[1].replace(/<[^>]*>/g, "").trim();
+      assert.ok(title && !/^(undefined|null)$/i.test(title), `${route}: 참고 자료 제목 누락 (${links[0][1]})`);
       assert.match(entry, /<\/a><\/p>\s*<p class="reference-note-summary">[^<]+<\/p>/, `${route}: 링크 아래 설명`);
       return links[0][1];
     });

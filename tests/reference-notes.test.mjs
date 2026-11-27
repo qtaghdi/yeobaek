@@ -53,3 +53,17 @@ test("generated references keep source links while omitting repeated back links"
   assert.equal(link.properties.dataReferenceSummary, references[url].summary);
   assert.equal(section.children[2], manualBackref);
 });
+
+test("references without catalog titles use authored link text or URL", () => {
+  const url = "https://support.apple.com/guide/safari/keyboard-shortcuts-and-gestures-cpsh003/mac";
+  const title = "Safari 키보드 단축키";
+  const createTree = (children) => ({
+    type: "root", children: [{ type: "paragraph", children: [{ type: "link", url, children }] }],
+  });
+  const tree = createTree([{ type: "strong", children: [{ type: "text", value: title }] }]);
+  remarkReferenceNotes()(tree);
+  assert.equal(tree.children[1].children[0].children[0].children[0].value, title);
+  const emptyTree = createTree([{ type: "text", value: "  " }]);
+  remarkReferenceNotes()(emptyTree);
+  assert.equal(emptyTree.children[1].children[0].children[0].children[0].value, url);
+});
