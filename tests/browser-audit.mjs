@@ -26,7 +26,7 @@ await new Promise((done) => server.listen(0, "127.0.0.1", done));
 const origin = "http://127.0.0.1:" + server.address().port;
 const browser = await chromium.launch();
 try {
-  const pages = (await readdir(root, { recursive: true })).filter((file) => file.endsWith("index.html") && !file.startsWith("_astro/")).map((file) => "/yeobaek/" + file.slice(0, -"index.html".length));
+  const pages = (await readdir(root, { recursive: true })).filter((file) => file.endsWith("index.html") && !file.startsWith("_astro/") && file !== "start/index.html").map((file) => "/yeobaek/" + file.slice(0, -"index.html".length));
   let storyCount = 0;
   let exampleCount = 0;
   const documentPaths = new Set(pages);
@@ -46,12 +46,17 @@ try {
       assert.ok(response?.ok(), `${route}: document response failed`);
       await page.locator(".main-pane").first().waitFor();
       await page.evaluate(() => document.fonts.ready);
-      if (route === "/yeobaek/start/") {
-        assert.equal(await page.locator(".intro-lead__statement").count(), 1);
-        assert.equal(await page.locator(".intro-method > li").count(), 3);
-        assert.equal(await page.locator(".intro-reading > a").count(), 3);
-        const intro = await page.locator(".intro-method").evaluate(element => [...element.children].map(child => child.getBoundingClientRect().top));
-        assert.equal(new Set(intro).size, width === 320 ? 3 : 1);
+      if (route === "/yeobaek/css/text-wrap/" && width === 1280) {
+        const paragraph = page.locator(".sl-markdown-content p").filter({ hasText: /^제목이 한 줄에 안 들어가는 건 괜찮습니다\./ });
+        await paragraph.locator("br[data-kowrap-break]").first().waitFor();
+        assert.equal(await paragraph.getAttribute("data-juliya-wrapped"), "true");
+        const widths = await paragraph.evaluate(element => {
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          return [...range.getClientRects()].filter(rect => rect.width > 0 && rect.height > 0).map(rect => rect.width);
+        });
+        assert.ok(widths.length >= 2 && widths.at(-1) >= Math.max(...widths) * .5, "본문 마지막 줄이 지나치게 짧지 않아야 함");
+        assert.equal(await paragraph.textContent(), "제목이 한 줄에 안 들어가는 건 괜찮습니다. 그런데 줄 끝에 단어가 어색하게 끊기거나 마지막 줄에 몇 글자만 남으면 같은 제목도 읽기 어렵습니다.");
       }
       const proseOverflow = await page.evaluate(() => {
         const prose = document.querySelectorAll(".sl-markdown-content p, .sl-markdown-content li");
@@ -478,7 +483,7 @@ try {
         overflow: document.documentElement.scrollWidth - Math.min(clientWidth, root.width),
       };
     });
-    for (const route of ["start", "css/text-wrap"]) {
+    for (const route of ["browser/events", "css/text-wrap"]) {
       await layoutPage.goto(origin + "/yeobaek/" + route + "/");
       for (const width of [1152, 1280, 1440, 1536, 1600, 1920, 2560]) {
         await layoutPage.setViewportSize({ width, height: 900 });

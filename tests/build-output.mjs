@@ -94,7 +94,7 @@ const codePage = await read("react/effects/index.html");
 assert.ok(codePage.includes('title="코드 복사"'));
 assert.ok(codePage.includes('data-copied="복사했습니다"'));
 const catalog = documentSections.flatMap(section => section.chapters.flatMap(chapter => chapter.pages));
-assert.deepEqual([...catalog].sort(), sourceRoutes.filter(route => route && route !== "start").sort(), "every public article belongs to exactly one chapter");
+assert.deepEqual([...catalog].sort(), sourceRoutes.filter(route => route).sort(), "every public article belongs to exactly one chapter");
 for (const route of catalog) {
   const page = await read(join(route, "index.html"));
   assert.match(page, /aria-label="관련 글"/, route);
@@ -106,6 +106,8 @@ for (const route of catalog) {
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
 assert.deepEqual([...readme.matchAll(/https:\/\/qtaghdi\.github\.io\/yeobaek\/([^\s)]+)\/\)/g)].map(match => match[1]), catalog);
 const home = await read("index.html");
+assert.match(await read("start/index.html"), /http-equiv="refresh" content="0; url=\.\.\//);
+assert.ok(!home.includes("여백 소개"));
 assert.deepEqual([...home.matchAll(/<title>(.*?)<\/title>/g)].map(match => match[1]), ["여백"]);
 assert.ok((await read("browser/events/index.html")).includes("<title>클릭 이벤트는 어디까지 전달될까? | 여백</title>"));
 assert.ok(home.includes("/yeobaek/favicon.svg"));

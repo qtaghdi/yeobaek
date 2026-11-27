@@ -2,7 +2,7 @@
 import Default from "@astrojs/starlight/components/PageTitle.astro";
 import { articleDates } from "./article-dates.mjs";
 const { id } = Astro.locals.starlightRoute.entry;
-const dates = id && id !== "start" ? articleDates(id) : null;
+const dates = id ? articleDates(id) : null;
 ---
 <Default><slot /></Default>
 {dates && <p class="article-dates" aria-label="글의 작성 및 수정 이력">

@@ -1,4 +1,5 @@
 import { mountKowrap } from "@oddmash/juliya/dom";
+import { mountProseWrapping } from "src/features/navigation/prose-wrap";
 import { searchNavigation } from "src/features/search/search-location";
 import { highlightDocumentMatch } from "src/features/search/document-highlight";
 import { mountNavigationMotion } from "src/features/navigation/navigation-motion";
@@ -53,7 +54,8 @@ const mountPage = () => {
   pageTransition = undefined;
   const tooltip = mountReferenceTooltips();
   const wrap = mountWrapping();
-  disposePage = () => { cancelHighlight?.(); navigate(); tooltip(); wrap(); };
+  const prose = mountProseWrapping();
+  disposePage = () => { cancelHighlight?.(); navigate(); tooltip(); wrap(); prose(); };
 };
 
 document.addEventListener("astro:before-preparation", (event) => {

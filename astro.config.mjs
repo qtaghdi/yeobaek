@@ -25,7 +25,6 @@ export default defineConfig({
       pagefind: false,
       components: { PageTitle: "./src/features/navigation/article-title.astro", Pagination: "./src/features/navigation/article-pagination.astro", Hero: "./src/features/landing/landing-hero.astro", Head: "./src/features/navigation/document-head.astro", Search: "./src/features/search/document-search.astro", ThemeSelect: "./src/features/theme/document-theme-select.astro" },
       sidebar: [
-        { label: "첫 장", items: [{ label: "여백 소개", slug: "start" }] },
         ...documentSections.map(({ title, chapters }) => ({
           label: title,
           items: chapters.map(({ number, title, pages }) => ({
