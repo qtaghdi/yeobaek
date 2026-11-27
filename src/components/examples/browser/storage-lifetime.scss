@@ -1,42 +1,35 @@
 .storage-lifetime {
   scroll-margin-block-start: 6rem;
-
-  &__sample {
-    display: grid;
-    align-content: start;
-    align-self: stretch;
-    justify-items: start;
-    gap: .75rem;
-    min-inline-size: 0;
-
-    .inline-example__caption {
-      margin: 0;
-    }
-
-    output {
-      color: var(--text);
-      font-weight: 600;
-    }
-  }
-
-  &__list {
-    display: grid;
-    gap: .55rem;
-    inline-size: 100%;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    li {
-      display: block;
-      padding-block: .55rem;
-      border-block-end: 1px solid var(--border);
-      color: var(--text-muted);
-    }
-
-    &[data-dense="true"] {
-      gap: .15rem;
-      li { padding-block: .15rem; }
-    }
-  }
+  &__browser { border: 1px solid var(--border-control); border-radius: var(--radius-surface); overflow: hidden; background: var(--background); min-inline-size: 0; }
+  &__chrome { background: var(--surface-raised); border-block-end: 1px solid var(--border); }
+  &__tabs { display: flex; align-items: end; gap: .25rem; padding: .45rem .45rem 0; flex-wrap: wrap; }
+  &__tabs button { min-block-size: 2rem; color: var(--text-muted); background: transparent; border: 1px solid transparent; border-radius: .35rem .35rem 0 0; padding: .3rem .65rem; font: inherit; font-size: .8rem; cursor: pointer; }
+  &__tabs button[aria-pressed="true"] { color: var(--text); background: var(--background); border-color: var(--border); border-block-end-color: var(--background); font-weight: 650; }
+  &__tabs button:disabled { opacity: .5; cursor: not-allowed; }
+  &__tabs button:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: -2px; }
+  &__toolbar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .35rem; padding: .45rem; }
+  &__toolbar button { min-block-size: 2rem; padding: .15rem .55rem; font-size: 1.15rem; }
+  &__address { background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-control); padding: .45rem .5rem; font-family: var(--mono); font-size: .75rem; overflow-wrap: anywhere; }
+  &__page { display: grid; gap: .85rem; padding: clamp(.75rem, 3vw, 1.3rem); min-inline-size: 0; }
+  &__page-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; padding-block-end: .6rem; border-block-end: 1px solid var(--border); gap: .3rem; }
+  &__page-header strong { font-size: 1.15rem; }
+  &__page-header span, &__scope span, &__shared span, &__note { color: var(--text-muted); font-size: .76rem; }
+  &__sample { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .6rem; min-inline-size: 0; }
+  &__sample .inline-example__caption { margin: 0; }
+  &__sample output { font-weight: 650; }
+  &__list { box-sizing: border-box; display: grid; gap: .5rem; inline-size: 100%; margin: 0; padding: .5rem; list-style: none; background: var(--surface); border-radius: var(--radius-control); }
+  &__list li { display: flex; gap: .5rem; align-items: center; padding: .55rem; background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-control); }
+  &__list[data-dense="true"] { gap: .15rem; li { padding-block: .15rem; } }
+  &__inspector { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .75rem; }
+  &__shared, &__sessions { min-inline-size: 0; border: 1px solid var(--border); border-radius: var(--radius-control); display: grid; gap: .5rem; align-content: start; padding: .75rem; background: var(--background); }
+  &__shared > div, &__scope { display: grid; gap: .25rem; }
+  &__inspector code { font-size: .78rem; overflow-wrap: anywhere; }
+  &__shared > code { padding: .55rem; background: var(--surface); border-radius: var(--radius-small); }
+  &__session { display: grid; gap: .25rem; padding: .5rem; border: 1px solid var(--border); border-radius: var(--radius-small); }
+  &__session[data-active="true"] { border: 1px solid var(--text-muted); background: var(--selection); }
+  &__session strong { font-size: .76rem; }
+  &__footer { display: flex; align-items: start; justify-content: space-between; gap: .6rem; flex-wrap: wrap; }
+  &__footer p { flex: 1 1 9rem; margin: 0; font-size: .85rem; }
+  &__note { margin: 0; }
+  @media (max-width: 35rem) { &__inspector { grid-template-columns: minmax(0,1fr); } }
 }
