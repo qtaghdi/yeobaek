@@ -542,10 +542,10 @@ try {
   for (const width of [1024, 1152, 1280, 1920, 2560]) {
     await sharedHeader.setViewportSize({ width, height: 900 });
     await sharedHeader.goto(origin + "/yeobaek/");
-    await sharedHeader.locator(".theme-trigger").waitFor();
+    await sharedHeader.locator("header.header .theme-trigger").waitFor();
     const landing = await measureHeader();
     await sharedHeader.goto(origin + "/yeobaek/css/text-wrap/");
-    await sharedHeader.locator(".theme-trigger").waitFor();
+    await sharedHeader.locator("header.header .theme-trigger").waitFor();
     const article = await measureHeader();
     for (let i = 0; i < landing.length; i++) {
       assert.ok(Math.abs(landing[i].left - article[i].left) < 2 && Math.abs(landing[i].right - article[i].right) < 2, `${width}: 헤더 컨트롤 ${i}가 이동함`);
