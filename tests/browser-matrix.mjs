@@ -447,12 +447,54 @@ const mobileFlow = async (browser) => {
   } finally { await session.detach(); await context.close(); }
 };
 
+const checkQualityExamples = async (browser, engine) => {
+  const context = await browser.newContext({ viewport: { width: 320, height: 844 }, reducedMotion: "reduce", colorScheme: "dark" });
+  const page = await context.newPage();
+  try {
+    await go(page, "accessibility/reference-tooltip/");
+    const tooltipFrame = page.getByRole("region", { name: "툴팁 연결과 포커스 비교" });
+    const link = tooltipFrame.getByRole("link", { name: "가이드 참고 링크" });
+    await link.focus();
+    const tip = page.locator("#example-reference-tip");
+    await tip.waitFor({ state: "visible" });
+    await link.press("Escape");
+    await tip.waitFor({ state: "hidden" });
+    assert.ok(await focusIs(link), engine + ": Escape changed focus");
+    await tooltipFrame.getByRole("button", { name: "툴팁 연결 해제" }).click();
+    await page.waitForFunction(() => document.querySelector("#example-reference-hint + a")?.getAttribute("aria-describedby") === "example-reference-hint");
+    await assertNoOverflow(page, engine + ": tooltip example");
+
+    await go(page, "design-system/input-leading-icon/");
+    const inputFrame = page.getByRole("region", { name: "입력 요소 정체성 비교" });
+    const input = inputFrame.getByRole("textbox", { name: "검색어" });
+    await input.fill("여백");
+    await input.press("Alt+i");
+    assert.equal(await input.inputValue(), "여백");
+    assert.ok(await focusIs(input), engine + ": stable input lost focus");
+    assert.equal(await inputFrame.locator("[data-input-same]").textContent(), "동일");
+    await inputFrame.getByRole("checkbox", { name: "아이콘 변경 시 요소 교체" }).check();
+    await input.fill("교체 전");
+    await input.press("Alt+i");
+    assert.equal(await input.inputValue(), "");
+    assert.equal(await inputFrame.locator("[data-input-same]").textContent(), "교체됨");
+    await assertNoOverflow(page, engine + ": input example");
+
+    await go(page, "css/viewport/");
+    const viewportFrame = page.getByRole("region", { name: "모바일 뷰포트 단위 비교" });
+    await viewportFrame.getByRole("button", { name: "주소창 접기" }).click();
+    assert.equal(await viewportFrame.locator('[data-viewport-overflow="svh"]').textContent(), "남는 공간 100px");
+    await assertNoOverflow(page, engine + ": viewport example");
+    console.log(engine + ": tooltip, actual DOM identity and viewport model passed at 320px");
+  } finally { await context.close(); }
+};
+
 try {
   for (const engine of engines) {
     assert.ok(["chromium", "firefox", "webkit"].includes(engine), `Unknown browser ${engine}`);
     const browser = await playwright[engine].launch();
     try {
       await coreFlow(browser, engine);
+      await checkQualityExamples(browser, engine);
       await checkPagination(browser, engine);
       await checkDialogBeforeHydration(browser, engine);
       if (engine !== "firefox") await checkLoadingExample(browser, engine);
