@@ -21,7 +21,7 @@
 .landing-note {
   position: relative;
   display: block;
-  width: min(100%, 24rem);
+  width: min(100%, 36rem);
   justify-self: end;
 }
 
@@ -80,7 +80,7 @@
     padding-block: 2rem .9rem;
   }
 
-  .landing-note { width: min(88%, 16rem); }
+  .landing-note { width: min(100%, 24rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {
