@@ -90,3 +90,16 @@ const mutation = useMutation({
 그래서 처음 질문에 답하자면, `useEffect`에서 데이터를 가져와도 됩니다. 외부 시스템과 맞춰야 할 일을 처리하는 게 Effect의 역할이니까요. 다만 캐시와 신선도, 중복 요청까지 직접 붙이고 있다면 한 번 멈춰서 생각해봅시다. 지금 만들고 있는 게 정말 API 호출 하나인가요?
 
 [벨로그 원문](https://velog.io/@qtaghdi/API-통신에-useEffect-쓰면-안되나) · [React의 Effect 설명](https://react.dev/reference/react/useEffect) · [TanStack Query 공식 문서](https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults)
+
+## 캐시가 있다는 것과 최신이라는 것은 다릅니다
+
+목록을 처음 가져오는 시점, 캐시된 결과를 다시 표시하는 시점, 서버의 최신 결과를 가져오는 시점을 구분합니다.
+
+| 상태 | 화면에 보이는 데이터 | 다음 행동 |
+| --- | --- | --- |
+| 최초 요청 | 아직 없음 | 응답을 기다림 |
+| 캐시가 있되 오래됨 | 이전 결과 | 정책에 따라 백그라운드 재조회 |
+| 재조회 성공 | 새로운 결과 | 갱신 시점 반영 |
+| 재조회 실패 | 상황에 따라 이전 결과 유지 | 실패 안내와 재시도 |
+
+이 표는 쿼리의 기본 동작을 단순화한 설명이며 재조회 조건과 캐시 제거 시점은 설정에 따라 달라집니다. 특히 staleTime은 신선함의 기준이고 gcTime은 사용하지 않는 캐시의 유지 정책입니다. [TanStack Query의 기본 동작](https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults)
