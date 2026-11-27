@@ -45,6 +45,7 @@
 
   .intro-method > li {
     min-inline-size: 0;
+    margin: 0;
     border-block-start: 1px solid var(--border-control);
     padding-block: 1.1rem;
     counter-increment: intro-step;
