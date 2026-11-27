@@ -1,0 +1,10 @@
+.state-snapshot {
+  &__panel { min-inline-size: 0; display: grid; align-content: start; gap: .6rem; background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-control); padding: .75rem; }
+  &__panel .inline-example__caption, &__panel .inline-example__count { margin: 0; }
+  .state-trace { min-block-size: 12rem; display: grid; align-content: start; gap: .6rem; padding-block: .6rem; border-block-start: 1px solid var(--border); }
+  .state-trace p, .state-trace small { margin: 0; font-size: .76rem; color: var(--text-muted); }
+  .state-trace__queue { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .3rem; }
+  .state-trace__queue > div { display: grid; gap: .4rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-small); padding: .4rem; min-inline-size: 0; }
+  .state-trace__queue code { font-size: .72rem; overflow-wrap: anywhere; }
+  .state-trace__queue strong { font-size: 1.1rem; }
+}
