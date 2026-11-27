@@ -611,6 +611,22 @@ try {
     await slowPage.close();
   }
   await auditExamplesInContext(browser, origin, layoutScreenshotDir);
+  const referencePage = await browser.newPage({ viewport: { width: 390, height: 844 }, colorScheme: "dark" });
+  try {
+    await referencePage.goto(origin + "/yeobaek/css/text-wrap/");
+    const input = referencePage.getByRole("textbox", { name: "비교할 문장" });
+    await input.scrollIntoViewIfNeeded();
+    await input.fill("긴기술용어와 짧은 문장");
+    await referencePage.waitForFunction(() => [...document.querySelectorAll(".text-wrap-preview__text")].every(node => node.textContent.trim() === "긴기술용어와 짧은 문장") && document.querySelectorAll(".text-wrap-preview__text").length === 3);
+    const related = referencePage.getByRole("navigation", { name: "관련 글", exact: true });
+    const link = related.getByRole("link").first();
+    await link.focus();
+    await link.press("Enter");
+    await referencePage.waitForURL(url => url.pathname !== "/yeobaek/css/text-wrap/");
+    assert.ok(await referencePage.getByRole("heading", { level: 1 }).isVisible());
+  } finally {
+    await referencePage.close();
+  }
   await auditArticleVisuals(browser, origin);
   await auditSearchRaces(browser, origin);
   await runMotionNetworkAudit(browser, origin);
