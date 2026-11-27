@@ -1,0 +1,14 @@
+---
+import Default from "@astrojs/starlight/components/PageTitle.astro";
+import { articleDates } from "./article-dates.mjs";
+const { id } = Astro.locals.starlightRoute.entry;
+const dates = id && id !== "start" ? articleDates(id) : null;
+---
+<Default><slot /></Default>
+{dates && <p class="article-dates" aria-label="글의 작성 및 수정 이력">
+  <span>작성일 <time datetime={dates.created}>{dates.created}</time></span>
+  <span>최종 수정일 <time datetime={dates.updated}>{dates.updated}</time></span>
+</p>}
+<style>
+  .article-dates { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; color: var(--text-muted); font-size: .82rem; margin: .65rem 0 0; line-height: 1.6; }
+</style>
