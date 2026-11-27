@@ -17,6 +17,7 @@
   - [포커스 링은 왜 필요할까?](https://qtaghdi.github.io/yeobaek/accessibility/focus-ring/)
   - [tabindex와 키보드 이동 순서](https://qtaghdi.github.io/yeobaek/accessibility/tab-order/)
   - [모달이 닫히면 포커스는 어디로 가야 할까?](https://qtaghdi.github.io/yeobaek/accessibility/dialog-focus/)
+  - [링크에 툴팁을 붙일 때 놓치기 쉬운 것](https://qtaghdi.github.io/yeobaek/accessibility/reference-tooltip/)
   - [비활성화와 접근성 상태](https://qtaghdi.github.io/yeobaek/accessibility/disabled-state/)
   - [localStorage와 sessionStorage의 차이](https://qtaghdi.github.io/yeobaek/browser/storage/)
 - CSS·텍스트·렌더링
@@ -46,6 +47,7 @@
   - [디자인 토큰은 왜 필요할까?](https://qtaghdi.github.io/yeobaek/design-system/tokens/)
   - [디자이너 없는 환경에서 디자인 시스템을 만든 이유](https://qtaghdi.github.io/yeobaek/design-system/why-design-system/)
   - [재사용 가능한 컴포넌트의 API](https://qtaghdi.github.io/yeobaek/design-system/component-api/)
+  - [입력란에 아이콘을 추가해도 포커스가 유지되어야 하는 이유](https://qtaghdi.github.io/yeobaek/design-system/input-leading-icon/)
   - [공통 컴포넌트의 호환성과 변경](https://qtaghdi.github.io/yeobaek/design-system/compatibility/)
 - 복합 인터랙션과 제품 UI
   - [왜 내 웹만 구릴까?](https://qtaghdi.github.io/yeobaek/design/visual-hierarchy/)

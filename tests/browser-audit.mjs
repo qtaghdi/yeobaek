@@ -539,11 +539,15 @@ try {
       const rect = selector => document.querySelector(selector).getBoundingClientRect();
       const header = rect("header.header > .header");
       const search = rect(".search-trigger");
-      const card = rect(".archive-featured > a");
+      const card = rect(".archive-highlights");
+      const featured = rect(".archive-featured");
+      const latest = rect(".archive-latest");
       const hero = rect(".landing-hero");
       const title = rect(".site-title");
       const controls = rect(".right-group");
       return {
+        sideBySide: latest.left >= featured.right && Math.abs(latest.top - featured.top) <= 2,
+        stacked: latest.top >= featured.bottom,
         center: (search.left + search.right - header.left - header.right) / 2,
         contentAlignment: (card.left + card.right - header.left - header.right) / 2,
         heroAlignment: (hero.left + hero.right - card.left - card.right) / 2,
@@ -553,6 +557,7 @@ try {
         controlsClearance: controls.left - search.right,
       };
     });
+    assert.ok(width > 736 ? layout.sideBySide : layout.stacked, `${width}px: latest layout`);
     assert.ok(Math.abs(layout.contentAlignment) <= 2, `${width}px: featured articles are not centered`);
     assert.ok(Math.abs(layout.heroAlignment) <= 2, `${width}px: hero and featured articles do not align`);
     if (width >= 800) {
@@ -611,6 +616,23 @@ try {
     await slowPage.close();
   }
   await auditExamplesInContext(browser, origin, layoutScreenshotDir);
+  const referencePage = await browser.newPage({ viewport: { width: 390, height: 844 }, colorScheme: "dark" });
+  try {
+    await referencePage.goto(origin + "/yeobaek/css/text-wrap/");
+    const input = referencePage.getByRole("textbox", { name: "비교할 문장" });
+    await input.scrollIntoViewIfNeeded();
+    await referencePage.locator("astro-island[ssr]:has(.text-wrap-preview)").waitFor({ state: "detached" });
+    await input.fill("긴기술용어와 짧은 문장");
+    await referencePage.waitForFunction(() => [...document.querySelectorAll(".text-wrap-preview__text")].every(node => node.textContent.trim() === "긴기술용어와 짧은 문장") && document.querySelectorAll(".text-wrap-preview__text").length === 3);
+    const related = referencePage.getByRole("navigation", { name: "관련 글", exact: true });
+    const link = related.getByRole("link").first();
+    await link.focus();
+    await link.press("Enter");
+    await referencePage.waitForURL(url => url.pathname !== "/yeobaek/css/text-wrap/");
+    assert.ok(await referencePage.getByRole("heading", { level: 1 }).isVisible());
+  } finally {
+    await referencePage.close();
+  }
   await auditArticleVisuals(browser, origin);
   await auditSearchRaces(browser, origin);
   await runMotionNetworkAudit(browser, origin);

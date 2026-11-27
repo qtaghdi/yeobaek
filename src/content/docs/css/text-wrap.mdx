@@ -31,7 +31,7 @@ import { TextWrapPreview } from "src/components/examples/css/text-wrap-preview";
 - `overflow-wrap: anywhere`: 다른 적절한 줄바꿈 기회가 없을 때 긴 문자열을 나눌 수 있게 합니다. 최소 콘텐츠 크기 계산에도 영향을 줄 수 있습니다.
 - `text-wrap: balance`: 여러 줄에 텍스트가 배치될 때 줄 길이를 균형 있게 만드는 데 도움을 줍니다.
 
-`keep-all`을 써도 `패키지 매니저`의 공백에서는 줄이 바뀔 수 있습니다. 카드 폭을 조금씩 줄이면 세 카드에서 같은 문장이 어디에서 나뉠까요? 세 카드 모두 긴 단어가 화면 밖으로 나가지 않도록 `overflow-wrap: anywhere`를 적용했습니다.
+`keep-all`을 써도 `패키지 매니저`의 공백에서는 줄이 바뀔 수 있습니다. 카드 폭을 조금씩 줄이면 세 카드에서 같은 문장이 어디에서 나뉠까요? 비교할 문장에 공백이 없는 긴 기술 용어나 여러 어절을 직접 입력해도 세 카드에 같은 내용이 즉시 반영됩니다. 세 카드 모두 긴 단어가 화면 밖으로 나가지 않도록 `overflow-wrap: anywhere`를 적용했습니다.
 
 <ExampleFrame label="카드 폭에 따른 CSS 줄바꿈">
   <TextWrapPreview client:visible />

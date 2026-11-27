@@ -23,7 +23,7 @@ export default defineConfig({
       social: [{ icon: "github", label: "GitHub", href: "https://github.com/qtaghdi/yeobaek" }],
       customCss: ["./src/styles/document.scss"],
       pagefind: false,
-      components: { Hero: "./src/features/landing/landing-hero.astro", Head: "./src/features/navigation/document-head.astro", Search: "./src/features/search/document-search.astro", ThemeSelect: "./src/features/theme/document-theme-select.astro" },
+      components: { PageTitle: "./src/features/navigation/article-title.astro", Pagination: "./src/features/navigation/article-pagination.astro", Hero: "./src/features/landing/landing-hero.astro", Head: "./src/features/navigation/document-head.astro", Search: "./src/features/search/document-search.astro", ThemeSelect: "./src/features/theme/document-theme-select.astro" },
       sidebar: [
         { label: "첫 장", items: [{ label: "여백 소개", slug: "start" }] },
         ...documentSections.map(({ title, chapters }) => ({

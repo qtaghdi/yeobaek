@@ -1,4 +1,6 @@
 .text-wrap-preview {
+  &__input { display: grid; gap: .4rem; min-inline-size: 0; }
+
   &__sample {
     display: grid;
     gap: .5rem;

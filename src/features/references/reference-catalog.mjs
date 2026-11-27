@@ -1,4 +1,12 @@
 export default {
+  "https://github.com/Oddmash/oddmash-ui/releases/tag/v0.12.0": { "title": "Oddmash UI 0.12.0", "summary": "Input의 장식용 leadingIcon 슬롯이 공개된 릴리스입니다." },
+  "https://github.com/Oddmash/oddmash-ui/releases/tag/v0.11.0": { "title": "Oddmash UI 0.11.0", "summary": "Tooltip과 정적 HTML 컨트롤러가 공개된 릴리스입니다." },
+  "https://github.com/Oddmash/oddmash-ui/issues/152": { "title": "Oddmash UI #152", "summary": "기존 링크의 조작 계약을 유지하는 Tooltip 및 정적 HTML 컨트롤러 요청입니다." },
+  "https://github.com/Oddmash/oddmash-ui/pull/153": { "title": "Oddmash UI PR #153", "summary": "Tooltip과 mountTooltip의 공개 API 및 구현을 추가합니다." },
+  "https://github.com/Oddmash/oddmash-ui/pull/159": { "title": "Oddmash UI PR #159", "summary": "툴팁의 포커스, 포인터 이동 상태와 정적 HTML 사용 예제를 개선합니다." },
+  "https://github.com/Oddmash/oddmash-ui/issues/169": { "title": "Oddmash UI #169", "summary": "네이티브 입력 계약을 유지하는 장식 아이콘 슬롯 요청입니다." },
+  "https://github.com/Oddmash/oddmash-ui/pull/170": { "title": "Oddmash UI PR #170", "summary": "leadingIcon 슬롯과 입력 요소 정체성, 폼 및 RTL 배치를 검증합니다." },
+
   "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling": {
     "title": "MDN: Event bubbling",
     "summary": "브라우저에서 이벤트가 대상까지 내려가는 캡처와 조상으로 올라가는 버블링, 이벤트 위임 및 전파 중단의 차이를 예제로 설명합니다."

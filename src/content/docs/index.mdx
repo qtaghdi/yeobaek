@@ -15,13 +15,17 @@ hero:
       variant: primary
 ---
 
+import LatestArticles from "src/features/landing/latest-articles.astro";
 import LandingIndex from "src/features/landing/landing-index.astro";
 
+<div class="archive-highlights">
 <section class="archive-featured" aria-labelledby="featured-heading">
   <h2 id="featured-heading">대표 글</h2>
   <a href="./css/text-wrap/"><strong>한국어 줄바꿈을 다루는 방법</strong><span>Juliya · CSS와 실제 글꼴 측정</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
   <a href="./design-system/component-api/"><strong>재사용 가능한 컴포넌트의 API</strong><span>Oddmash UI · Select의 상태와 API</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
   <a href="./architecture/testing/"><strong>테스트는 어떤 문제를 막아야 할까?</strong><span>Boundra · 전체 검사와 증분 검사</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
 </section>
+<LatestArticles />
+</div>
 
 <LandingIndex />
