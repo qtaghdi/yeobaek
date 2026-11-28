@@ -90,6 +90,12 @@ for (const route of sourceRoutes) {
   }
 }
 const textWrap = await read("css/text-wrap/index.html");
+const authLifecycle = await read("react/auth-lifecycle/index.html");
+assert.match(authLifecycle, /<td>확인 실패<\/td>\s*<td>세션 유효 여부를 알 수 없으므로 다시 확인할 수 있는 안내<\/td>/);
+assert.match(authLifecycle, /<td>세션 없음 확인\(만료·로그아웃 포함\)<\/td>\s*<td>로그인 경로<\/td>/);
+for (const status of [401, 403]) {
+  assert.match(authLifecycle, new RegExp(`https://developer\\.mozilla\\.org/en-US/docs/Web/HTTP/Reference/Status/${status}`));
+}
 assert.match(textWrap, /<section data-footnotes[^>]*id="참고-자료"/);
 assert.match(textWrap, /<section data-footnotes[\s\S]*?href="\.\.\/\.\.\/browser\/layout-observation\/"[\s\S]*?<\/section>/);
 const codePage = await read("react/effects/index.html");

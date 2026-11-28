@@ -173,6 +173,27 @@ export const auditExamplesInContext = async (browser, origin, screenshotDir) => 
     assert.equal(await readNumber(measurement), measuredNarrow);
     console.log("React filter, cache key and effect cleanup behavior passed");
 
+    const requests = await go("language/async-requests", "응답 순서 비교");
+    const replay = requests.getByRole("button", { name: "응답 순서 재현" });
+    const failA = requests.getByRole("button", { name: "A 실패 재현" });
+    const failB = requests.getByRole("button", { name: "B 실패 재현" });
+    const assertResults = async (expected) => {
+      await page.waitForFunction(value => [...document.querySelectorAll(".example-frame output")].map(e => e.textContent).join(",") === value, expected.join(","));
+    };
+    await page.setViewportSize({ width: 320, height: 844 });
+    await replay.focus();
+    await page.keyboard.press("Tab");
+    assert.ok(await failA.evaluate(element => element === document.activeElement && element.matches(":focus-visible")));
+    await page.keyboard.press("Space");
+    await assertResults(["A 오류", "B 결과"]);
+    if (screenshotDir) await requests.screenshot({ path: screenshotDir + "/request-order-failure-320.png" });
+    await page.keyboard.press("Tab");
+    assert.ok(await failB.evaluate(element => element === document.activeElement && element.matches(":focus-visible")));
+    await page.keyboard.press("Enter");
+    await assertResults(["A 결과", "B 오류"]);
+    assert.ok(await requests.evaluate(element => element.scrollWidth <= element.clientWidth + 2));
+    await page.setViewportSize({ width: 430, height: 844 });
+
     const feedback = await go("design/feedback", "저장 요청의 진행·성공·실패 비교");
     const save = feedback.getByRole("button", { name: "변경 사항 저장" });
     await save.click();

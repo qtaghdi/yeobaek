@@ -334,6 +334,17 @@ try {
   await click("다시 재현");
   await page.waitForFunction(() => [...document.querySelectorAll(".example-frame output")].map(e => e.textContent).join(",") === "A 결과,B 결과");
   assert.deepEqual(await frame().locator("ol li").allTextContents(), ["A 요청 시작", "B 요청 시작", "B 응답 도착", "A 응답 도착"]);
+  const assertRequestResult = async (expected, events) => {
+    await page.waitForFunction(value => [...document.querySelectorAll(".example-frame output")].map(e => e.textContent).join(",") === value, expected.join(","));
+    assert.deepEqual(await frame().locator("ol li").allTextContents(), events);
+  };
+  await click("A 실패 재현");
+  await assertRequestResult(["A 오류", "B 결과"], ["A 요청 시작", "B 요청 시작", "B 응답 도착", "A 실패 응답 도착"]);
+  await click("B 실패 재현");
+  await assertRequestResult(["A 결과", "B 오류"], ["A 요청 시작", "B 요청 시작", "B 실패 응답 도착", "A 응답 도착"]);
+  await click("A 실패 재현");
+  await click("B 실패 재현");
+  await assertRequestResult(["A 결과", "B 오류"], ["A 요청 시작", "B 요청 시작", "B 실패 응답 도착", "A 응답 도착"]);
 
   await go("design/visual-hierarchy");
   for (const stage of ["문자", "간격", "색상", "위계", "개선 후"]) {

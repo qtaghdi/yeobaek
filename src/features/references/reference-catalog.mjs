@@ -2,6 +2,8 @@ export default {
   "https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/": { "title": "WAI-ARIA APG: Tooltip", "summary": "키보드 포커스, Escape, 역할 및 설명 연결을 다루는 작성 중인 Tooltip 패턴입니다." },
   "https://react.dev/learn/preserving-and-resetting-state": { "title": "React: 상태 유지와 초기화", "summary": "렌더 트리에서 위치, 요소 타입과 key를 통해 상태가 유지되거나 초기화되는 이유를 설명합니다." },
   "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies": { "title": "MDN: HTTP 쿠키", "summary": "HTTP 쿠키의 전달 범위, 만료, 보안 속성과 세션 관리의 기본 계약을 설명합니다." },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401": { "title": "MDN: 401 Unauthorized", "summary": "요청에 유효한 인증 정보가 없을 때의 HTTP 응답과 인증 방식 안내를 설명합니다." },
+  "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/403": { "title": "MDN: 403 Forbidden", "summary": "서버가 요청을 이해했지만 정책 등으로 처리를 거부하는 응답과 401의 차이를 설명합니다." },
   "https://react.dev/reference/react-dom/client/hydrateRoot": { "title": "React: hydrateRoot", "summary": "서버에서 생성한 HTML에 React 상태와 이벤트 동작을 연결하는 API입니다." },
   "https://github.com/Oddmash/oddmash-ui/releases/tag/v0.12.0": { "title": "Oddmash UI 0.12.0", "summary": "Input의 장식용 leadingIcon 슬롯이 공개된 릴리스입니다." },
   "https://github.com/Oddmash/oddmash-ui/releases/tag/v0.11.0": { "title": "Oddmash UI 0.11.0", "summary": "Tooltip과 정적 HTML 컨트롤러가 공개된 릴리스입니다." },
